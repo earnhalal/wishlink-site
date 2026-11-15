@@ -5,7 +5,7 @@
    POST { id, fail: true } → mark failed.
    Old requests (>2h, any state) are deleted on every call — photos are
    never kept longer than that. */
-const { dbGet, dbUpdate, dbRemove, readBody, send } = require("./_lib");
+const { dbGet, dbSet, dbUpdate, dbRemove, readBody, send } = require("./_lib");
 
 function authed(req) {
   const t = process.env.WL_AGENT_TOKEN || "";
