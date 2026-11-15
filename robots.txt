@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /*-surprise-
 Sitemap: https://www.wishlink.pp.ua/sitemap.xml
