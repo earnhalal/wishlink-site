@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Stats — WishLink (Owner)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#2D2A6E">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+:root{--indigo:#2D2A6E;--indigo-d:#211F55;--coral:#FF6B5B;--gold:#F4B942;--cream:#FFF9F2;--ink:#1B1B2F;--mut:#666A85;--line:#E8E3F0;--tint:#EFEAFB;--ok:#1E8E5A;--err:#C0392B}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream)}
+h1,h2{font-family:'Fraunces',serif;color:var(--indigo);margin:0}
+a{color:var(--indigo)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:880px;margin:0 auto;padding:22px 16px 40px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
+.logo{font-family:'Fraunces',serif;font-size:24px;font-weight:700;color:var(--indigo);text-decoration:none}
+.logo span{color:var(--coral)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
+.pin-card{max-width:420px;margin:40px auto;text-align:center}
+.pin-card input{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:12px;font-size:20px;text-align:center;letter-spacing:4px;margin:14px 0}
+.btn{display:inline-block;background:var(--indigo);color:#fff;border:0;border-radius:999px;padding:13px 28px;font-size:16px;font-weight:600;cursor:pointer;min-height:48px}
+.btn:hover{background:var(--indigo-d)}
+.btn.ghost{background:#fff;color:var(--indigo);border:1.5px solid var(--indigo)}
+.err{color:var(--err);min-height:22px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.stat .num{font-family:'Fraunces',serif;font-size:34px;font-weight:700;color:var(--indigo);line-height:1.1}
+.stat .lbl{color:var(--mut);font-size:13px;margin-top:4px}
+.stat.live .num{color:var(--err)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#e33;vertical-align:middle;margin-right:7px;animation:pulse 1.4s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
+.bars{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:8px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.bar .col{width:100%;max-width:52px;background:var(--indigo);border-radius:8px 8px 0 0;min-height:3px}
+.bar.today .col{background:var(--coral)}
+.bar .bv{font-size:13px;font-weight:700;color:var(--indigo)}
+.bar .bd{font-size:11px;color:var(--mut);white-space:nowrap}
+.bar .bu{font-size:11px;color:var(--mut)}
+table.pages{width:100%;border-collapse:collapse}
+table.pages td{padding:8px 6px;border-bottom:1px solid var(--line)}
+table.pages td:last-child{text-align:right;font-weight:700;color:var(--indigo)}
+.mut{color:var(--mut);font-size:13px}
+.rowline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+footer{background:#0B0B12;color:#C9CAE0;text-align:center;padding:26px 16px;margin-top:10px}
+footer .fb{font-family:'Fraunces',serif;color:var(--gold);font-size:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="/">WishLink<span>.</span></a>
+    <button class="btn ghost" id="lockBtn" style="display:none;padding:9px 18px;min-height:40px">🔒 Lock</button>
+  </header>
+
+  <div class="card pin-card" id="pinCard">
+    <h1 id="pinTitle">📊 Website Stats</h1>
+    <p class="mut" id="pinText">Enter your stats PIN to see how many people are visiting WishLink.</p>
+    <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" maxlength="8">
+    <div class="err" id="pinErr"></div>
+    <button class="btn" id="pinBtn">Show stats</button>
+  </div>
+
+  <div id="dash" style="display:none">
+    <div class="grid" style="margin-bottom:12px">
+      <div class="stat live"><div class="num"><span class="dot"></span><span id="sLive">–</span></div><div class="lbl">Live on the website right now</div></div>
+      <div class="stat"><div class="num" id="sToday">–</div><div class="lbl">Visits today</div></div>
+      <div class="stat"><div class="num" id="sTodayU">–</div><div class="lbl">Unique visitors today</div></div>
+      <div class="stat"><div class="num" id="sYest">–</div><div class="lbl">Visits yesterday</div></div>
+      <div class="stat"><div class="num" id="sMonth">–</div><div class="lbl">Visits this month</div></div>
+      <div class="stat"><div class="num" id="sTotal">–</div><div class="lbl">All-time visits</div></div>
+      <div class="stat"><div class="num" id="sTotalU">–</div><div class="lbl">All-time unique visitors</div></div>
+    </div>
+
+    <div class="card">
+      <div class="rowline"><h2>Last 7 days</h2><span class="mut">visits per day · unique visitors under each bar</span></div>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:8px">Top pages today</h2>
+      <table class="pages"><tbody id="pagesBody"></tbody></table>
+      <p class="mut" id="pagesEmpty" style="display:none">No visits yet today.</p>
+    </div>
+
+    <p class="mut" style="text-align:center">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
+  </div>
+</div>
+<footer>
+  <div class="fb">WishLink</div>
+  <div style="font-size:13px;margin-top:4px">Owner stats — only you can see this page's numbers.</div>
+</footer>
+
+<script>
+var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "🎂 My Pages", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var pin = localStorage.getItem("wl_stats_pin") || "";
+var setupMode = false;
+var timer = null;
+
+function el(id) { return document.getElementById(id); }
+function post(body) {
+  return fetch("/api/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+    .then(function(r) { return r.json().then(function(j) { return { code: r.status, j: j }; }); });
+}
+function labelFor(k) {
+  if (LABELS[k]) return LABELS[k];
+  if (k.indexOf("blog-") === 0) return "📰 Blog post";
+  return k;
+}
+function fmtDate(d) {
+  try { return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" }); } catch (e) { return d; }
+}
+function render(s) {
+  el("sLive").textContent = s.live;
+  el("sToday").textContent = s.today.visits;
+  el("sTodayU").textContent = s.today.uniques;
+  el("sYest").textContent = s.yesterday.visits;
+  el("sMonth").textContent = s.monthVisits;
+  el("sTotal").textContent = s.total.visits;
+  el("sTotalU").textContent = s.total.uniques;
+  var max = 1;
+  s.last7.forEach(function(r) { if (r.visits > max) max = r.visits; });
+  el("bars").innerHTML = s.last7.map(function(r, i) {
+    var h = Math.max(3, Math.round(r.visits / max * 84));
+    return '<div class="bar' + (i === 6 ? " today" : "") + '"><div class="bv">' + r.visits + '</div><div class="col" style="height:' + h + 'px"></div><div class="bd">' + fmtDate(r.d) + '</div><div class="bu">' + r.uniques + " unique</div></div>";
+  }).join("");
+  var entries = Object.keys(s.today.pages || {}).map(function(k) { return [k, s.today.pages[k]]; }).sort(function(a, b) { return b[1] - a[1]; });
+  el("pagesEmpty").style.display = entries.length ? "none" : "block";
+  el("pagesBody").innerHTML = entries.map(function(e) { return "<tr><td>" + labelFor(e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+}
+function loadStats() {
+  if (!pin) return;
+  post({ type: "stats", pin: pin }).then(function(r) {
+    if (r.code === 401) { logout("Wrong PIN — please enter it again."); return; }
+    if (r.j && r.j.setup) { enterSetup(); return; }
+    if (r.j && typeof r.j.live === "number") {
+      el("pinCard").style.display = "none";
+      el("dash").style.display = "block";
+      el("lockBtn").style.display = "inline-block";
+      render(r.j);
+    }
+  }).catch(function(){});
+}
+function enterSetup() {
+  setupMode = true;
+  el("pinCard").style.display = "block";
+  el("dash").style.display = "none";
+  el("pinTitle").textContent = "📊 Create your stats PIN";
+  el("pinText").textContent = "This is the first visit. Choose a 4–8 digit PIN — only someone with this PIN can see the website numbers.";
+  el("pinBtn").textContent = "Set PIN & show stats";
+}
+function logout(msg) {
+  pin = "";
+  localStorage.removeItem("wl_stats_pin");
+  if (timer) { clearInterval(timer); timer = null; }
+  el("dash").style.display = "none";
+  el("lockBtn").style.display = "none";
+  el("pinCard").style.display = "block";
+  el("pinTitle").textContent = "📊 Website Stats";
+  el("pinText").textContent = "Enter your stats PIN to see how many people are visiting WishLink.";
+  el("pinBtn").textContent = "Show stats";
+  el("pinErr").textContent = msg || "";
+  el("pinInput").value = "";
+}
+el("pinBtn").addEventListener("click", function() {
+  var v = el("pinInput").value.trim();
+  if (!/^\d{4,8}$/.test(v)) { el("pinErr").textContent = "PIN must be 4–8 digits."; return; }
+  el("pinErr").textContent = "";
+  if (setupMode) {
+    post({ type: "setpin", pin: v }).then(function(r) {
+      if (r.code === 200) {
+        pin = v; localStorage.setItem("wl_stats_pin", v); setupMode = false;
+        loadStats(); startTimer();
+      } else if (r.code === 409) {
+        setupMode = false; pin = v; localStorage.setItem("wl_stats_pin", v); loadStats(); startTimer();
+      } else {
+        el("pinErr").textContent = (r.j && r.j.error) || "Could not set the PIN. Try again.";
+      }
+    }).catch(function() { el("pinErr").textContent = "Network problem — try again."; });
+  } else {
+    pin = v; localStorage.setItem("wl_stats_pin", v);
+    loadStats(); startTimer();
+  }
+});
+el("pinInput").addEventListener("keydown", function(e) { if (e.key === "Enter") el("pinBtn").click(); });
+el("lockBtn").addEventListener("click", function() { logout(""); });
+function startTimer() { if (!timer) timer = setInterval(loadStats, 30000); }
+
+/* On open: if no PIN is set on the server yet, go straight to setup. */
+if (pin) { loadStats(); startTimer(); }
+else {
+  post({ type: "stats", pin: "" }).then(function(r) { if (r.j && r.j.setup) enterSetup(); }).catch(function(){});
+}
+</script>
+</body>
+</html>

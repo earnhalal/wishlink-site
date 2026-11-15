@@ -104,5 +104,19 @@ footer{background:#0B0B12;margin-top:40px;padding:30px 18px 36px;text-align:cent
   <p class="footlinks"><a href="/">Maker</a><a href="/my.html">My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
   <p style="margin-top:10px">© 2026 WishLink</p>
 </footer>
+<script>
+/* WishLink analytics — our own counting system (visits + live visitors), stored on our own Firebase. No external service, no ads. */
+(function(){
+  try {
+    var dev = localStorage.getItem('wl_device');
+    if (!dev) { dev = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', dev); }
+    var page = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '').replace(/\//g, '-') || 'home';
+    if (!/^[a-z0-9-]{1,40}$/.test(page)) page = 'other';
+    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t }), keepalive: true }).catch(function(){}); }
+    send('visit');
+    setInterval(function(){ send('ping'); }, 30000);
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>

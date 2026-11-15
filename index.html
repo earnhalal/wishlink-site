@@ -17,6 +17,19 @@
   (function(s){s.dataset.zone='12272509',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')));
 })();
 </script>
+<script>
+/* WishLink analytics — our own counting system (visits + live visitors), stored on our own Firebase. No external service, no ads. */
+(function(){
+  try {
+    var dev = localStorage.getItem('wl_device');
+    if (!dev) { dev = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', dev); }
+    var page = (/^\/[a-zA-Z0-9][a-zA-Z0-9\-]{2,48}$/.test(location.pathname) || /#p=[A-Za-z0-9\-_]+/.test(location.hash)) ? 'surprise' : 'home';
+    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t }), keepalive: true }).catch(function(){}); }
+    send('visit');
+    setInterval(function(){ send('ping'); }, 30000);
+  } catch (e) {}
+})();
+</script>
 <meta name="google-site-verification" content="2u3NTcFwqrW1F72_D-L9Iao1uH3AAqlTPEAuZEJ-bzE">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="WishLink">
