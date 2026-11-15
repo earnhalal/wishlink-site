@@ -35,7 +35,14 @@ module.exports = async (req, res) => {
       const buf = Buffer.from(m[2], "base64");
       if (buf.length > 400_000) continue;
       const path = "pages/" + slug + "/" + randomCode(16) + ".jpg";
-      urls.push(await storageUpload(path, buf));
+      try {
+        urls.push(await storageUpload(path, buf));
+      } catch (e) {
+        /* Storage not enabled on this project (needs Blaze) — keep the
+           photo inside the page record instead. It is still only ever
+           released by /api/unlock after the PIN checks out. */
+        urls.push(dataUrl);
+      }
     }
     if (urls.length) content.im = urls;
 
