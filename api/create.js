@@ -4,7 +4,7 @@
    Photos go to Firebase Storage at unguessable paths; the DB holds only URLs.
    Returns: { slug, editToken } — the edit token exists ONLY in this response
    and on the creator's device. */
-const { dbSet, storageUpload, hashSecret, newSalt, randomCode, slugifyName, readBody, send } = require("./_lib");
+const { dbGet, dbSet, dbUpdate, storageUpload, hashSecret, newSalt, randomCode, slugifyName, readBody, send } = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
@@ -59,6 +59,17 @@ module.exports = async (req, res) => {
     content.editSalt = editSalt;
 
     await dbSet("pages/" + slug, content);
+
+    /* analytics: daily page-creation counter (best-effort — a stats
+       failure must never block a page creation) */
+    try {
+      const day = new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10);
+      const dayRec = (await dbGet("stats_days/" + day)) || {};
+      await dbUpdate("stats_days/" + day, { created: (dayRec.created || 0) + 1 });
+      const tot = (await dbGet("stats_total")) || {};
+      await dbUpdate("stats_total", { pages: (tot.pages || 0) + 1 });
+    } catch (e) {}
+
     if (content.device) {
       await dbSet("user_pages/" + content.device + "/" + slug, { n: name, ts: content.createdAt }).catch(() => {});
     }

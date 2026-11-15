@@ -45,6 +45,14 @@ module.exports = async (req, res) => {
       return send(res, 200, { ok: true, wiped: true });
     }
 
+    if (type === "resetpin") {
+      if (!process.env.WL_AGENT_TOKEN || String(b.token || "") !== process.env.WL_AGENT_TOKEN) {
+        return send(res, 401, { error: "auth" });
+      }
+      await dbRemove("stats_admin");
+      return send(res, 200, { ok: true });
+    }
+
     if (type === "setpin") {
       const pin = String(b.pin || "");
       if (!/^\d{4,8}$/.test(pin)) return send(res, 400, { error: "PIN must be 4-8 digits" });
@@ -83,18 +91,18 @@ module.exports = async (req, res) => {
       const last7 = [];
       for (let i = 6; i >= 0; i--) {
         const d = pktDay(now - i * 86400000);
-        const rec = days[d] || { visits: 0, uniques: 0 };
-        last7.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0 });
+        const rec = days[d] || { visits: 0, uniques: 0, created: 0 };
+        last7.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0 });
       }
-      const t = days[today] || { visits: 0, uniques: 0, pages: {} };
-      const y = days[yesterday] || { visits: 0, uniques: 0 };
+      const t = days[today] || { visits: 0, uniques: 0, created: 0, pages: {} };
+      const y = days[yesterday] || { visits: 0, uniques: 0, created: 0 };
       return send(res, 200, {
         live,
-        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, pages: t.pages || {} },
-        yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0 },
+        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, pages: t.pages || {} },
+        yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0, created: y.created || 0 },
         last7,
         monthVisits,
-        total: { visits: total.visits || 0, uniques: total.uniques || 0 },
+        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0 },
       });
     }
 
@@ -125,6 +133,7 @@ module.exports = async (req, res) => {
     await dbSet("stats_days/" + day, {
       visits: (dayRec.visits || 0) + 1,
       uniques: (dayRec.uniques || 0) + (isNewToday ? 1 : 0),
+      created: dayRec.created || 0,
       pages,
     });
 
@@ -132,6 +141,7 @@ module.exports = async (req, res) => {
     await dbSet("stats_total", {
       visits: (total.visits || 0) + 1,
       uniques: (total.uniques || 0) + (isNewDevice ? 1 : 0),
+      pages: total.pages || 0,
     });
 
     const daysMap = (devRec && devRec.days) || {};

@@ -71,14 +71,16 @@ footer .fb{font-family:'Fraunces',serif;color:var(--gold);font-size:20px}
       <div class="stat live"><div class="num"><span class="dot"></span><span id="sLive">–</span></div><div class="lbl">Live on the website right now</div></div>
       <div class="stat"><div class="num" id="sToday">–</div><div class="lbl">Visits today</div></div>
       <div class="stat"><div class="num" id="sTodayU">–</div><div class="lbl">Unique visitors today</div></div>
+      <div class="stat"><div class="num" id="sCreated">–</div><div class="lbl">🎂 Pages created today</div></div>
       <div class="stat"><div class="num" id="sYest">–</div><div class="lbl">Visits yesterday</div></div>
       <div class="stat"><div class="num" id="sMonth">–</div><div class="lbl">Visits this month</div></div>
       <div class="stat"><div class="num" id="sTotal">–</div><div class="lbl">All-time visits</div></div>
       <div class="stat"><div class="num" id="sTotalU">–</div><div class="lbl">All-time unique visitors</div></div>
+      <div class="stat"><div class="num" id="sTotalPages">–</div><div class="lbl">🎂 Pages created in total</div></div>
     </div>
 
     <div class="card">
-      <div class="rowline"><h2>Last 7 days</h2><span class="mut">visits per day · unique visitors under each bar</span></div>
+      <div class="rowline"><h2>Last 7 days</h2><span class="mut">visits per day · unique visitors &amp; 🎂 pages created under each bar</span></div>
       <div class="bars" id="bars"></div>
     </div>
 
@@ -119,15 +121,17 @@ function render(s) {
   el("sLive").textContent = s.live;
   el("sToday").textContent = s.today.visits;
   el("sTodayU").textContent = s.today.uniques;
+  el("sCreated").textContent = s.today.created || 0;
   el("sYest").textContent = s.yesterday.visits;
   el("sMonth").textContent = s.monthVisits;
   el("sTotal").textContent = s.total.visits;
   el("sTotalU").textContent = s.total.uniques;
+  el("sTotalPages").textContent = s.total.pages || 0;
   var max = 1;
   s.last7.forEach(function(r) { if (r.visits > max) max = r.visits; });
   el("bars").innerHTML = s.last7.map(function(r, i) {
     var h = Math.max(3, Math.round(r.visits / max * 84));
-    return '<div class="bar' + (i === 6 ? " today" : "") + '"><div class="bv">' + r.visits + '</div><div class="col" style="height:' + h + 'px"></div><div class="bd">' + fmtDate(r.d) + '</div><div class="bu">' + r.uniques + " unique</div></div>";
+    return '<div class="bar' + (i === 6 ? " today" : "") + '"><div class="bv">' + r.visits + '</div><div class="col" style="height:' + h + 'px"></div><div class="bd">' + fmtDate(r.d) + '</div><div class="bu">' + r.uniques + " unique</div>" + '<div class="bu">🎂 ' + (r.created || 0) + " pages</div></div>";
   }).join("");
   var entries = Object.keys(s.today.pages || {}).map(function(k) { return [k, s.today.pages[k]]; }).sort(function(a, b) { return b[1] - a[1]; });
   el("pagesEmpty").style.display = entries.length ? "none" : "block";
