@@ -2118,14 +2118,48 @@ else { runViewer(); }
   if(!m) return;
   var slug = m[1];
   var overlay = document.createElement("div");
-  overlay.setAttribute("style", "position:fixed;inset:0;z-index:99;background:#FFF9F2;display:flex;align-items:center;justify-content:center;padding:18px;font-family:'DM Sans',system-ui,sans-serif");
-  overlay.innerHTML = '<div style="background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(45,42,110,.18);max-width:360px;width:100%;padding:30px 26px;text-align:center">' +
+  overlay.setAttribute("style", "position:fixed;inset:0;z-index:99;background:#14101f;display:flex;align-items:center;justify-content:center;padding:18px;font-family:'DM Sans',system-ui,sans-serif");
+  overlay.innerHTML = '<div id="wlCard" style="background:#1d1430;border:1px solid rgba(232,184,75,.45);border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.45);max-width:360px;width:100%;padding:30px 26px;text-align:center">' +
     '<div style="font-size:46px">🔒</div>' +
-    '<div style="font-weight:800;font-size:20px;color:#1B1B2F;margin-top:8px">A surprise is locked for you</div>' +
-    '<p style="color:#666A85;font-size:14.5px;margin-top:7px;line-height:1.55">Someone made a birthday page for you.<br>Type the secret PIN to open it.</p>' +
-    '<input id="wlPin" type="tel" inputmode="numeric" autocomplete="off" placeholder="••••" style="margin-top:14px;width:190px;padding:13px;border-radius:14px;border:2px solid #2D2A6E;font-size:19px;text-align:center;letter-spacing:6px;font-weight:700;outline:none">' +
-    '<br><button id="wlUnlock" style="margin-top:14px;background:#2D2A6E;color:#fff;border:none;font-weight:700;font-size:16px;padding:13px 32px;border-radius:999px;cursor:pointer;font-family:inherit">Unlock my surprise 🔓</button>' +
-    '<div id="wlErr" style="color:#c0392b;font-size:13.5px;font-weight:700;min-height:19px;margin-top:10px"></div></div>';
+    '<div id="wlTitle" style="font-weight:800;font-size:21px;color:#fdf6e3;margin-top:8px">A surprise is locked for you</div>' +
+    '<p id="wlSub" style="color:#cbbf9f;font-size:14.5px;margin-top:7px;line-height:1.55">Someone made a birthday page for you.<br>Type the secret PIN to open it.</p>' +
+    '<div style="position:relative;width:216px;margin:16px auto 0">' +
+    '<input id="wlPin" type="password" inputmode="numeric" autocomplete="off" placeholder="\u2022\u2022\u2022\u2022" style="width:100%;box-sizing:border-box;padding:13px 44px 13px 13px;border-radius:14px;border:2px solid #e8b84b;background:rgba(255,255,255,.06);color:#fdf6e3;font-size:19px;text-align:center;letter-spacing:6px;font-weight:700;outline:none">' +
+    '<button id="wlEye" type="button" aria-label="Show PIN" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:20px;cursor:pointer;padding:6px;line-height:1">👁️</button>' +
+    '</div>' +
+    '<br><button id="wlUnlock" style="margin-top:10px;background:linear-gradient(160deg,#f5d67b,#e8b84b);color:#241a08;border:none;font-weight:800;font-size:16px;padding:13px 32px;border-radius:999px;cursor:pointer;font-family:inherit">Unlock my surprise 🔓</button>' +
+    '<div id="wlErr" style="color:#ff9c9c;font-size:13.5px;font-weight:700;min-height:19px;margin-top:10px"></div></div>';
+  function lum(hex){
+    var h = String(hex || "").replace("#", "");
+    if(h.length !== 6) return 0;
+    return 0.2126 * parseInt(h.substr(0, 2), 16) / 255 + 0.7152 * parseInt(h.substr(2, 2), 16) / 255 + 0.0722 * parseInt(h.substr(4, 2), 16) / 255;
+  }
+  /* Paint the gate in the PAGE's own theme (classic = Midnight Gold).
+     Only the theme id comes from the server — the content stays locked. */
+  function applyTheme(t){
+    try{
+      var card = document.getElementById("wlCard"), title = document.getElementById("wlTitle"),
+          sub = document.getElementById("wlSub"), pin = document.getElementById("wlPin"),
+          btn = document.getElementById("wlUnlock");
+      if(!card || !t || t === "classic" || !window.THEMES || !THEMES[t]) return;
+      var th = THEMES[t];
+      overlay.style.background = th.bg;
+      overlay.style.fontFamily = th.fb;
+      card.style.background = th.card;
+      card.style.border = "1px solid " + th.acc + "66";
+      card.style.borderRadius = th.rad;
+      title.style.color = th.ink; title.style.fontFamily = th.fd;
+      sub.style.color = th.mut;
+      pin.style.borderColor = th.acc; pin.style.color = th.ink;
+      pin.style.background = th.dark ? "rgba(255,255,255,.07)" : "rgba(255,255,255,.75)";
+      btn.style.background = th.acc; btn.style.color = lum(th.acc) > 0.55 ? "#1B1B2F" : "#ffffff";
+      if(window.fontUrl && !document.getElementById("wlGateFont")){
+        var lk = document.createElement("link");
+        lk.id = "wlGateFont"; lk.rel = "stylesheet"; lk.href = fontUrl(th);
+        document.head.appendChild(lk);
+      }
+    }catch(e){}
+  }
   function openWith(pin, resp){
     try{
       var vd = payloadToData(resp);
@@ -2162,6 +2196,18 @@ else { runViewer(); }
     try{ fetch("/api/seen", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: slug }) }); }catch(e){}
     var pinEl = document.getElementById("wlPin");
     var errEl = document.getElementById("wlErr");
+    var eyeEl = document.getElementById("wlEye");
+    if(eyeEl) eyeEl.addEventListener("click", function(){
+      var hidden = pinEl.type === "password";
+      pinEl.type = hidden ? "text" : "password";
+      eyeEl.textContent = hidden ? "🙈" : "👁️";
+      eyeEl.setAttribute("aria-label", hidden ? "Hide PIN" : "Show PIN");
+      pinEl.focus();
+    });
+    fetch("/api/gate?slug=" + encodeURIComponent(slug))
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ if(j && j.t) applyTheme(j.t); })
+      .catch(function(){});
     pinEl.focus();
     function submit(){
       var pin = pinEl.value.trim();
