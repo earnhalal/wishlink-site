@@ -61,7 +61,24 @@ footer{max-width:900px;margin:34px auto 0;padding:22px 18px 34px;text-align:cent
 <p class="lede">We are a small studio and we read every message ourselves.</p>
 <h2>Email</h2>
 <p>The fastest way to reach us is email:</p>
-<div class="wishbox">📧 <b>mintnestsofficial@gmail.com</b></div>
+<div class="wishbox">📧 <b>hello@wishlink.pp.ua</b></div>
+<h2>Send us a message</h2>
+<p>Fill this in and press send — it opens your email app with the message ready to go:</p>
+<label style="display:block;font-weight:700;margin-top:12px">Your name</label>
+<input id="cName" type="text" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-top:6px">
+<label style="display:block;font-weight:700;margin-top:12px">Your message</label>
+<textarea id="cMsg" rows="4" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-top:6px"></textarea>
+<button id="cBtn" class="cta" style="border:none;cursor:pointer;font-family:inherit;font-size:15.5px">✉️ Send message</button>
+<script>
+document.getElementById("cBtn").addEventListener("click", function(){
+  var n = document.getElementById("cName").value.trim();
+  var m = document.getElementById("cMsg").value.trim();
+  var body = (n ? "From: " + n + "
+
+" : "") + m;
+  location.href = "mailto:hello@wishlink.pp.ua?subject=" + encodeURIComponent("WishLink contact") + "&body=" + encodeURIComponent(body);
+});
+</script>
 <h2>What to write about</h2>
 <ul>
 <li><b>Help with a page</b> — tell us what went wrong and, if you can, the page link.</li>
