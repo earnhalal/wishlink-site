@@ -131,6 +131,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <button type="button" class="scene" data-aistyle="rose"><span class="sw" style="background:linear-gradient(160deg,#33101f,#170710)"></span><small>Rose Night</small></button>
 <button type="button" class="scene" data-aistyle="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
 </div>
+<p class="note" style="text-align:left">🎁 <b>2 AI edits are FREE</b> on this device. After that, each AI edit is <b>Rs 30</b>.</p>
 <p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>3–8 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
 <button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit</button>
 </div>
@@ -393,6 +394,16 @@ Array.prototype.forEach.call(document.querySelectorAll('#sizes .scene'), functio
 });
 /* ---------- AI Edit by Laila ---------- */
 var uploadDataUrl = null, aiStyle = 'midnight', aiTimer = null, aiResultUrl = null;
+function deviceId(){
+  try {
+    var d = localStorage.getItem('wl_device');
+    if (!d) { d = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', d); }
+    return d;
+  } catch (e) { return 'dev-anon0000'; }
+}
+function showPaid(){
+  aiShow('🎁 <b>Your 2 free AI edits are used.</b><br>Paid AI Edit: <b>Rs 30 per picture</b>.<br>Pay by JazzCash / EasyPaisa and send the screenshot on WhatsApp — Laila will edit your photo and send it back.<br><a class="btn btn-pri" style="margin-top:12px" target="_blank" rel="noopener" href="https://wa.me/923338739929?text=' + encodeURIComponent('Assalam o Alaikum! I want a paid AI Edit on WishLink (Rs 30). I have paid and will send the screenshot.') + '">💬 Order on WhatsApp — Rs 30</a>');
+}
 function setMode(m){
   var ai = m === 'ai';
   document.getElementById('modeFrame').classList.toggle('sel', !ai);
@@ -442,10 +453,11 @@ function aiPoll(id){
 document.getElementById('btnAi').addEventListener('click', function(){
   if (!uploadDataUrl) { toast('Add a photo first'); return; }
   var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
-  fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle }) })
+  fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId() }) })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
     .then(function(x){
       btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit';
+      if (x.j && x.j.limit) { showPaid(); return; }
       if (!x.ok || !x.j.id) { aiShow('⚠️ ' + ((x.j && x.j.error) || 'Could not send. Please try again.')); return; }
       try { localStorage.setItem('wl_ai_req', x.j.id); } catch (e) {}
       document.getElementById('aiResult').style.display = 'none';

@@ -1,6 +1,6 @@
 /* GET /api/studio-status?id=srXXXX — poll the state of an AI edit request.
    Requests (and the photos in them) expire after 60 minutes. */
-const { dbGet, dbRemove, send } = require("./_lib");
+const { dbGet, dbSet, dbRemove, send } = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "GET") return send(res, 405, { error: "method" });
@@ -12,6 +12,10 @@ module.exports = async (req, res) => {
     if (!rec) return send(res, 404, { error: "not found" });
     if (Date.now() - (rec.ts || 0) > 60 * 60 * 1000) {
       await dbRemove("studio_requests/" + id);
+      if (rec.status !== "done" && rec.device) {
+        const u = (await dbGet("studio_usage/" + rec.device)) || { count: 0 };
+        await dbSet("studio_usage/" + rec.device, { count: Math.max(0, (u.count || 0) - 1), ts: Date.now() });
+      }
       return send(res, 200, { status: "expired" });
     }
     const out = { status: rec.status };
