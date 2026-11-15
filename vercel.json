@@ -1,5 +1,32 @@
 {
   "rewrites": [
-    { "source": "/:slug", "destination": "/index.html" }
+    {
+      "source": "/api/studio-request",
+      "destination": "/api/studio?a=request"
+    },
+    {
+      "source": "/api/studio-status",
+      "destination": "/api/studio?a=status"
+    },
+    {
+      "source": "/api/studio-agent",
+      "destination": "/api/studio?a=agent"
+    },
+    {
+      "source": "/api/studio-grant",
+      "destination": "/api/studio?a=grant"
+    },
+    {
+      "source": "/api/studio-pay",
+      "destination": "/api/studio?a=pay"
+    },
+    {
+      "source": "/api/studio-pay-agent",
+      "destination": "/api/studio?a=payagent"
+    },
+    {
+      "source": "/:slug",
+      "destination": "/index.html"
+    }
   ]
 }
