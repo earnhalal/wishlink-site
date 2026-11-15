@@ -37,6 +37,6 @@ module.exports = async (req, res) => {
     if (!out.im) out.im = [];
     return send(res, 200, out);
   } catch (e) {
-    return send(res, 500, { error: "unlock failed" });
+    return send(res, 500, { error: "unlock failed", detail: String(e && e.message || e) });
   }
 };
