@@ -532,7 +532,8 @@ function buildPage(d, tier){
     return "<span>" + esc(ch === " " ? " " : ch) + "</span>";
   }).join("");
   var photos = [];
-  if(premium){ [photoData, photoG1, photoG2].forEach(function(p){ if(p) photos.push(p); }); }
+  if(d && d.im && d.im.length){ photos = d.im.slice(0, 4); }
+  else if(premium){ [photoData, photoG1, photoG2].forEach(function(p){ if(p) photos.push(p); }); }
 
   /* ---- hero visual ---- */
   var heroVisual;
@@ -630,7 +631,7 @@ function buildPage(d, tier){
         '<figure class="photo' + (i === 0 ? " featured" : "") + '">' +
           (i === 0 ? '<span class="featured-badge">★ FEATURED</span>' : "") +
           '<div class="frame"><img src="' + src + '" alt="' + photoAlt + '' + eName + '"></div>' +
-          '<figcaption><div class="cap-title">' + galCaps[i][0] + '</div><div class="cap-sub">' + galCaps[i][1] + '</div></figcaption>' +
+          '<figcaption><div class="cap-title">' + galCaps[i % galCaps.length][0] + '</div><div class="cap-sub">' + galCaps[i % galCaps.length][1] + '</div></figcaption>' +
         '</figure>';
     });
   } else {
