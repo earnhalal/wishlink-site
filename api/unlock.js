@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     const b = await readBody(req);
     const slug = String(b.slug || "");
     const pin = String(b.pin || "");
-    if (!/^[a-z0-9][a-z0-9-]{2,40}$/.test(slug)) return send(res, 400, { error: "bad slug" });
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{2,48}$/.test(slug)) return send(res, 400, { error: "bad slug" });
 
     const ip = clientIp(req);
     const rl = await rateLimited(ip, slug);

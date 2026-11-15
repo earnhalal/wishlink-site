@@ -72,7 +72,7 @@ document.getElementById("dBtn").addEventListener("click", function(){
   var link = document.getElementById("dLink").value.trim();
   var token = document.getElementById("dToken").value.trim();
   var msg = document.getElementById("dMsg");
-  var m = link.match(/wishlink\.pp\.ua\/([a-z0-9][a-z0-9\-]{2,48})/) || link.match(/^([a-z0-9][a-z0-9\-]{2,48})$/);
+  var m = link.match(/wishlink\.pp\.ua\/([a-zA-Z0-9][a-zA-Z0-9\-]{2,48})/) || link.match(/^([a-zA-Z0-9][a-zA-Z0-9\-]{2,48});
   if(!m){ msg.style.color = "#c0392b"; msg.textContent = "That does not look like a WishLink page link."; return; }
   if(!token){ msg.style.color = "#c0392b"; msg.textContent = "Please paste the edit token."; return; }
   msg.style.color = "#173a34"; msg.textContent = "Deleting…";

@@ -1919,7 +1919,7 @@ else { runViewer(); }
    the correct PIN is entered (POST /api/unlock). Nothing private is in this page. */
 (function(){
   if(window.__WL_VIEW__) return;
-  var m = location.pathname.match(/^\/([a-z0-9][a-z0-9\-]{2,48})$/);
+  var m = location.pathname.match(/^\/([a-zA-Z0-9][a-zA-Z0-9\-]{2,48})$/);
   if(!m) return;
   var slug = m[1];
   var overlay = document.createElement("div");

@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
     const b = await readBody(req);
     const slug = String(b.slug || "");
     const token = String(b.token || "");
-    if (!/^[a-z0-9][a-z0-9-]{2,40}$/.test(slug) || !token) return send(res, 400, { error: "slug and token required" });
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{2,48}$/.test(slug) || !token) return send(res, 400, { error: "slug and token required" });
     const page = await dbGet("pages/" + slug);
     if (!page) return send(res, 404, { error: "page not found" });
     if (!page.editHash) return send(res, 403, { error: "this page has no edit token (it was made before tokens existed)" });

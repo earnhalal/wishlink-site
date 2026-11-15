@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   try {
     const b = await readBody(req);
     const slug = String(b.slug || "");
-    if (!/^[a-z0-9][a-z0-9-]{2,40}$/.test(slug)) return send(res, 400, { error: "bad slug" });
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{2,48}$/.test(slug)) return send(res, 400, { error: "bad slug" });
     const page = await dbGet("pages/" + slug);
     if (!page) return send(res, 404, { error: "page not found" });
     const reports = (page.reports || 0) + 1;
