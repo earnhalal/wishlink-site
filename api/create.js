@@ -58,6 +58,6 @@ module.exports = async (req, res) => {
     await dbSet("pages/" + slug, content);
     return send(res, 200, { slug, editToken });
   } catch (e) {
-    return send(res, 500, { error: "create failed", detail: String(e && e.message || e) });
+    return send(res, 500, { error: "create failed" });
   }
 };

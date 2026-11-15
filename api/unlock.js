@@ -2,7 +2,7 @@
    The ONLY way page content leaves the server. Content is returned solely
    after the PIN verifies against its salted hash. Failed attempts are
    rate-limited per IP + page. */
-const { dbGet, verifySecret, readBody, send, clientIp, rateLimited, recordFailure, clearFailures } = require("./_lib");
+const { dbGet, verifySecret, readBody, send, clientIp, rateLimited, rateLimitedKey, recordFailure, clearFailures } = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
 
     const ip = clientIp(req);
     const rl = await rateLimited(ip, slug);
-    if (rl.limited) return send(res, 429, { error: "too many tries — please wait a few minutes" });
+    const rlPage = await rateLimitedKey("page_" + slug.replace(/[^a-zA-Z0-9-]/g, ""), 30);
+    if (rl.limited || rlPage.limited) return send(res, 429, { error: "too many tries — please wait a few minutes" });
 
     const page = await dbGet("pages/" + slug);
     if (!page) return send(res, 404, { error: "page not found" });
@@ -22,9 +23,11 @@ module.exports = async (req, res) => {
     const okPin = page.pinHash ? await verifySecret(pin, page.pinSalt, page.pinHash) : pin === page.p;
     if (!okPin) {
       await recordFailure(rl.key, rl.rec, rl.now);
+      await recordFailure(rlPage.key, rlPage.rec, rlPage.now);
       return send(res, 401, { error: "wrong PIN" });
     }
     await clearFailures(rl.key);
+    await clearFailures(rlPage.key);
 
     /* content only — never the hashes. Fields pass through as stored:
        new pages carry full texts (w/l/g); legacy pages carry template
@@ -37,6 +40,6 @@ module.exports = async (req, res) => {
     if (!out.im) out.im = [];
     return send(res, 200, out);
   } catch (e) {
-    return send(res, 500, { error: "unlock failed", detail: String(e && e.message || e) });
+    return send(res, 500, { error: "unlock failed" });
   }
 };

@@ -125,6 +125,9 @@ function ipKey(ip) { return crypto.createHash("sha256").update(ip).digest("hex")
 
 async function rateLimited(ip, slug, max = 8, windowMs = 10 * 60 * 1000) {
   const key = ipKey(ip) + "_" + slug.replace(/[^a-zA-Z0-9-]/g, "");
+  return rateLimitedKey(key, max, windowMs);
+}
+async function rateLimitedKey(key, max = 30, windowMs = 10 * 60 * 1000) {
   const rec0 = (await dbGet("_rl/" + key)) || { count: 0, since: Date.now() };
   const now = Date.now();
   const rec = now - rec0.since > windowMs ? { count: 0, since: now } : rec0;
@@ -138,5 +141,5 @@ async function clearFailures(key) { await dbRemove("_rl/" + key); }
 module.exports = {
   dbGet, dbSet, dbUpdate, dbRemove, storageUpload, storageDeletePrefix,
   hashSecret, newSalt, verifySecret, randomCode, slugifyName, readBody, send, clientIp,
-  rateLimited, recordFailure, clearFailures,
+  rateLimited, rateLimitedKey, recordFailure, clearFailures,
 };
