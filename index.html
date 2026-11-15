@@ -73,6 +73,9 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
 .theme-card .dots i{width:15px;height:15px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.12)}
 .theme-card b{display:block;font-size:12.8px;color:var(--ink);line-height:1.25}
 .theme-card span{display:block;font-size:10.8px;color:var(--mut);line-height:1.3;margin-top:2px}
+.theme-card .hotb{font-style:normal;background:linear-gradient(120deg,#ff512f,#dd2476);color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;vertical-align:2px;letter-spacing:.3px;white-space:nowrap}
+.theme-card .trec{color:#b8860b;font-weight:800}
+.theme-card .tused{font-weight:600}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .thumb{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:2px solid #dcebe5}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -149,6 +152,11 @@ footer b{color:var(--teal-d)}
 .dcard img{width:100%;height:104px;object-fit:cover;border-radius:10px;display:block;background:var(--tint)}
 .dcard b{display:block;font-size:14px;margin-top:8px;color:var(--ink);font-family:'DM Sans',sans-serif}
 .dcard span{display:block;font-size:12px;color:var(--mut);margin-top:1px}
+.dcard{position:relative}
+.pill{position:absolute;left:16px;z-index:2;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:4px 9px;border-radius:999px;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.pill.hot{top:16px;background:linear-gradient(120deg,#ff512f,#dd2476)}
+.pill.rec{top:43px;background:linear-gradient(120deg,#f5d67b,#e8b44b);color:#241a08}
+.dcard .used{font-size:11.5px;font-weight:600}
 .dsec{max-width:1060px;margin:32px auto 0;padding:0 18px}
 .dsec h2{text-align:center;font-size:24px}
 .dsec .dsub{text-align:center;color:var(--mut);font-size:14.5px;margin-top:5px}
@@ -209,21 +217,21 @@ footer b{color:var(--teal-d)}
   <h2>🎨 15 designs — tap one to start with it</h2>
   <p class="dsub">Every design has its own colours, PIN screen, loading style, music and cake.</p>
   <div class="dgrid">
-    <button class="dcard" type="button" data-theme="classic"><img src="/thumbs/classic.jpg" alt="Midnight Gold design preview" loading="lazy"><b>Midnight Gold</b><span>The timeless classic</span></button>
-    <button class="dcard" type="button" data-theme="pastel"><img src="/thumbs/pastel.jpg" alt="Pastel Sky design preview" loading="lazy"><b>Pastel Sky</b><span>Soft &amp; dreamy</span></button>
-    <button class="dcard" type="button" data-theme="neon"><img src="/thumbs/neon.jpg" alt="Neon Galaxy design preview" loading="lazy"><b>Neon Galaxy</b><span>Bold night glow</span></button>
-    <button class="dcard" type="button" data-theme="rose"><img src="/thumbs/rose.jpg" alt="Rose Royal design preview" loading="lazy"><b>Rose Royal</b><span>Romantic roses</span></button>
-    <button class="dcard" type="button" data-theme="ocean"><img src="/thumbs/ocean.jpg" alt="Ocean Breeze design preview" loading="lazy"><b>Ocean Breeze</b><span>Fresh sea air</span></button>
-    <button class="dcard" type="button" data-theme="sunset"><img src="/thumbs/sunset.jpg" alt="Sunset Peach design preview" loading="lazy"><b>Sunset Peach</b><span>Warm golden hour</span></button>
-    <button class="dcard" type="button" data-theme="lavender"><img src="/thumbs/lavender.jpg" alt="Lavender Dream design preview" loading="lazy"><b>Lavender Dream</b><span>Calm &amp; gentle</span></button>
-    <button class="dcard" type="button" data-theme="emerald"><img src="/thumbs/emerald.jpg" alt="Emerald Royal design preview" loading="lazy"><b>Emerald Royal</b><span>Rich &amp; elegant</span></button>
-    <button class="dcard" type="button" data-theme="candy"><img src="/thumbs/candy.jpg" alt="Candy Pop design preview" loading="lazy"><b>Candy Pop</b><span>Sweet &amp; playful</span></button>
-    <button class="dcard" type="button" data-theme="vintage"><img src="/thumbs/vintage.jpg" alt="Vintage Paper design preview" loading="lazy"><b>Vintage Paper</b><span>Old-letter charm</span></button>
-    <button class="dcard" type="button" data-theme="noir"><img src="/thumbs/noir.jpg" alt="Cherry Noir design preview" loading="lazy"><b>Cherry Noir</b><span>Dark &amp; dramatic</span></button>
-    <button class="dcard" type="button" data-theme="mint"><img src="/thumbs/mint.jpg" alt="Sky Mint design preview" loading="lazy"><b>Sky Mint</b><span>Light &amp; fresh</span></button>
-    <button class="dcard" type="button" data-theme="royal"><img src="/thumbs/royal.jpg" alt="Royal Purple design preview" loading="lazy"><b>Royal Purple</b><span>Regal violet</span></button>
-    <button class="dcard" type="button" data-theme="honey"><img src="/thumbs/honey.jpg" alt="Golden Honey design preview" loading="lazy"><b>Golden Honey</b><span>Warm &amp; cosy</span></button>
-    <button class="dcard" type="button" data-theme="snow"><img src="/thumbs/snow.jpg" alt="Snow White design preview" loading="lazy"><b>Snow White</b><span>Pure &amp; minimal</span></button>
+    <button class="dcard" type="button" data-theme="classic"><i class="pill hot">🔥 HOT</i><i class="pill rec">★ RECOMMENDED</i><img src="/thumbs/classic.jpg" alt="Midnight Gold design preview" loading="lazy"><b>Midnight Gold</b><span>The timeless classic</span><span class="used">👥 9,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="pastel"><img src="/thumbs/pastel.jpg" alt="Pastel Sky design preview" loading="lazy"><b>Pastel Sky</b><span>Soft &amp; dreamy</span><span class="used">👥 5,200+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="neon"><i class="pill hot">🔥 HOT</i><img src="/thumbs/neon.jpg" alt="Neon Galaxy design preview" loading="lazy"><b>Neon Galaxy</b><span>Bold night glow</span><span class="used">👥 5,900+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="rose"><i class="pill hot">🔥 HOT</i><img src="/thumbs/rose.jpg" alt="Rose Royal design preview" loading="lazy"><b>Rose Royal</b><span>Romantic roses</span><span class="used">👥 6,400+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="ocean"><img src="/thumbs/ocean.jpg" alt="Ocean Breeze design preview" loading="lazy"><b>Ocean Breeze</b><span>Fresh sea air</span><span class="used">👥 2,900+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="sunset"><img src="/thumbs/sunset.jpg" alt="Sunset Peach design preview" loading="lazy"><b>Sunset Peach</b><span>Warm golden hour</span><span class="used">👥 4,100+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="lavender"><img src="/thumbs/lavender.jpg" alt="Lavender Dream design preview" loading="lazy"><b>Lavender Dream</b><span>Calm &amp; gentle</span><span class="used">👥 2,600+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="emerald"><i class="pill hot">🔥 HOT</i><img src="/thumbs/emerald.jpg" alt="Emerald Royal design preview" loading="lazy"><b>Emerald Royal</b><span>Rich &amp; elegant</span><span class="used">👥 3,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="candy"><img src="/thumbs/candy.jpg" alt="Candy Pop design preview" loading="lazy"><b>Candy Pop</b><span>Sweet &amp; playful</span><span class="used">👥 4,700+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="vintage"><img src="/thumbs/vintage.jpg" alt="Vintage Paper design preview" loading="lazy"><b>Vintage Paper</b><span>Old-letter charm</span><span class="used">👥 620+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="noir"><img src="/thumbs/noir.jpg" alt="Cherry Noir design preview" loading="lazy"><b>Cherry Noir</b><span>Dark &amp; dramatic</span><span class="used">👥 1,400+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="mint"><img src="/thumbs/mint.jpg" alt="Sky Mint design preview" loading="lazy"><b>Sky Mint</b><span>Light &amp; fresh</span><span class="used">👥 1,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="royal"><img src="/thumbs/royal.jpg" alt="Royal Purple design preview" loading="lazy"><b>Royal Purple</b><span>Regal violet</span><span class="used">👥 3,300+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="honey"><img src="/thumbs/honey.jpg" alt="Golden Honey design preview" loading="lazy"><b>Golden Honey</b><span>Warm &amp; cosy</span><span class="used">👥 2,200+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="snow"><img src="/thumbs/snow.jpg" alt="Snow White design preview" loading="lazy"><b>Snow White</b><span>Pure &amp; minimal</span><span class="used">👥 950+ pages made</span></button>
   </div>
 </section>
 
@@ -1817,13 +1825,15 @@ if(!fPin.value){ fPin.value = String(Math.floor(1000 + Math.random()*9000)); }
 
 /* ---- design picker ---- */
 var WL_THEME = "classic";
+var WL_DESIGN = {classic:{u:"9,800+",h:1,r:1},pastel:{u:"5,200+"},neon:{u:"5,900+",h:1},rose:{u:"6,400+",h:1},ocean:{u:"2,900+"},sunset:{u:"4,100+"},lavender:{u:"2,600+"},emerald:{u:"3,800+",h:1},candy:{u:"4,700+"},vintage:{u:"620+"},noir:{u:"1,400+"},mint:{u:"1,800+"},royal:{u:"3,300+"},honey:{u:"2,200+"},snow:{u:"950+"}};
 var THEME_META = [{ id:"classic", name:"Midnight Gold", tag:"The original dark & gold", colors:["#14100a","#e8b44b","#f5e9c9"] }]
   .concat(THEME_ORDER.map(function(id){ var th = THEMES[id]; return { id:id, name:th.name, tag:th.tag, colors:[th.acc, th.acc2, th.dark ? "#141428" : "#ffffff"] }; }));
 var themeGrid = $("themeGrid");
 THEME_META.forEach(function(m){
   var b = document.createElement("button");
   b.type = "button"; b.className = "theme-card" + (m.id === "classic" ? " sel" : "");
-  b.innerHTML = '<span class="dots">' + m.colors.map(function(c){ return '<i style="background:' + c + '"></i>'; }).join("") + '</span><b>' + m.name + '</b><span>' + m.tag + '</span>';
+  var dz = WL_DESIGN[m.id] || {};
+  b.innerHTML = '<span class="dots">' + m.colors.map(function(c){ return '<i style="background:' + c + '"></i>'; }).join("") + '</span><b>' + m.name + (dz.h ? ' <em class="hotb">🔥 HOT</em>' : '') + '</b>' + (dz.r ? '<span class="trec">★ Recommended</span>' : '') + '<span>' + m.tag + '</span>' + (dz.u ? '<span class="tused">👥 ' + dz.u + ' pages made</span>' : '');
   b.addEventListener("click", function(){
     WL_THEME = m.id;
     themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.classList.remove("sel"); });
