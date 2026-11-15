@@ -55,7 +55,9 @@ input[type=range]{width:100%;accent-color:var(--indigo);height:36px}
 .scene{flex:1 1 28%}
 .scene{flex:1;border:2.5px solid var(--line);border-radius:12px;padding:8px 6px;background:#fff;cursor:pointer;text-align:center;font:inherit}
 .scene .sw{height:44px;border-radius:8px;margin-bottom:6px}
-.scene.sel{border-color:var(--indigo)}
+.scene .swthumb{width:100%;height:78px;object-fit:cover;object-position:top;border-radius:8px;margin-bottom:6px;display:block;background:#14102a}
+.scene.sel{border-color:var(--indigo);box-shadow:0 8px 20px rgba(45,42,110,.20);transform:translateY(-1px)}
+.scene{transition:box-shadow .2s,transform .2s,border-color .2s}
 .scene small{display:block;font-weight:600;color:var(--ink);font-size:13px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:999px;padding:0 26px;min-height:52px;text-decoration:none;width:100%;margin-top:12px}
 .btn-pri{background:var(--indigo);color:#fff}
@@ -88,7 +90,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <header class="top"><div class="wrap topin">
 <a class="logo" href="/">Wish<em>Link</em></a>
 <nav class="nav"><a href="/#designs">Designs</a><a href="/#maker" class="keep">Make a page</a><a href="/blog.html">Blog</a></nav>
-<a class="mypill" href="/my.html">🎂 My Pages</a>
+<a class="mypill" href="/my.html">📊 Track My Pages</a>
 </div></header>
 
 <main class="wrap">
@@ -115,12 +117,12 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <div id="frameControls">
 <label class="fl">Choose a scene</label>
 <div class="scenes" id="scenes">
-<button type="button" class="scene sel" data-scene="midnight"><span class="sw" style="background:linear-gradient(160deg,#241a08,#0d0a05)"></span><small>Midnight Gold</small></button>
-<button type="button" class="scene" data-scene="rose"><span class="sw" style="background:linear-gradient(160deg,#33101f,#170710)"></span><small>Rose Night</small></button>
-<button type="button" class="scene" data-scene="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
-<button type="button" class="scene" data-scene="emerald"><span class="sw" style="background:linear-gradient(160deg,#0f3524,#06170e)"></span><small>Emerald Royal</small></button>
-<button type="button" class="scene" data-scene="starry"><span class="sw" style="background:linear-gradient(160deg,#0d1b3e,#050914)"></span><small>Starry Night</small></button>
-<button type="button" class="scene" data-scene="pearl"><span class="sw" style="background:linear-gradient(160deg,#fff6e8,#f3ddba)"></span><small>Pearl Blush</small></button>
+<button type="button" class="scene sel" data-scene="midnight"><canvas class="swthumb" width="216" height="270"></canvas><small>Midnight Gold</small></button>
+<button type="button" class="scene" data-scene="rose"><canvas class="swthumb" width="216" height="270"></canvas><small>Rose Night</small></button>
+<button type="button" class="scene" data-scene="royal"><canvas class="swthumb" width="216" height="270"></canvas><small>Royal Violet</small></button>
+<button type="button" class="scene" data-scene="emerald"><canvas class="swthumb" width="216" height="270"></canvas><small>Emerald Royal</small></button>
+<button type="button" class="scene" data-scene="starry"><canvas class="swthumb" width="216" height="270"></canvas><small>Starry Night</small></button>
+<button type="button" class="scene" data-scene="pearl"><canvas class="swthumb" width="216" height="270"></canvas><small>Pearl Blush</small></button>
 </div>
 <label class="fl">Picture size</label>
 <div class="scenes" id="sizes">
@@ -154,7 +156,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <div class="stage">
 <div id="frameStage">
 <canvas id="cv" width="1080" height="1350"></canvas>
-<div class="hint">Your framed picture appears here.</div>
+<div class="hint">✨ Live animated preview — twinkling lights, floating balloons and falling confetti. Your downloaded picture is a beautiful still image.</div>
 <button class="btn btn-coral" id="btnDl" type="button" style="max-width:430px">⬇ Download picture</button>
 <button class="btn btn-pri" id="btnUse" type="button" style="max-width:430px">🎂 Use it in my WishLink page</button>
 <p class="note" style="color:#bdb8d9">“Use it” places this picture as the first photo of your birthday page.</p>
@@ -198,6 +200,7 @@ var SIZE = '45', L = LAYOUTS['45'];
 var scene = 'midnight';
 var img = null, zoom = 1, offX = 0, offY = 0;
 var FRAME = { x: 96, y: 268, w: 888, h: 690, r: 36 };
+var animT = 0;
 var confetti = [];
 (function(){ var s = 42; function rnd(){ s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
   for (var i = 0; i < 150; i++) confetti.push({ x: rnd() * W, y: rnd() * 1920, w: 6 + rnd() * 8, h: 3 + rnd() * 5, a: rnd() * Math.PI, c: rnd() });
@@ -206,6 +209,7 @@ var confetti = [];
 function rr(x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 
 function balloon(x, y, r, color){
+  y += Math.sin(animT * 1.3 + x * 0.045) * 7;
   ctx.save();
   ctx.fillStyle = color;
   ctx.beginPath(); ctx.ellipse(x, y, r * 0.82, r, 0, 0, Math.PI * 2); ctx.fill();
@@ -219,6 +223,7 @@ function balloon(x, y, r, color){
   ctx.restore();
 }
 function sparkle(x, y, s, color){
+  s = s * (1 + 0.22 * Math.sin(animT * 2.6 + x * 0.07 + y * 0.03));
   ctx.save(); ctx.fillStyle = color; ctx.beginPath();
   ctx.moveTo(x, y - s); ctx.quadraticCurveTo(x, y, x + s, y); ctx.quadraticCurveTo(x, y, x, y + s);
   ctx.quadraticCurveTo(x, y, x - s, y); ctx.quadraticCurveTo(x, y, x, y - s); ctx.fill(); ctx.restore();
@@ -230,9 +235,10 @@ function cake(x, y, s, sc){
   ctx.fillStyle = '#FFE9C9'; rr(-78, -118, 156, 60, 12); ctx.fill();
   ctx.fillStyle = sc.main; rr(-78, -118, 156, 18, 9); ctx.fill();
   [-52, 0, 52].forEach(function(cx){
+    var fl = 1 + 0.15 * Math.sin(animT * 9 + cx * 1.7);
     ctx.fillStyle = '#fff'; ctx.fillRect(cx - 5, -156, 10, 38);
-    ctx.fillStyle = '#FF9E3D'; ctx.beginPath(); ctx.ellipse(cx, -168, 7, 12, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#FFE9A8'; ctx.beginPath(); ctx.ellipse(cx, -166, 3.4, 6, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#FF9E3D'; ctx.beginPath(); ctx.ellipse(cx, -168 - 6 * (fl - 1), 7, 12 * fl, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#FFE9A8'; ctx.beginPath(); ctx.ellipse(cx, -166 - 6 * (fl - 1), 3.4, 6 * fl, 0, 0, Math.PI * 2); ctx.fill();
   });
   ctx.restore();
 }
@@ -285,11 +291,11 @@ function draw(){
   rg.addColorStop(0, sc.glow); rg.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
   if (sc.deco === 'stars'){
-    confetti.forEach(function(c){ if (c.y > H) return; ctx.save(); ctx.globalAlpha = .35 + c.c * .6; ctx.fillStyle = '#DCE8FF'; ctx.beginPath(); ctx.arc(c.x, c.y, c.c > .8 ? 3.2 : 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+    confetti.forEach(function(c){ if (c.y > H) return; ctx.save(); ctx.globalAlpha = .25 + .7 * Math.abs(Math.sin(animT * 1.8 + c.x * 0.13 + c.y * 0.07)); ctx.fillStyle = '#DCE8FF'; ctx.beginPath(); ctx.arc(c.x, c.y, c.c > .8 ? 3.2 : 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
     ctx.save(); ctx.fillStyle = '#F4E9C8'; ctx.beginPath(); ctx.arc(936, 168, 36, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = sc.bg1; ctx.beginPath(); ctx.arc(954, 156, 31, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   } else {
-    confetti.forEach(function(c){ if (c.y > H) return; ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.globalAlpha = .5; ctx.fillStyle = sc.flag[Math.floor(c.c * sc.flag.length)]; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
+    confetti.forEach(function(c){ var cy = (c.y + animT * 26 * (0.4 + c.c)) % (H + 30); ctx.save(); ctx.translate(c.x, cy); ctx.rotate(c.a + animT * (0.4 + c.c)); ctx.globalAlpha = .5; ctx.fillStyle = sc.flag[Math.floor(c.c * sc.flag.length)]; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
   }
   // bunting
   ctx.save(); ctx.strokeStyle = sc.line || 'rgba(255,255,255,.5)'; ctx.lineWidth = 3;
@@ -305,8 +311,10 @@ function draw(){
   ctx.save();
   for (var j = 0; j <= 12; j++){
     var fx = 40 + j * (W - 80) / 12, fy = L.lightsY + Math.sin(j * 1.3) * 10;
-    ctx.fillStyle = sc.main; ctx.shadowColor = sc.main; ctx.shadowBlur = 18;
-    ctx.beginPath(); ctx.arc(fx, fy, 6, 0, Math.PI * 2); ctx.fill();
+    var tw = 0.5 + 0.5 * Math.sin(animT * 3 + j * 0.9);
+    ctx.globalAlpha = 0.35 + 0.65 * tw;
+    ctx.fillStyle = sc.main; ctx.shadowColor = sc.main; ctx.shadowBlur = 10 + 14 * tw;
+    ctx.beginPath(); ctx.arc(fx, fy, 5 + 2 * tw, 0, Math.PI * 2); ctx.fill();
   }
   ctx.restore();
   // balloons behind the frame
@@ -339,6 +347,36 @@ function draw(){
   var vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.36, W / 2, H / 2, H * 0.78);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, sc.light ? 'rgba(184,134,11,.14)' : 'rgba(0,0,0,.42)');
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+/* ---------- Animated live preview + visual scene thumbnails ---------- */
+var animRun = false, lastFrameTs = 0;
+function animLoop(ts){
+  if (!animRun) return;
+  if (ts - lastFrameTs >= 33) { lastFrameTs = ts; animT = ts / 1000; draw(); }
+  requestAnimationFrame(animLoop);
+}
+function startAnim(){ if (!animRun) { animRun = true; requestAnimationFrame(animLoop); } }
+function stopAnim(){ animRun = false; }
+document.addEventListener('visibilitychange', function(){
+  var fs = document.getElementById('frameStage');
+  if (document.hidden) stopAnim(); else if (fs && !fs.hidden) startAnim();
+});
+function renderThumbs(){
+  var nameEl = document.getElementById('pname');
+  var sName = nameEl ? nameEl.value : '';
+  if (nameEl) nameEl.value = '';
+  Array.prototype.forEach.call(document.querySelectorAll('#scenes .scene'), function(b){
+    var c = b.querySelector('.swthumb'); if (!c) return;
+    var tctx = c.getContext('2d'); if (!tctx) return;
+    var sCtx = ctx, sScene = scene, sImg = img, sL = L, sH = H, sFY = FRAME.y, sFH = FRAME.h, sT = animT;
+    ctx = tctx; scene = b.getAttribute('data-scene'); img = null; L = LAYOUTS['45']; H = 1350; FRAME.y = L.frameY; FRAME.h = L.frameH; animT = 0;
+    ctx.setTransform(216 / 1080, 0, 0, 270 / 1350, 0, 0);
+    draw();
+    ctx = sCtx; scene = sScene; img = sImg; L = sL; H = sH; FRAME.y = sFY; FRAME.h = sFH; animT = sT;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  });
+  if (nameEl) nameEl.value = sName;
+  draw();
 }
 function toast(msg){ var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2400); }
 
@@ -420,17 +458,61 @@ function deviceId(){
   } catch (e) { return 'dev-anon0000'; }
 }
 function deviceCode(){ try { return deviceId().slice(4, 12).toUpperCase(); } catch (e) { return ''; } }
-function loadBalance(){
-  fetch('/api/studio-wallet?device=' + encodeURIComponent(deviceId()))
-    .then(function(r){ return r.json(); })
-    .then(function(j){
-      if (j && typeof j.total === 'number') {
-        var bt = document.getElementById('balTxt');
-        if (bt) bt.innerHTML = '<b>' + j.total + ' credits</b> (Free: ' + j.free + ' · Paid: ' + j.paid + ')';
-        var bc = document.getElementById('balCode');
-        if (bc) bc.textContent = j.code || deviceCode();
+/* Device fingerprint: traits that stay the same across browsers on one
+   phone (screen size, pixel ratio, timezone, language, touch points,
+   CPU cores, GPU family), hashed with SHA-256. The server uses it to
+   hand a returning visitor their ORIGINAL wallet instead of minting a
+   new one with fresh free credits when they change browsers. */
+var _fpPromise = null, WLFP = '';
+function wlFp(){
+  if (_fpPromise) return _fpPromise;
+  _fpPromise = (async function(){
+    try {
+      var nav = navigator, scr = window.screen || {};
+      var w = Math.min(scr.width || 0, scr.height || 0), h = Math.max(scr.width || 0, scr.height || 0);
+      var gpu = '';
+      try {
+        var gc = document.createElement('canvas');
+        var gl = gc.getContext('webgl') || gc.getContext('experimental-webgl');
+        if (gl) {
+          var ext = gl.getExtension('WEBGL_debug_renderer_info');
+          var r = String((ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)) || '');
+          var gm = /(Adreno|Mali|PowerVR|Immortalis|Apple GPU)[^\s,)]*(?:\s*\d+)?/i.exec(r);
+          gpu = gm ? gm[0].replace(/\(TM\)/gi, '').replace(/\s+/g, '').toLowerCase() : r.slice(0, 32).toLowerCase();
+        }
+      } catch (e) {}
+      var parts = [w + 'x' + h, scr.colorDepth || '', window.devicePixelRatio || '', nav.maxTouchPoints || 0, nav.hardwareConcurrency || '', (window.Intl && Intl.DateTimeFormat ? Intl.DateTimeFormat().resolvedOptions().timeZone : '') || '', nav.language || '', gpu];
+      var s = parts.join('|');
+      if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+        var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+        return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
       }
-    }).catch(function(){});
+      var out = '';
+      for (var k = 0; k < 4; k++) {
+        var hh = 5381, s2 = s + '#' + k;
+        for (var i = 0; i < s2.length; i++) hh = ((hh << 5) + hh + s2.charCodeAt(i)) >>> 0;
+        out += ('0000000' + hh.toString(16)).slice(-8) + ('0000000' + ((hh * 2654435761) >>> 0).toString(16)).slice(-8);
+      }
+      return out;
+    } catch (e) { return ''; }
+  })();
+  return _fpPromise;
+}
+wlFp().then(function(v){ WLFP = v || ''; });
+function loadBalance(){
+  wlFp().then(function(fp){
+    fetch('/api/studio-wallet?device=' + encodeURIComponent(deviceId()) + (fp ? '&fp=' + encodeURIComponent(fp) : ''))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.device && j.device !== deviceId()) { try { localStorage.setItem('wl_device', j.device); } catch (e) {} }
+        if (j && typeof j.total === 'number') {
+          var bt = document.getElementById('balTxt');
+          if (bt) bt.innerHTML = '<b>' + j.total + ' credits</b> (Free: ' + j.free + ' · Paid: ' + j.paid + ')';
+          var bc = document.getElementById('balCode');
+          if (bc) bc.textContent = j.code || deviceCode();
+        }
+      }).catch(function(){});
+  });
 }
 var payShot = null, payTimer = null;
 function payMsg(status, reason, credits, amount){
@@ -491,7 +573,7 @@ function showPaid(){
   document.getElementById('paySubmit').addEventListener('click', function(){
     if (!payShot) { toast('Add the payment screenshot first'); return; }
     var st = document.getElementById('payStat'); st.innerHTML = 'Sending…';
-    fetch('/api/studio-pay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId(), img: payShot }) })
+    fetch('/api/studio-pay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId(), img: payShot, fp: WLFP }) })
       .then(function(r){ return r.json(); })
       .then(function(j){
         if (j && j.id) {
@@ -511,7 +593,7 @@ function setMode(m){
   document.getElementById('aiControls').hidden = !ai;
   document.getElementById('frameStage').hidden = ai;
   document.getElementById('aiStage').hidden = !ai;
-  if (ai) loadBalance();
+  if (ai) { stopAnim(); loadBalance(); } else { startAnim(); }
 }
 document.getElementById('modeFrame').addEventListener('click', function(){ setMode('frame'); });
 document.getElementById('modeAi').addEventListener('click', function(){ setMode('ai'); });
@@ -556,7 +638,7 @@ document.getElementById('btnAi').addEventListener('click', function(){
   var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
   aiShow('⏳ <b>Sending your photo to Laila…</b>');
   document.getElementById('aiStat').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId() }) })
+  fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId(), fp: WLFP }) })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
     .then(function(x){
       btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit · 10 credits';
@@ -613,8 +695,10 @@ if (btnRestoreEl) btnRestoreEl.addEventListener('click', function(){
     .catch(function(){ msg.textContent = '❌ Network problem — try again.'; });
 });
 
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ draw(); renderThumbs(); });
 draw();
+renderThumbs();
+startAnim();
 </script>
 <script>
 /* WishLink analytics — our own counting system (visits + live visitors), stored on our own Firebase. No external service, no ads. */

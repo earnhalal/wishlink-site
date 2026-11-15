@@ -56,6 +56,57 @@ async function getWallet(device) {
   return w;
 }
 
+/* ---------- Device fingerprint guard ----------
+   The wallet key used to be only the random device id stored in the
+   browser, so changing browsers (or clearing the cache) minted a fresh
+   wallet with 20 new free credits. The client now also sends a device
+   fingerprint hash (screen, pixel ratio, timezone, language, touch,
+   cores, GPU family — traits that stay the same across browsers on one
+   phone). studio_fp/<fp> remembers which wallet claimed a fingerprint:
+   - same fingerprint AND same network IP -> the visitor is handed their
+     ORIGINAL wallet (the client adopts that device id), no new free credits
+   - same fingerprint but a different network (VPN, moved, carrier IP
+     changed) -> the other wallet is never handed over (it could be a
+     stranger with the same phone model); a brand-new wallet instead
+     starts with 0 free credits, because this fingerprint already claimed
+     its free allowance. Paid top-ups still work and the normal 24h
+     refill still applies. */
+function validFp(fp) { return /^[a-f0-9]{32,64}$/.test(fp || ""); }
+
+async function resolveWallet(device, fp, ip) {
+  let own = null;
+  try { own = await dbGet("studio_wallets/" + device); } catch (e) {}
+  if (validFp(fp)) {
+    let idx = null;
+    try { idx = await dbGet("studio_fp/" + fp); } catch (e) {}
+    if (idx && idx.device && idx.device !== device) {
+      let target = null;
+      try { target = await dbGet("studio_wallets/" + idx.device); } catch (e) {}
+      if (target) {
+        if (idx.ip && ip && idx.ip === ip) {
+          const w = await getWallet(idx.device);
+          try { await dbUpdate("studio_fp/" + fp, { ip: ip, ts: Date.now() }); } catch (e) {}
+          return { device: idx.device, wallet: w, aliased: true };
+        }
+        if (!own) {
+          const now = Date.now();
+          const w = { free: 0, freeTs: now, paid: 0, ts: now, fpDenied: fp };
+          await dbSet("studio_wallets/" + device, w);
+          return { device: device, wallet: w, aliased: false };
+        }
+        return { device: device, wallet: await getWallet(device), aliased: false };
+      }
+    }
+    const w = await getWallet(device);
+    try {
+      if (!idx) await dbSet("studio_fp/" + fp, { device: device, ip: ip || "", ts: Date.now() });
+      else if (idx.device === device) await dbUpdate("studio_fp/" + fp, { ip: ip || idx.ip || "", ts: Date.now() });
+    } catch (e) {}
+    return { device: device, wallet: w, aliased: false };
+  }
+  return { device: device, wallet: await getWallet(device), aliased: false };
+}
+
 async function spendCredits(device) {
   const w = await getWallet(device);
   if ((w.free || 0) + (w.paid || 0) < EDIT_COST) return null;
@@ -87,12 +138,15 @@ const hRequest = async (req, res) => {
     if (!img.startsWith("data:image/") || img.length < 1000 || img.length > 1400000)
       return send(res, 400, { error: "bad image" });
 
-    const device = String(b.device || "");
+    let device = String(b.device || "");
     if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
 
     const ip = clientIp(req);
     const rl = await rateLimited(ip, "studio", 5, 10 * 60 * 1000);
     if (rl.limited) return send(res, 429, { error: "too many requests — try again in a few minutes" });
+
+    const resolved = await resolveWallet(device, String(b.fp || ""), ip);
+    device = resolved.device;
 
     const spend = await spendCredits(device);
     if (!spend) {
@@ -245,7 +299,7 @@ const hPay = async (req, res) => {
     }
     if (req.method !== "POST") return send(res, 405, { error: "method" });
     const b = await readBody(req);
-    const device = String(b.device || "");
+    let device = String(b.device || "");
     if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
     const img = String(b.img || "");
     if (!img.startsWith("data:image/") || img.length < 1000 || img.length > 1600000)
@@ -254,6 +308,9 @@ const hPay = async (req, res) => {
     const ip = clientIp(req);
     const rl = await rateLimited(ip, "pay", 5, 10 * 60 * 1000);
     if (rl.limited) return send(res, 429, { error: "too many tries — wait a few minutes" });
+
+    const resolvedPay = await resolveWallet(device, String(b.fp || ""), ip);
+    device = resolvedPay.device;
 
     /* one open check per device: reuse it instead of stacking duplicates */
     const all = (await dbGet("pay_requests")) || {};
@@ -359,8 +416,10 @@ const hWallet = async (req, res) => {
     if (req.method === "GET") {
       const device = String((req.query && req.query.device) || "");
       if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
-      const w = await getWallet(device);
-      return send(res, 200, { free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0), code: device.slice(4, 12).toUpperCase() });
+      const fp = String((req.query && req.query.fp) || "");
+      const resolved = await resolveWallet(device, fp, clientIp(req));
+      const w = resolved.wallet;
+      return send(res, 200, { device: resolved.device, free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0), code: resolved.device.slice(4, 12).toUpperCase() });
     }
     if (req.method === "POST") {
       const ip = clientIp(req);

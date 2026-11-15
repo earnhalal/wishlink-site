@@ -94,6 +94,21 @@ footer .fb{font-family:'Fraunces',serif;color:var(--gold);font-size:20px}
       <p class="mut" id="pagesEmpty" style="display:none">No visits yet today.</p>
     </div>
 
+    <div class="card">
+      <h2 style="margin-bottom:8px">🌍 Where visitors come from — today</h2>
+      <table class="pages"><tbody id="countriesBody"></tbody></table>
+      <p class="mut" id="countriesEmpty" style="display:none">No country data yet today — it starts counting from today's first visit after this update.</p>
+      <p class="mut" id="countriesTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:8px">📱 Devices — today</h2>
+      <table class="pages"><tbody id="devBody"></tbody></table>
+      <p class="mut" id="devEmpty" style="display:none">No device data yet today.</p>
+      <p class="mut" id="osLine" style="margin-top:10px"></p>
+      <p class="mut" id="brLine"></p>
+    </div>
+
     <p class="mut" style="text-align:center">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
   </div>
 </div>
@@ -103,7 +118,18 @@ footer .fb{font-family:'Fraunces',serif;color:var(--gold);font-size:20px}
 </footer>
 
 <script>
-var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "🎂 My Pages", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "📊 Track My Pages", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var COUNTRY_NAMES = { PK: "Pakistan", IN: "India", US: "United States", GB: "United Kingdom", AE: "UAE", SA: "Saudi Arabia", BD: "Bangladesh", CA: "Canada", AU: "Australia", DE: "Germany", FR: "France", IT: "Italy", ES: "Spain", TR: "Türkiye", ID: "Indonesia", MY: "Malaysia", SG: "Singapore", QA: "Qatar", KW: "Kuwait", OM: "Oman", NP: "Nepal", LK: "Sri Lanka", PH: "Philippines", EG: "Egypt", ZA: "South Africa", NG: "Nigeria", KE: "Kenya", BR: "Brazil", MX: "Mexico", NL: "Netherlands", SE: "Sweden", NO: "Norway", DK: "Denmark", IE: "Ireland", NZ: "New Zealand", JP: "Japan", KR: "South Korea", CN: "China", RU: "Russia", UA: "Ukraine", PL: "Poland", TH: "Thailand", VN: "Vietnam", IR: "Iran", IQ: "Iraq", AF: "Afghanistan" };
+function flag(cc) {
+  if (!/^[A-Z]{2}$/.test(cc)) return "🌐";
+  return String.fromCodePoint.apply(null, cc.split("").map(function(ch) { return 127397 + ch.charCodeAt(0); }));
+}
+function sortedEntries(map) {
+  return Object.keys(map || {}).map(function(k) { return [k, map[k]]; }).sort(function(a, b) { return b[1] - a[1]; });
+}
+function mapLine(map) {
+  return sortedEntries(map).map(function(e) { return e[0] + " " + e[1]; }).join(" · ");
+}
 var pin = localStorage.getItem("wl_stats_pin") || "";
 var setupMode = false;
 var timer = null;
@@ -144,6 +170,20 @@ function render(s) {
   var entries = Object.keys(s.today.pages || {}).map(function(k) { return [k, s.today.pages[k]]; }).sort(function(a, b) { return b[1] - a[1]; });
   el("pagesEmpty").style.display = entries.length ? "none" : "block";
   el("pagesBody").innerHTML = entries.map(function(e) { return "<tr><td>" + labelFor(e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  var cents = sortedEntries(s.today.countries);
+  el("countriesEmpty").style.display = cents.length ? "none" : "block";
+  el("countriesBody").innerHTML = cents.map(function(e) {
+    var name = e[0] === "??" ? "Unknown" : (COUNTRY_NAMES[e[0]] || e[0]);
+    return "<tr><td>" + flag(e[0]) + " " + name + "</td><td>" + e[1] + "</td></tr>";
+  }).join("");
+  var ctAll = sortedEntries(s.total.countries).slice(0, 5);
+  el("countriesTotal").textContent = ctAll.length ? "All time: " + ctAll.map(function(e) { return flag(e[0]) + " " + (e[0] === "??" ? "Unknown" : (COUNTRY_NAMES[e[0]] || e[0])) + " " + e[1]; }).join(" · ") : "";
+  var devIcons = { Mobile: "📱", Tablet: "📲", Desktop: "💻" };
+  var dents = sortedEntries(s.today.devtypes);
+  el("devEmpty").style.display = dents.length ? "none" : "block";
+  el("devBody").innerHTML = dents.map(function(e) { return "<tr><td>" + (devIcons[e[0]] || "📟") + " " + e[0] + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  el("osLine").textContent = s.today.oses && Object.keys(s.today.oses).length ? "System: " + mapLine(s.today.oses) : "";
+  el("brLine").textContent = s.today.browsers && Object.keys(s.today.browsers).length ? "Browser: " + mapLine(s.today.browsers) : "";
 }
 function loadStats() {
   if (!pin) return;

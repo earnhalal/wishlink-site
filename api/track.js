@@ -8,9 +8,11 @@
    POST /api/track {type:"wipe", token} — agent-token only; clears all
      stats nodes (used once after the launch test).
    Data (RTDB):
-     stats_days/<YYYY-MM-DD> = {visits, uniques, pages:{<pageKey>:n}}
-     stats_total             = {visits, uniques}
-     stats_devices/<device>  = {first, last, days:{<date>:1}}
+     stats_days/<YYYY-MM-DD> = {visits, uniques, pages:{<pageKey>:n},
+       countries:{<CC>:n}, devtypes:{<Mobile|Tablet|Desktop>:n},
+       oses:{<os>:n}, browsers:{<browser>:n}}
+     stats_total             = {visits, uniques, + the same maps}
+     stats_devices/<device>  = {first, last, days:{<date>:1}, cc, dtype, os, browser}
      stats_live/<device>     = last heartbeat timestamp
      stats_admin             = {salt, hash}  (stats PIN, scrypt)
    Days follow Asia/Karachi (PKT = UTC+5, no DST). */
@@ -25,6 +27,40 @@ const LIVE_WINDOW = 90 * 1000;
 
 function pktDay(ts) {
   return new Date(ts + 5 * 3600 * 1000).toISOString().slice(0, 10);
+}
+
+/* Where a visit came from: Vercel's edge adds the visitor's country to
+   every request (x-vercel-ip-country) at no cost; the device family,
+   OS and browser come from the User-Agent header. "??" = unknown
+   (e.g. local or non-Vercel traffic). */
+function visitCountry(req) {
+  const cc = String((req.headers && req.headers["x-vercel-ip-country"]) || "").toUpperCase();
+  return /^[A-Z]{2}$/.test(cc) ? cc : "??";
+}
+function visitDevice(req) {
+  const ua = String((req.headers && req.headers["user-agent"]) || "");
+  let type = "Desktop";
+  if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) type = "Tablet";
+  else if (/Mobi|Android|iPhone|iPod|Windows Phone/i.test(ua)) type = "Mobile";
+  let os = "Other";
+  if (/Android/i.test(ua)) os = "Android";
+  else if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+  else if (/Windows/i.test(ua)) os = "Windows";
+  else if (/Mac OS|Macintosh/i.test(ua)) os = "Mac";
+  else if (/Linux/i.test(ua)) os = "Linux";
+  let browser = "Other";
+  if (/Edg\//i.test(ua)) browser = "Edge";
+  else if (/SamsungBrowser/i.test(ua)) browser = "Samsung";
+  else if (/OPR\/|Opera/i.test(ua)) browser = "Opera";
+  else if (/Firefox\//i.test(ua)) browser = "Firefox";
+  else if (/Chrome\//i.test(ua)) browser = "Chrome";
+  else if (/Safari\//i.test(ua)) browser = "Safari";
+  return { type, os, browser };
+}
+function bumpMap(map, key) {
+  const m = Object.assign({}, map || {});
+  m[key] = (m[key] || 0) + 1;
+  return m;
 }
 
 module.exports = async (req, res) => {
@@ -98,11 +134,11 @@ module.exports = async (req, res) => {
       const y = days[yesterday] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, paidRs: 0 };
       return send(res, 200, {
         live,
-        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, edits: t.edits || 0, paid: t.paid || 0, paidRs: t.paidRs || 0, pages: t.pages || {} },
+        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, edits: t.edits || 0, paid: t.paid || 0, paidRs: t.paidRs || 0, pages: t.pages || {}, countries: t.countries || {}, devtypes: t.devtypes || {}, oses: t.oses || {}, browsers: t.browsers || {} },
         yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0, created: y.created || 0, edits: y.edits || 0, paid: y.paid || 0, paidRs: y.paidRs || 0 },
         last7,
         monthVisits,
-        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0, edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0 },
+        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0, edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0, countries: total.countries || {}, devtypes: total.devtypes || {}, oses: total.oses || {}, browsers: total.browsers || {} },
       });
     }
 
@@ -127,6 +163,9 @@ module.exports = async (req, res) => {
     const isNewDevice = !devRec;
     const isNewToday = !(devRec && devRec.days && devRec.days[day]);
 
+    const cc = visitCountry(req);
+    const vd = visitDevice(req);
+
     const dayRec = (await dbGet("stats_days/" + day)) || { visits: 0, uniques: 0, pages: {} };
     const pages = dayRec.pages || {};
     pages[page] = (pages[page] || 0) + 1;
@@ -138,6 +177,10 @@ module.exports = async (req, res) => {
       paid: dayRec.paid || 0,
       paidRs: dayRec.paidRs || 0,
       pages,
+      countries: bumpMap(dayRec.countries, cc),
+      devtypes: bumpMap(dayRec.devtypes, vd.type),
+      oses: bumpMap(dayRec.oses, vd.os),
+      browsers: bumpMap(dayRec.browsers, vd.browser),
     });
 
     const total = (await dbGet("stats_total")) || { visits: 0, uniques: 0 };
@@ -148,6 +191,10 @@ module.exports = async (req, res) => {
       edits: total.edits || 0,
       paid: total.paid || 0,
       paidRs: total.paidRs || 0,
+      countries: bumpMap(total.countries, cc),
+      devtypes: bumpMap(total.devtypes, vd.type),
+      oses: bumpMap(total.oses, vd.os),
+      browsers: bumpMap(total.browsers, vd.browser),
     });
 
     const daysMap = (devRec && devRec.days) || {};
@@ -156,6 +203,10 @@ module.exports = async (req, res) => {
       first: devRec ? devRec.first || now : now,
       last: now,
       days: daysMap,
+      cc: cc,
+      dtype: vd.type,
+      os: vd.os,
+      browser: vd.browser,
     });
     return send(res, 200, { ok: true });
   } catch (e) {
