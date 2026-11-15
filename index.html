@@ -3,13 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WishLink — Create a Birthday Surprise Page (Free)</title>
-<meta name="description" content="Make a beautiful birthday surprise page in one minute — a secret PIN, a cake, a gift and a letter. Share it on WhatsApp with one link, or download the page as a file. Free, no sign-up.">
-<meta property="og:title" content="WishLink — Birthday Surprise Pages">
-<meta property="og:description" content="Create a birthday surprise page and share it with one link. Free, no sign-up.">
+<title>WishLink — Free Birthday Surprise Page Maker (15 Designs, Photos & PIN Lock)</title>
+<meta name="description" content="Create a beautiful birthday surprise page in 2 minutes — free. Choose from 15 designs, add photos in an auto-sliding gallery, lock it with a secret PIN and share one simple link on WhatsApp.">
+<link rel="canonical" href="https://www.wishlink.pp.ua/">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230e7a6d'/%3E%3Cpath d='M10.6 13.4a4.5 4.5 0 0 0 6.4 0l3-3a4.54 4.54 0 1 0-6.4-6.4l-1.7 1.7' stroke='white' stroke-width='2.3' stroke-linecap='round' fill='none'/%3E%3Cpath d='M13.4 10.6a4.5 4.5 0 0 0-6.4 0l-3 3a4.54 4.54 0 1 0 6.4 6.4l1.7-1.7' stroke='white' stroke-width='2.3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<meta property="og:site_name" content="WishLink">
+<meta property="og:title" content="WishLink — Free Birthday Surprise Page Maker">
+<meta property="og:description" content="15 designs, photo gallery, secret PIN, cake, gift and a letter — one link, one unforgettable birthday surprise.">
+<meta property="og:url" content="https://www.wishlink.pp.ua/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🎂</text></svg>">
 <style>
+
 :root{--teal:#0e7a6d;--teal-d:#0a5f55;--bg:#f0f7f4;--ink:#12211d;--mut:#5b6f6a;--card:#ffffff;--line:#dcebe6;--gold:#ffb52e}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
@@ -73,9 +77,49 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
 .step .n{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
 footer{text-align:center;color:var(--mut);font-size:13.5px;padding:30px 16px 40px}
 footer b{color:var(--teal-d)}
+
+.brand{font-weight:800;font-size:21px;display:flex;align-items:center;gap:8px}
+.brand-emoji{font-size:25px}
+.tagline{text-align:center;color:var(--mut);letter-spacing:2.5px;font-size:11px;font-weight:700;margin-top:2px}
+.nav{display:flex;gap:20px;align-items:center;margin-left:18px}
+.nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
+.nav a:hover{color:var(--teal)}
+.hero{text-align:center;padding:42px 16px 8px;max-width:760px;margin:0 auto}
+.hero h1{font-size:clamp(30px,6vw,46px);line-height:1.15;color:var(--ink)}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero p{color:var(--mut);font-size:17px;margin-top:12px;line-height:1.6}
+.hero .cta{display:inline-block;margin-top:20px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;font-size:16.5px;padding:14px 32px;border-radius:999px;box-shadow:0 10px 24px rgba(14,122,109,.3)}
+.hero .trust{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.hero .trust span{background:#fff;border:1.5px solid #dcebe5;color:#33524b;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:999px}
+.showcase{max-width:820px;margin:26px auto 0;padding:0 16px}
+.showcase h3{text-align:center;font-size:15px;color:var(--mut);letter-spacing:.4px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.chip{display:flex;align-items:center;gap:7px;background:#fff;border:1.5px solid #dcebe5;border-radius:999px;padding:6px 13px 6px 8px;font-size:12.8px;font-weight:700;color:#33524b}
+.chip i{width:13px;height:13px;border-radius:50%;display:block;border:1px solid rgba(0,0,0,.12)}
+.features{max-width:900px;margin:34px auto 0;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.feature{background:#fff;border:1.5px solid #e2efe9;border-radius:18px;padding:20px}
+.feature .fi{font-size:27px}
+.feature b{display:block;margin:8px 0 5px;font-size:15.5px}
+.feature p{color:var(--mut);font-size:13.8px;line-height:1.55}
+.faq{max-width:760px;margin:36px auto 0;padding:0 16px}
+.faq h2,.blogteaser h2{text-align:center;font-size:24px}
+.faq details{background:#fff;border:1.5px solid #e2efe9;border-radius:14px;padding:15px 18px;margin-top:10px}
+.faq summary{font-weight:700;cursor:pointer;font-size:15px}
+.faq details p{color:var(--mut);font-size:14.3px;line-height:1.6;margin-top:8px}
+.blogteaser{max-width:900px;margin:38px auto 0;padding:0 16px}
+.postcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px}
+.postcard{background:#fff;border:1.5px solid #e2efe9;border-radius:18px;padding:20px;text-decoration:none;color:var(--ink);display:block}
+.postcard .pi{font-size:30px}
+.postcard b{display:block;margin:9px 0 5px;font-size:15.5px;line-height:1.35}
+.postcard p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.postcard .more{color:var(--teal);font-weight:700;font-size:13px;margin-top:9px;display:block}
+.footcols{display:flex;gap:34px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.footcols div{text-align:left}
+.footcols b{display:block;margin-bottom:7px;font-size:13.5px}
+.footcols a{display:block;color:var(--mut);text-decoration:none;font-size:13px;margin-top:4px}
+.footcols a:hover{color:var(--teal)}
+@media(max-width:640px){.nav{display:none}}
 </style>
-</head>
-<body>
 <script>
 /* Viewer mode: a shared link (#p=...) opens the birthday page itself */
 (function(){
@@ -84,15 +128,25 @@ footer b{color:var(--teal-d)}
   window.__WL_VIEW__ = m[1];
 })();
 </script>
+</head>
+<body>
 <header class="top">
-  <a class="logo" href="./"><span class="mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M10.6 13.4a4.5 4.5 0 0 0 6.4 0l3-3a4.54 4.54 0 1 0-6.4-6.4l-1.7 1.7" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round"/><path d="M13.4 10.6a4.5 4.5 0 0 0-6.4 0l-3 3a4.54 4.54 0 1 0 6.4 6.4l1.7-1.7" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round"/></svg></span><span>Wish<em>Link</em><span class="tag">SURPRISE PAGES &amp; INVITATIONS</span></span></a>
+  <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
+  <nav class="nav">
+    <a href="/">Home</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+  </nav>
   <div class="demo-wrap"><a class="demo-btn" href="/#p=eyJuIjoiQXllc2hhIiwiZiI6IlRlYW0gV2lzaExpbmsiLCJwIjoiZGVtbyIsIndjIjoiaGVhcnRmZWx0Iiwid2kiOjAsImxpIjowLCJnaSI6MH0" target="_blank" rel="noopener">▶ Live Demo</a><div class="demo-pin">Demo PIN: <b>demo</b></div></div>
 </header>
+<p class="tagline">SURPRISE PAGES &amp; INVITATIONS</p>
 
 <section class="hero">
-  <h1>A birthday page they will <span>never forget</span> 🎂</h1>
-  <p>Turn a simple wish into a little celebration — a secret PIN, a teddy welcome, confetti, a cake to cut, a hidden gift and a letter from you. Make it in one minute and share it with a single link.</p>
-  <span class="free">100% FREE · NO SIGN-UP · WORKS ON EVERY PHONE</span>
+  <h1>A birthday page they will <em>never forget</em> 🎂</h1>
+  <p>WishLink turns a name, a wish and a few photos into a magical little web page — locked with a secret PIN, opened with one simple link. No app to install, no sign-up, completely free.</p>
+  <a class="cta" href="#maker">✨ Create your free page</a>
+  <div class="trust"><span>✅ 100% free</span><span>🔒 Secret PIN lock</span><span>📸 Photo gallery</span><span>🎨 15 designs</span><span>📱 Works on any phone</span></div>
 </section>
 
 <div class="wrap">
@@ -183,7 +237,60 @@ footer b{color:var(--teal-d)}
   </div>
 </div>
 
+<section class="showcase">
+  <h3>🎨 15 DESIGNS — EVERY PAGE LOOKS DIFFERENT</h3>
+  <div class="chips">
+    <span class="chip"><i style="background:#e8b44b"></i>Midnight Gold</span>
+    <span class="chip"><i style="background:#ff5e8a"></i>Pastel Sky</span>
+    <span class="chip"><i style="background:#22d3ee"></i>Neon Galaxy</span>
+    <span class="chip"><i style="background:#fb7185"></i>Rose Royal</span>
+    <span class="chip"><i style="background:#0891b2"></i>Ocean Breeze</span>
+    <span class="chip"><i style="background:#ea580c"></i>Sunset Peach</span>
+    <span class="chip"><i style="background:#7c3aed"></i>Lavender Dream</span>
+    <span class="chip"><i style="background:#10b981"></i>Emerald Royal</span>
+    <span class="chip"><i style="background:#ec4899"></i>Candy Pop</span>
+    <span class="chip"><i style="background:#b45309"></i>Vintage Paper</span>
+    <span class="chip"><i style="background:#e11d48"></i>Cherry Noir</span>
+    <span class="chip"><i style="background:#059669"></i>Sky Mint</span>
+    <span class="chip"><i style="background:#a78bfa"></i>Royal Purple</span>
+    <span class="chip"><i style="background:#f59e0b"></i>Golden Honey</span>
+    <span class="chip"><i style="background:#0284c7"></i>Snow White</span>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature"><div class="fi">🔒</div><b>Secret PIN lock</b><p>Every page opens only with a PIN you choose — like a little locked gift box they unlock on their phone.</p></div>
+  <div class="feature"><div class="fi">📸</div><b>Auto-sliding photo gallery</b><p>Add up to 4 photos. On the page they glide by on their own like a slideshow — and a swipe works too.</p></div>
+  <div class="feature"><div class="fi">🎂</div><b>Blow &amp; cut the cake</b><p>A cake with real candles to blow out and cut — plus confetti, a hidden gift box and your personal letter.</p></div>
+  <div class="feature"><div class="fi">🎵</div><b>Music &amp; a spoken wish</b><p>The birthday tune plays and the page says “Happy Birthday” out loud in their name. A mute button is always there.</p></div>
+  <div class="feature"><div class="fi">💌</div><b>Wishes &amp; letters built in</b><p>85+ ready wishes and letters for friends, family and partners — pick one, tweak it, or write your own.</p></div>
+  <div class="feature"><div class="fi">🔗</div><b>One short link</b><p>Your page gets a short, friendly link with their name in it — perfect for WhatsApp. Or download the page as a file.</p></div>
+</section>
+
+<section class="faq">
+  <h2>Frequently asked questions</h2>
+  <details><summary>Is WishLink really free?</summary><p>Yes. Creating and sharing birthday pages is completely free, with no sign-up and no app to install. Free pages carry a small “Made with WishLink” line at the bottom.</p></details>
+  <details><summary>How does the person open my surprise?</summary><p>You send them one link (WhatsApp works best). The page asks for the secret PIN you chose — tell them the PIN in your message. Once it opens, the celebration starts: music, confetti, cake, your photos, a gift box and your letter.</p></details>
+  <details><summary>Can I add our photos?</summary><p>Yes — up to 4 photos. They are resized in your browser and saved inside your page, then shown as an auto-sliding gallery the birthday person can also swipe through.</p></details>
+  <details><summary>Do I need to install an app or create an account?</summary><p>No. WishLink works entirely in the browser, on any phone or computer. There are no accounts and no passwords to remember — just the PIN on each page.</p></details>
+  <details><summary>What occasions does WishLink support?</summary><p>Birthday pages are live now with 15 designs. Anniversary, wedding, baby, Eid and New Year pages are in the works — the same idea, made for each celebration.</p></details>
+</section>
+
+<section class="blogteaser">
+  <h2>From the WishLink blog</h2>
+  <div class="postcards">
+    <a class="postcard" href="/blog-how-to-make-a-birthday-surprise-page.html"><span class="pi">🎂</span><b>How to Make a Birthday Surprise Page Online (Free, in 2 Minutes)</b><p>A step-by-step guide: pick a design, write the wish, add photos, lock it with a PIN and send one link.</p><span class="more">Read the guide →</span></a>
+    <a class="postcard" href="/blog-birthday-wishes-for-best-friend.html"><span class="pi">💖</span><b>25 Heartfelt Birthday Wishes for Your Best Friend</b><p>Short, sweet and funny wishes you can copy straight into your surprise page — for every kind of bestie.</p><span class="more">See the wishes →</span></a>
+    <a class="postcard" href="/blog-creative-online-birthday-surprises.html"><span class="pi">🎉</span><b>10 Creative Ways to Surprise Someone on Their Birthday Online</b><p>Distance does not have to mean dull. Ten ideas that make a birthday feel personal, even from far away.</p><span class="more">Get inspired →</span></a>
+  </div>
+</section>
+
 <footer>
+  <div class="footcols">
+    <div><b>Tools</b><a href="/">Birthday Surprise Maker</a><a href="/blog.html">Birthday Ideas Blog</a></div>
+    <div><b>WishLink</b><a href="/about.html">About us</a><a href="/contact.html">Contact</a></div>
+    <div><b>Legal</b><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></div>
+  </div>
   <p><b>WishLink</b> — Surprise Pages &amp; Invitations · Birthday pages are live now; Anniversary, Wedding, Baby, Eid &amp; New Year pages are coming soon.</p>
   <p style="margin-top:6px">Free pages carry a small “Made with WishLink” line. Your page is stored on WishLink so your link can open anywhere.</p>
 </footer>
