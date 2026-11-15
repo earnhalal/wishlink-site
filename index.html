@@ -210,7 +210,7 @@ footer b{color:var(--teal-d)}
     <div class="trust"><span>✅ 100% free</span><span>🔒 Secret PIN lock</span><span>📸 Photo gallery</span><span>🎨 15 designs</span><span>🚫 No app. No sign-up.</span></div>
   </div>
   <div class="herodemo">
-    <a class="demo-btn big" href="/#p=eyJuIjoiQXllc2hhIiwiZiI6IlRlYW0gV2lzaExpbmsiLCJwIjoiZGVtbyIsIndjIjoiaGVhcnRmZWx0Iiwid2kiOjAsImxpIjowLCJnaSI6MH0" target="_blank" rel="noopener">▶ Live Demo</a>
+    <a class="demo-btn big" href="/#p=eyJuIjoiQXllc2hhIiwiZiI6IlRlYW0gV2lzaExpbmsiLCJwIjoiZGVtbyIsIndjIjoiaGVhcnRmZWx0Iiwid2kiOjAsImxpIjowLCJnaSI6MCwiaW0iOlsiaHR0cHM6Ly93d3cud2lzaGxpbmsucHAudWEvZGVtby1hZnRlci5qcGciLCJodHRwczovL3d3dy53aXNobGluay5wcC51YS9kZW1vLWJlZm9yZS5qcGciXX0" target="_blank" rel="noopener">▶ Live Demo</a>
     <a class="demo-btn ghostbig" href="/studio.html">📸 Photo Frame Studio</a>
     <a class="demo-btn ghostbig" href="/my.html">🎂 My Pages — find your saved pages</a>
     <p class="phonecap">See a real surprise page, exactly as your friend will open it.<br>PIN: <b>demo</b></p>
@@ -255,6 +255,7 @@ footer b{color:var(--teal-d)}
       <div class="mstep" data-step="1">
         <label>Choose a design <small>(15 designs — every one has its own colours, PIN screen and loading style)</small></label>
         <div class="theme-grid" id="themeGrid"></div>
+        <button type="button" id="themeChange" class="genbtn wide hidden">🎨 Change design</button>
         <div class="mnav"><button class="btn btn-main" id="btnNext1" type="button">Next: their name →</button></div>
       </div>
 
@@ -1843,10 +1844,24 @@ THEME_META.forEach(function(m){
     themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.classList.remove("sel"); });
     b.classList.add("sel");
     saveDraft();
+    collapseThemes();
   });
   themeGrid.appendChild(b);
 });
 
+
+/* Once a design is chosen, the picker folds down to just that design —
+   the full list comes back with the Change button. */
+var themeChange = $("themeChange");
+function collapseThemes(){
+  themeGrid.querySelectorAll(".theme-card").forEach(function(x){ if(!x.classList.contains("sel")) x.style.display = "none"; });
+  if(themeChange) themeChange.classList.remove("hidden");
+}
+function expandThemes(){
+  themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.style.display = ""; });
+  if(themeChange) themeChange.classList.add("hidden");
+}
+if(themeChange) themeChange.addEventListener("click", expandThemes);
 
 /* ---- 4-step maker, draft autosave, preview, design grid ---- */
 var STEP_LABELS = {1:"Step 1 of 4 · Pick a design", 2:"Step 2 of 4 · Names", 3:"Step 3 of 4 · Wish & letter", 4:"Step 4 of 4 · Photos, gift & PIN"};
@@ -1889,6 +1904,7 @@ $("makerForm").addEventListener("change", saveDraft);
     var idx = THEME_META.map(function(m){ return m.id; }).indexOf(d.t);
     if(idx > 0 && themeGrid.children[idx]) themeGrid.children[idx].click();
   }
+  if(d.t) collapseThemes();
 })();
 $("btnPreview").addEventListener("click", function(){
   var d = collect();
