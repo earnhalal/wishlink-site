@@ -294,6 +294,7 @@ footer b{color:var(--teal-d)}
         <label for="fPhotos">Add photos <small>(optional — up to 4; they appear as an auto-sliding gallery on the page)</small></label>
         <input type="file" id="fPhotos" accept="image/*" multiple>
         <div class="thumbs" id="thumbs"></div>
+<p class="sub" style="margin-top:6px">No framed photo? <a href="/studio.html"><b>✨ Make one in the Photo Frame Studio</b></a> — balloons, cake and fairy lights, free.</p>
         <p class="sub" style="margin-top:6px">Photos are resized in your browser and stored securely with your page on our servers.</p>
         <label for="fGift">Gift-box surprise line <small>(revealed when they open the gift on the page)</small></label>
         <select id="fGift">
@@ -381,7 +382,7 @@ footer b{color:var(--teal-d)}
     <div><b>Tools</b><a href="/">Birthday Surprise Maker</a><a href="/blog.html">Birthday Ideas Blog</a></div>
     <div><b>WishLink</b><a href="/about.html">About us</a><a href="/contact.html">Contact</a></div>
     <div><b>Legal</b><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></div>
-    <div><b>Your pages</b><a href="/delete.html">Delete a page</a><a href="/contact.html">Report a page</a></div>
+    <div><b>Your pages</b><a href="/studio.html">Photo Frame Studio</a><a href="/delete.html">Delete a page</a><a href="/contact.html">Report a page</a></div>
   </div>
   <p><b>WishLink</b> — Surprise Pages &amp; Invitations · Birthday pages are live now; Anniversary, Wedding, Baby, Eid &amp; New Year pages are coming soon.</p>
   <p style="margin-top:6px">Pages and photos are stored securely on our servers until you delete them — that is how your link opens anywhere.</p>
@@ -1924,6 +1925,11 @@ $("fPhotos").addEventListener("change", function(){
     img.src = url;
   });
 });
+
+try {
+  var sp = localStorage.getItem('wl_studio_photo');
+  if (sp) { localStorage.removeItem('wl_studio_photo'); WL_IMAGES.unshift(sp); if (WL_IMAGES.length > 4) WL_IMAGES.length = 4; renderThumbs(); }
+} catch (e) {}
 
 function collect(){
   var name=fName.value.trim(), from=fFrom.value.trim(), pin=fPin.value.trim().toLowerCase();
