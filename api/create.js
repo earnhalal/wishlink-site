@@ -4,12 +4,11 @@
    Photos go to Firebase Storage at unguessable paths; the DB holds only URLs.
    Returns: { slug, editToken } — the edit token exists ONLY in this response
    and on the creator's device. */
-const { init, hashSecret, newSalt, randomCode, slugifyName, readBody, send } = require("./_lib");
+const { dbSet, storageUpload, hashSecret, newSalt, randomCode, slugifyName, readBody, send } = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   try {
-    const { db, bucket } = init();
     const b = await readBody(req);
     const name = String(b.n || "").slice(0, 60);
     const from = String(b.f || "").slice(0, 60);
@@ -36,13 +35,7 @@ module.exports = async (req, res) => {
       const buf = Buffer.from(m[2], "base64");
       if (buf.length > 400_000) continue;
       const path = "pages/" + slug + "/" + randomCode(16) + ".jpg";
-      const file = bucket.file(path);
-      const token = randomCode(24);
-      await file.save(buf, {
-        contentType: "image/jpeg",
-        metadata: { metadata: { firebaseStorageDownloadTokens: token } },
-      });
-      urls.push("https://firebasestorage.googleapis.com/v0/b/" + bucket.name + "/o/" + encodeURIComponent(path) + "?alt=media&token=" + token);
+      urls.push(await storageUpload(path, buf));
     }
     if (urls.length) content.im = urls;
 
@@ -55,7 +48,7 @@ module.exports = async (req, res) => {
     content.editHash = await hashSecret(editToken, editSalt);
     content.editSalt = editSalt;
 
-    await db.ref("pages/" + slug).set(content);
+    await dbSet("pages/" + slug, content);
     return send(res, 200, { slug, editToken });
   } catch (e) {
     return send(res, 500, { error: "create failed" });

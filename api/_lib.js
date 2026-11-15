@@ -1,27 +1,84 @@
-/* WishLink API shared helpers (Vercel serverless, Node 18+).
-   Requires env var FIREBASE_SERVICE_ACCOUNT (JSON string of the service account). */
+/* WishLink API shared helpers (Vercel serverless, Node 20+).
+   Talks to Firebase over REST, signed in as a dedicated Auth user
+   (the "API user"). Env vars: WL_API_KEY (project web API key),
+   WL_API_EMAIL, WL_API_PASSWORD. Database rules grant access to that
+   user's uid only — no service-account key is used anywhere. */
 const crypto = require("crypto");
 
-let admin = null;
-let db = null;
-let bucket = null;
+const DB_URL = "https://wishlink-e9752-default-rtdb.asia-southeast1.firebasedatabase.app";
+const BUCKET = "wishlink-e9752.firebasestorage.app";
 
-function init() {
-  if (db) return { db, bucket };
-  admin = require("firebase-admin");
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
-  if (!raw) throw new Error("FIREBASE_SERVICE_ACCOUNT is not set");
-  const sa = JSON.parse(raw);
-  if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(sa),
-      databaseURL: "https://wishlink-e9752-default-rtdb.asia-southeast1.firebasedatabase.app",
-      storageBucket: "wishlink-e9752.firebasestorage.app",
-    });
+let cachedToken = null;
+let tokenExpiry = 0;
+
+async function signIn() {
+  if (cachedToken && Date.now() < tokenExpiry - 60_000) return cachedToken;
+  const key = process.env.WL_API_KEY;
+  const email = process.env.WL_API_EMAIL;
+  const password = process.env.WL_API_PASSWORD;
+  if (!key || !email || !password) throw new Error("API user env vars are not set");
+  const r = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + key, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, returnSecureToken: true }),
+  });
+  if (!r.ok) throw new Error("API user sign-in failed");
+  const j = await r.json();
+  cachedToken = j.idToken;
+  tokenExpiry = Date.now() + Number(j.expiresIn || 3600) * 1000;
+  return cachedToken;
+}
+
+async function dbCall(method, path, body, retry = true) {
+  const token = await signIn();
+  const r = await fetch(DB_URL + "/" + path + ".json?auth=" + token, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  if (r.status === 401 && retry) {
+    cachedToken = null;
+    return dbCall(method, path, body, false);
   }
-  db = admin.database();
-  bucket = admin.storage().bucket();
-  return { db, bucket };
+  if (!r.ok) throw new Error("db " + method + " " + path + " -> " + r.status);
+  return r.status === 200 ? r.json().catch(() => null) : null;
+}
+const dbGet = (path) => dbCall("GET", path);
+const dbSet = (path, value) => dbCall("PUT", path, value);
+const dbUpdate = (path, value) => dbCall("PATCH", path, value);
+const dbRemove = (path) => dbCall("DELETE", path);
+
+async function storageUpload(path, buffer) {
+  const token = await signIn();
+  const r = await fetch("https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o?uploadType=media&name=" + encodeURIComponent(path), {
+    method: "POST",
+    headers: { "Content-Type": "image/jpeg", Authorization: "Bearer " + token },
+    body: buffer,
+  });
+  if (!r.ok) throw new Error("storage upload -> " + r.status);
+  const downloadToken = randomCode(24);
+  const p = await fetch("https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o/" + encodeURIComponent(path), {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ metadata: { firebaseStorageDownloadTokens: downloadToken } }),
+  });
+  if (!p.ok) throw new Error("storage metadata -> " + p.status);
+  return "https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o/" + encodeURIComponent(path) + "?alt=media&token=" + downloadToken;
+}
+
+async function storageDeletePrefix(prefix) {
+  const token = await signIn();
+  const r = await fetch("https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o?prefix=" + encodeURIComponent(prefix), {
+    headers: { Authorization: "Bearer " + token },
+  });
+  if (!r.ok) return;
+  const j = await r.json().catch(() => ({}));
+  for (const item of j.items || []) {
+    await fetch("https://firebasestorage.googleapis.com/v0/b/" + BUCKET + "/o/" + encodeURIComponent(item.name), {
+      method: "DELETE",
+      headers: { Authorization: "Bearer " + token },
+    }).catch(() => {});
+  }
 }
 
 function hashSecret(secret, salt) {
@@ -66,19 +123,20 @@ function clientIp(req) {
 }
 function ipKey(ip) { return crypto.createHash("sha256").update(ip).digest("hex").slice(0, 24); }
 
-/* Rate limit: max `max` failed attempts per `windowMs` per IP+slug, stored in RTDB _rl/<key>. */
-async function rateLimited(db, ip, slug, max = 8, windowMs = 10 * 60 * 1000) {
+async function rateLimited(ip, slug, max = 8, windowMs = 10 * 60 * 1000) {
   const key = ipKey(ip) + "_" + slug.replace(/[^a-zA-Z0-9-]/g, "");
-  const ref = db.ref("_rl/" + key);
-  const snap = await ref.get();
+  const rec0 = (await dbGet("_rl/" + key)) || { count: 0, since: Date.now() };
   const now = Date.now();
-  let rec = snap.val() || { count: 0, since: now };
-  if (now - rec.since > windowMs) rec = { count: 0, since: now };
+  const rec = now - rec0.since > windowMs ? { count: 0, since: now } : rec0;
   return { limited: rec.count >= max, key, rec, now };
 }
-async function recordFailure(db, key, rec, now) {
-  await db.ref("_rl/" + key).set({ count: (rec.count || 0) + 1, since: rec.since || now });
+async function recordFailure(key, rec, now) {
+  await dbSet("_rl/" + key, { count: (rec.count || 0) + 1, since: rec.since || now });
 }
-async function clearFailures(db, key) { await db.ref("_rl/" + key).remove(); }
+async function clearFailures(key) { await dbRemove("_rl/" + key); }
 
-module.exports = { init, hashSecret, newSalt, verifySecret, randomCode, slugifyName, readBody, send, clientIp, rateLimited, recordFailure, clearFailures };
+module.exports = {
+  dbGet, dbSet, dbUpdate, dbRemove, storageUpload, storageDeletePrefix,
+  hashSecret, newSalt, verifySecret, randomCode, slugifyName, readBody, send, clientIp,
+  rateLimited, recordFailure, clearFailures,
+};
