@@ -68,6 +68,15 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 .foot a{color:var(--mut)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--indigo);color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;transition:transform .3s;z-index:50;box-shadow:0 10px 26px rgba(0,0,0,.25)}
 .toast.show{transform:translateX(-50%) translateY(0)}
+.modetabs{display:flex;gap:10px;margin-bottom:16px}
+.modetab{flex:1;border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 8px;font:inherit;font-weight:700;cursor:pointer;color:var(--mut)}
+.modetab.sel{border-color:var(--indigo);color:var(--indigo);background:var(--tint)}
+.demoba{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.demoba figure{margin:0}
+.demoba img{width:100%;height:290px;object-fit:cover;object-position:top;border-radius:12px;display:block}
+.demoba figcaption{color:#bdb8d9;font-size:13px;margin-top:6px;text-align:center}
+.aistat{background:#fff;border-radius:12px;padding:16px 18px;color:var(--ink);text-align:left;margin-top:14px;font-size:15px}
+.aiimg{width:100%;max-width:430px;border-radius:10px;margin-top:14px;box-shadow:0 14px 34px rgba(0,0,0,.45)}
 </style>
 </head>
 <body>
@@ -79,12 +88,16 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <main class="wrap">
 <div class="hero">
 <h1>Photo Frame <em>Studio</em></h1>
-<p>Add a photo and get a framed birthday picture — dark background, balloons, cake and fairy lights. Free, instant, and your photo never leaves your phone.</p>
+<p>Add a photo and get a framed birthday picture — or let <b>Laila, our AI artist</b>, edit you into a real birthday scene, just like the demo below.</p>
 </div>
 
 <div class="grid">
 <div class="card">
 <h2>1 · Make your picture</h2>
+<div class="modetabs">
+<button type="button" class="modetab sel" id="modeFrame">⚡ Instant Frame</button>
+<button type="button" class="modetab" id="modeAi">🤖 AI Edit by Laila</button>
+</div>
 <label class="up" for="file">
 <b>📷 Tap to add a photo</b>
 <span>JPG or PNG from your phone or computer</span>
@@ -92,6 +105,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <input type="file" id="file" accept="image/*" hidden>
 <label class="fl" for="pname">Name on the picture</label>
 <input type="text" id="pname" placeholder="e.g. Hamza" maxlength="24">
+<div id="frameControls">
 <label class="fl">Choose a scene</label>
 <div class="scenes" id="scenes">
 <button type="button" class="scene sel" data-scene="midnight"><span class="sw" style="background:linear-gradient(160deg,#241a08,#0d0a05)"></span><small>Midnight Gold</small></button>
@@ -110,13 +124,37 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <input type="range" id="zoom" min="100" max="260" value="100">
 <p class="note">Tip: drag the photo inside the frame to move it, and use the slider to zoom.</p>
 </div>
+<div id="aiControls" hidden>
+<label class="fl">Choose a scene style</label>
+<div class="scenes" id="aiScenes">
+<button type="button" class="scene sel" data-aistyle="midnight"><span class="sw" style="background:linear-gradient(160deg,#241a08,#0d0a05)"></span><small>Midnight Gold</small></button>
+<button type="button" class="scene" data-aistyle="rose"><span class="sw" style="background:linear-gradient(160deg,#33101f,#170710)"></span><small>Rose Night</small></button>
+<button type="button" class="scene" data-aistyle="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
+</div>
+<p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>3–8 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
+<button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit</button>
+</div>
+</div>
 
 <div class="stage">
+<div id="frameStage">
 <canvas id="cv" width="1080" height="1350"></canvas>
 <div class="hint">Your framed picture appears here.</div>
 <button class="btn btn-coral" id="btnDl" type="button" style="max-width:430px">⬇ Download picture</button>
 <button class="btn btn-pri" id="btnUse" type="button" style="max-width:430px">🎂 Use it in my WishLink page</button>
 <p class="note" style="color:#bdb8d9">“Use it” places this picture as the first photo of your birthday page.</p>
+</div>
+<div id="aiStage" hidden>
+<div class="demoba">
+<figure><img src="/demo-before.jpg" alt="A plain photo before the AI edit" loading="lazy"><figcaption>Before — plain photo</figcaption></figure>
+<figure><img src="/demo-after.jpg" alt="The same person after Laila's AI edit — birthday scene with cake and balloons" loading="lazy"><figcaption>After — Laila's AI edit ✨</figcaption></figure>
+</div>
+<p class="hint">Demo made with an AI-generated model (not a real person). Your edit will look just like this — with YOUR photo.</p>
+<div class="aistat" id="aiStat" hidden></div>
+<img class="aiimg" id="aiResult" alt="Your AI edited picture" style="display:none">
+<button class="btn btn-coral" id="btnAiDl" type="button" style="max-width:430px;display:none">⬇ Download picture</button>
+<button class="btn btn-pri" id="btnAiUse" type="button" style="max-width:430px;display:none">🎂 Use it in my WishLink page</button>
+</div>
 </div>
 </div>
 </main>
@@ -294,7 +332,15 @@ document.getElementById('file').addEventListener('change', function(){
   var f = this.files && this.files[0]; if (!f) return;
   var url = URL.createObjectURL(f);
   var im = new Image();
-  im.onload = function(){ img = im; zoom = 1; offX = 0; offY = 0; document.getElementById('zoom').value = 100; draw(); toast('Photo added — drag it to adjust'); };
+  im.onload = function(){
+    img = im; zoom = 1; offX = 0; offY = 0; document.getElementById('zoom').value = 100; draw(); toast('Photo added — drag it to adjust');
+    try {
+      var mx = 880, w = im.naturalWidth, h = im.naturalHeight, s2 = Math.min(1, mx / Math.max(w, h));
+      var c2 = document.createElement('canvas'); c2.width = Math.round(w * s2); c2.height = Math.round(h * s2);
+      c2.getContext('2d').drawImage(im, 0, 0, c2.width, c2.height);
+      uploadDataUrl = c2.toDataURL('image/jpeg', 0.82);
+    } catch (e) { uploadDataUrl = null; }
+  };
   im.onerror = function(){ toast('That file could not be read as a photo'); };
   im.src = url;
 });
@@ -345,6 +391,91 @@ Array.prototype.forEach.call(document.querySelectorAll('#sizes .scene'), functio
     draw();
   });
 });
+/* ---------- AI Edit by Laila ---------- */
+var uploadDataUrl = null, aiStyle = 'midnight', aiTimer = null, aiResultUrl = null;
+function setMode(m){
+  var ai = m === 'ai';
+  document.getElementById('modeFrame').classList.toggle('sel', !ai);
+  document.getElementById('modeAi').classList.toggle('sel', ai);
+  document.getElementById('frameControls').hidden = ai;
+  document.getElementById('aiControls').hidden = !ai;
+  document.getElementById('frameStage').hidden = ai;
+  document.getElementById('aiStage').hidden = !ai;
+}
+document.getElementById('modeFrame').addEventListener('click', function(){ setMode('frame'); });
+document.getElementById('modeAi').addEventListener('click', function(){ setMode('ai'); });
+Array.prototype.forEach.call(document.querySelectorAll('#aiScenes .scene'), function(b){
+  b.addEventListener('click', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#aiScenes .scene'), function(x){ x.classList.remove('sel'); });
+    b.classList.add('sel'); aiStyle = b.getAttribute('data-aistyle');
+  });
+});
+function aiShow(html){ var s = document.getElementById('aiStat'); s.hidden = false; s.innerHTML = html; }
+function aiPoll(id){
+  if (aiTimer) clearInterval(aiTimer);
+  var tick = function(){
+    fetch('/api/studio-status?id=' + encodeURIComponent(id)).then(function(r){ return r.json(); }).then(function(j){
+      if (j.status === 'done' && j.result) {
+        clearInterval(aiTimer); aiTimer = null;
+        try { localStorage.removeItem('wl_ai_req'); } catch (e) {}
+        aiResultUrl = j.result;
+        var im = document.getElementById('aiResult'); im.src = j.result; im.style.display = 'block';
+        document.getElementById('btnAiDl').style.display = '';
+        document.getElementById('btnAiUse').style.display = '';
+        aiShow('🎉 <b>Your AI edited picture is ready!</b> Download it, or use it in your WishLink page.');
+      } else if (j.status === 'failed') {
+        clearInterval(aiTimer); aiTimer = null;
+        try { localStorage.removeItem('wl_ai_req'); } catch (e) {}
+        aiShow('😔 Sorry — the edit could not be made this time. Please try again, or use the Instant Frame.');
+      } else if (j.status === 'expired') {
+        clearInterval(aiTimer); aiTimer = null;
+        try { localStorage.removeItem('wl_ai_req'); } catch (e) {}
+        aiShow('⌛ This request expired. Please send your photo again.');
+      } else {
+        aiShow('⏳ <b>Laila is editing your photo…</b><br>Usually 3–8 minutes. Keep this page open — your picture will appear right here.');
+      }
+    }).catch(function(){ /* network hiccup — keep polling */ });
+  };
+  tick();
+  aiTimer = setInterval(tick, 10000);
+}
+document.getElementById('btnAi').addEventListener('click', function(){
+  if (!uploadDataUrl) { toast('Add a photo first'); return; }
+  var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+  fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle }) })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+    .then(function(x){
+      btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit';
+      if (!x.ok || !x.j.id) { aiShow('⚠️ ' + ((x.j && x.j.error) || 'Could not send. Please try again.')); return; }
+      try { localStorage.setItem('wl_ai_req', x.j.id); } catch (e) {}
+      document.getElementById('aiResult').style.display = 'none';
+      document.getElementById('btnAiDl').style.display = 'none';
+      document.getElementById('btnAiUse').style.display = 'none';
+      aiPoll(x.j.id);
+    })
+    .catch(function(){ btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit'; aiShow('⚠️ Network problem — please try again.'); });
+});
+document.getElementById('btnAiDl').addEventListener('click', function(){
+  if (!aiResultUrl) return;
+  fetch(aiResultUrl).then(function(r){ return r.blob(); }).then(function(blob){
+    var a = document.createElement('a');
+    a.download = 'wishlink-ai-edit.jpg';
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    toast('Picture downloaded');
+  });
+});
+document.getElementById('btnAiUse').addEventListener('click', function(){
+  if (!aiResultUrl) return;
+  try { localStorage.setItem('wl_studio_photo', aiResultUrl); location.href = '/#maker'; }
+  catch (e) { toast('Could not pass the picture — please download it instead'); }
+});
+try {
+  var savedReq = localStorage.getItem('wl_ai_req');
+  if (savedReq) { setMode('ai'); aiShow('⏳ Checking your earlier request…'); aiPoll(savedReq); }
+} catch (e) {}
+
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 draw();
 </script>
