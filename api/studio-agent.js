@@ -22,9 +22,10 @@ module.exports = async (req, res) => {
     }
     if (req.method === "GET") {
       const pending = Object.entries(all)
-        .filter(([, r]) => r.status === "pending" && now - (r.ts || 0) <= 2 * 60 * 60 * 1000)
+        .filter(([, r]) => now - (r.ts || 0) <= 2 * 60 * 60 * 1000 &&
+          (r.status === "pending" || (r.status === "working" && now - (r.wts || 0) > 10 * 60 * 1000)))
         .sort((a, b) => (a[1].ts || 0) - (b[1].ts || 0))
-        .slice(0, 3);
+        .slice(0, 2);
       const out = [];
       for (const [id, r] of pending) {
         await dbUpdate("studio_requests/" + id, { status: "working", wts: now });
