@@ -126,10 +126,8 @@ footer b{color:var(--teal-d)}
 .postcard b{display:block;margin:9px 0 5px;font-size:15.5px;line-height:1.35}
 .postcard p{color:var(--mut);font-size:13.5px;line-height:1.55}
 .postcard .more{color:var(--teal);font-weight:700;font-size:13px;margin-top:9px;display:block}
-.footcols{display:flex;gap:34px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
-.footcols div{text-align:left}
-.footcols b{display:block;margin-bottom:7px;font-size:13.5px}
-.footcols a{display:block;color:var(--mut);text-decoration:none;font-size:13px;margin-top:4px}
+.footlinks a{color:var(--mut);text-decoration:none;margin:0 8px;font-size:13.5px;line-height:2.1}
+.footlinks a:hover{color:var(--indigo);text-decoration:underline}
 .footcols a:hover{color:var(--teal)}
 @media(max-width:640px){.nav{display:none}}
 .mprog{margin-bottom:18px}
@@ -378,14 +376,9 @@ footer b{color:var(--teal-d)}
 </section>
 
 <footer>
-  <div class="footcols">
-    <div><b>Tools</b><a href="/">Birthday Surprise Maker</a><a href="/blog.html">Birthday Ideas Blog</a></div>
-    <div><b>WishLink</b><a href="/about.html">About us</a><a href="/contact.html">Contact</a></div>
-    <div><b>Legal</b><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></div>
-    <div><b>Your pages</b><a href="/studio.html">Photo Frame Studio</a><a href="/delete.html">Delete a page</a><a href="/contact.html">Report a page</a></div>
-  </div>
-  <p><b>WishLink</b> — Surprise Pages &amp; Invitations · Birthday pages are live now; Anniversary, Wedding, Baby, Eid &amp; New Year pages are coming soon.</p>
-  <p style="margin-top:6px">Pages and photos are stored securely on our servers until you delete them — that is how your link opens anywhere.</p>
+  <p style="margin:0 0 6px"><b style="color:var(--indigo);font-family:'Fraunces',serif;font-size:18px">WishLink</b></p>
+  <p class="footlinks"><a href="/">Maker</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
+  <p style="margin-top:10px">© 2026 WishLink</p>
 </footer>
 
 <script>
@@ -1843,6 +1836,8 @@ function goStep(n){
   document.querySelectorAll(".mstep").forEach(function(st){ st.classList.toggle("hidden", parseInt(st.getAttribute("data-step"),10) !== n); });
   $("mBar").style.width = (n*25) + "%";
   $("mStepLabel").textContent = STEP_LABELS[n];
+  var anchor = document.querySelector(".mprog") || document.getElementById("maker");
+  if (anchor) { var y = anchor.getBoundingClientRect().top + window.pageYOffset - 76; window.scrollTo({ top: Math.max(0, y), behavior: "smooth" }); }
 }
 function saveDraft(){
   try{ localStorage.setItem("wl_draft", JSON.stringify({ n:fName.value, f:fFrom.value, pin:fPin.value, wc:fWishCat.value, w:fWish.value, ls:fLetterSel.value, l:fLetter.value, g:fGift.value, gc:fGiftCustom.value, t:WL_THEME })); }catch(e){}

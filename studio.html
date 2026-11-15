@@ -49,7 +49,8 @@ input[type=range]{width:100%;accent-color:var(--indigo);height:36px}
 .up:hover{border-color:var(--indigo)}
 .up b{color:var(--indigo);font-size:17px}
 .up span{display:block;color:var(--mut);font-size:13.5px;margin-top:4px}
-.scenes{display:flex;gap:10px}
+.scenes{display:flex;gap:10px;flex-wrap:wrap}
+.scene{flex:1 1 28%}
 .scene{flex:1;border:2.5px solid var(--line);border-radius:12px;padding:8px 6px;background:#fff;cursor:pointer;text-align:center;font:inherit}
 .scene .sw{height:44px;border-radius:8px;margin-bottom:6px}
 .scene.sel{border-color:var(--indigo)}
@@ -92,10 +93,18 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <label class="fl" for="pname">Name on the picture</label>
 <input type="text" id="pname" placeholder="e.g. Hamza" maxlength="24">
 <label class="fl">Choose a scene</label>
-<div class="scenes">
+<div class="scenes" id="scenes">
 <button type="button" class="scene sel" data-scene="midnight"><span class="sw" style="background:linear-gradient(160deg,#241a08,#0d0a05)"></span><small>Midnight Gold</small></button>
 <button type="button" class="scene" data-scene="rose"><span class="sw" style="background:linear-gradient(160deg,#33101f,#170710)"></span><small>Rose Night</small></button>
 <button type="button" class="scene" data-scene="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
+<button type="button" class="scene" data-scene="emerald"><span class="sw" style="background:linear-gradient(160deg,#0f3524,#06170e)"></span><small>Emerald Royal</small></button>
+<button type="button" class="scene" data-scene="starry"><span class="sw" style="background:linear-gradient(160deg,#0d1b3e,#050914)"></span><small>Starry Night</small></button>
+<button type="button" class="scene" data-scene="pearl"><span class="sw" style="background:linear-gradient(160deg,#fff6e8,#f3ddba)"></span><small>Pearl Blush</small></button>
+</div>
+<label class="fl">Picture size</label>
+<div class="scenes" id="sizes">
+<button type="button" class="scene sel" data-size="45"><small>4:5 · Post</small></button>
+<button type="button" class="scene" data-size="916"><small>9:16 · Story / Reel</small></button>
 </div>
 <label class="fl" for="zoom">Photo zoom</label>
 <input type="range" id="zoom" min="100" max="260" value="100">
@@ -126,12 +135,20 @@ var SCENES = {
   rose:     { bg1:'#3a1224', bg2:'#170710', glow:'rgba(255,143,179,.28)', main:'#FF8FB3', second:'#F4B942', cream:'#FFE9F1', flag:['#FF8FB3','#F4B942','#FFE9F1','#FF6B5B'] },
   royal:    { bg1:'#2a1454', bg2:'#0f0820', glow:'rgba(160,130,255,.30)', main:'#C9B8FF', second:'#F4B942', cream:'#EFE9FF', flag:['#C9B8FF','#F4B942','#EFE9FF','#8B5CF6'] }
 };
+SCENES.emerald = { bg1:'#0f3524', bg2:'#06170e', glow:'rgba(244,185,66,.26)', main:'#F4B942', second:'#3ECF8E', cream:'#FFF3D6', flag:['#F4B942','#3ECF8E','#FFF3D6','#FF6B5B'], border:'double' };
+SCENES.starry = { bg1:'#0d1b3e', bg2:'#050914', glow:'rgba(160,190,255,.25)', main:'#C7D6FF', second:'#F4B942', cream:'#EAF0FF', flag:['#C7D6FF','#F4B942','#EAF0FF','#8FB3FF'], deco:'stars' };
+SCENES.pearl = { bg1:'#FFF8EC', bg2:'#F5DFBB', glow:'rgba(244,185,66,.35)', main:'#B8860B', second:'#E2725B', cream:'#7A4E12', flag:['#E8A2B4','#F4B942','#E2725B','#A8C3A0'], light:true, line:'rgba(122,78,18,.45)' };
+var LAYOUTS = {
+  '45':  { H:1350, headY:238, frameY:268, frameH:690, nameY:1078, subY:1140, lightsY:128, cake:[848,1280,1.0], gift:[196,1252,1.0], sparkles:[[120,1080],[950,1030],[880,1160],[90,1180]] },
+  '916': { H:1920, headY:308, frameY:348, frameH:960, nameY:1466, subY:1536, lightsY:196, cake:[848,1810,1.05], gift:[196,1780,1.0], sparkles:[[120,1420],[950,1400],[880,1620],[90,1660]] }
+};
+var SIZE = '45', L = LAYOUTS['45'];
 var scene = 'midnight';
 var img = null, zoom = 1, offX = 0, offY = 0;
 var FRAME = { x: 96, y: 268, w: 888, h: 690, r: 36 };
 var confetti = [];
 (function(){ var s = 42; function rnd(){ s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; }
-  for (var i = 0; i < 90; i++) confetti.push({ x: rnd() * W, y: rnd() * H, w: 6 + rnd() * 8, h: 3 + rnd() * 5, a: rnd() * Math.PI, c: rnd() });
+  for (var i = 0; i < 150; i++) confetti.push({ x: rnd() * W, y: rnd() * 1920, w: 6 + rnd() * 8, h: 3 + rnd() * 5, a: rnd() * Math.PI, c: rnd() });
 })();
 
 function rr(x, y, w, h, r){ ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
@@ -179,10 +196,10 @@ function gift(x, y, s, sc){
 }
 function placeholder(){
   ctx.save();
-  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 3; ctx.setLineDash([14, 12]);
+  ctx.strokeStyle = SCENES[scene].light ? 'rgba(122,78,18,.4)' : 'rgba(255,255,255,.35)'; ctx.lineWidth = 3; ctx.setLineDash([14, 12]);
   rr(FRAME.x + 8, FRAME.y + 8, FRAME.w - 16, FRAME.h - 16, FRAME.r - 6); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.textAlign = 'center';
+  ctx.fillStyle = SCENES[scene].light ? 'rgba(122,78,18,.55)' : 'rgba(255,255,255,.55)'; ctx.textAlign = 'center';
   ctx.font = '600 44px "DM Sans", sans-serif';
   ctx.fillText('📷', W / 2, FRAME.y + FRAME.h / 2 - 16);
   ctx.font = '500 30px "DM Sans", sans-serif';
@@ -203,7 +220,9 @@ function drawPhoto(){
   ctx.drawImage(img, dx, dy, dw, dh);
   ctx.restore();
   ctx.save(); ctx.lineWidth = 10; ctx.strokeStyle = sc.main;
-  rr(FRAME.x, FRAME.y, FRAME.w, FRAME.h, FRAME.r); ctx.stroke(); ctx.restore();
+  rr(FRAME.x, FRAME.y, FRAME.w, FRAME.h, FRAME.r); ctx.stroke();
+  if (sc.border === 'double'){ ctx.lineWidth = 3.5; rr(FRAME.x - 15, FRAME.y - 15, FRAME.w + 30, FRAME.h + 30, FRAME.r + 12); ctx.stroke(); }
+  ctx.restore();
 }
 function draw(){
   var sc = SCENES[scene];
@@ -213,9 +232,15 @@ function draw(){
   var rg = ctx.createRadialGradient(W / 2, FRAME.y + FRAME.h / 2, 80, W / 2, FRAME.y + FRAME.h / 2, 720);
   rg.addColorStop(0, sc.glow); rg.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
-  confetti.forEach(function(c){ ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.globalAlpha = .5; ctx.fillStyle = sc.flag[Math.floor(c.c * sc.flag.length)]; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
+  if (sc.deco === 'stars'){
+    confetti.forEach(function(c){ if (c.y > H) return; ctx.save(); ctx.globalAlpha = .35 + c.c * .6; ctx.fillStyle = '#DCE8FF'; ctx.beginPath(); ctx.arc(c.x, c.y, c.c > .8 ? 3.2 : 2, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+    ctx.save(); ctx.fillStyle = '#F4E9C8'; ctx.beginPath(); ctx.arc(936, 168, 36, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = sc.bg1; ctx.beginPath(); ctx.arc(954, 156, 31, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  } else {
+    confetti.forEach(function(c){ if (c.y > H) return; ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.a); ctx.globalAlpha = .5; ctx.fillStyle = sc.flag[Math.floor(c.c * sc.flag.length)]; ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
+  }
   // bunting
-  ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 3;
+  ctx.save(); ctx.strokeStyle = sc.line || 'rgba(255,255,255,.5)'; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(-10, 26); ctx.quadraticCurveTo(W / 2, 108, W + 10, 26); ctx.stroke();
   for (var i = 0; i < 9; i++){
     var t = (i + 0.5) / 9, bx = (1 - t) * (1 - t) * -10 + 2 * (1 - t) * t * (W / 2) + t * t * (W + 10);
@@ -227,7 +252,7 @@ function draw(){
   // fairy lights
   ctx.save();
   for (var j = 0; j <= 12; j++){
-    var fx = 40 + j * (W - 80) / 12, fy = 128 + Math.sin(j * 1.3) * 10;
+    var fx = 40 + j * (W - 80) / 12, fy = L.lightsY + Math.sin(j * 1.3) * 10;
     ctx.fillStyle = sc.main; ctx.shadowColor = sc.main; ctx.shadowBlur = 18;
     ctx.beginPath(); ctx.arc(fx, fy, 6, 0, Math.PI * 2); ctx.fill();
   }
@@ -239,7 +264,7 @@ function draw(){
   ctx.save(); ctx.textAlign = 'center';
   ctx.fillStyle = sc.cream; ctx.font = '700 92px "Dancing Script", cursive';
   ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 10;
-  ctx.fillText('Happy Birthday', W / 2, 238);
+  ctx.fillText('Happy Birthday', W / 2, L.headY);
   ctx.restore();
   drawPhoto();
   // name
@@ -249,18 +274,18 @@ function draw(){
     var size = 96; ctx.font = '700 ' + size + 'px "Fraunces", serif';
     while (ctx.measureText(name).width > W - 140 && size > 40){ size -= 6; ctx.font = '700 ' + size + 'px "Fraunces", serif'; }
     ctx.fillStyle = sc.main; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 8;
-    ctx.fillText(name, W / 2, 1078);
+    ctx.fillText(name, W / 2, L.nameY);
   }
   ctx.shadowBlur = 0; ctx.fillStyle = sc.cream; ctx.globalAlpha = .85;
   ctx.font = 'italic 500 34px "Fraunces", serif';
-  ctx.fillText('★ with love, on your special day ★', W / 2, 1140);
+  ctx.fillText('★ with love, on your special day ★', W / 2, L.subY);
   ctx.restore();
-  cake(848, 1280, 1.0, sc);
-  gift(196, 1252, 1.0, sc);
-  sparkle(120, 1080, 20, sc.main); sparkle(950, 1030, 16, sc.cream); sparkle(880, 1160, 13, sc.main); sparkle(90, 1180, 14, sc.cream);
+  cake(L.cake[0], L.cake[1], L.cake[2], sc);
+  gift(L.gift[0], L.gift[1], L.gift[2], sc);
+  L.sparkles.forEach(function(s, i){ sparkle(s[0], s[1], i % 2 ? 14 : 19, i % 2 ? sc.cream : sc.main); });
   // vignette
   var vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.36, W / 2, H / 2, H * 0.78);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.42)');
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, sc.light ? 'rgba(184,134,11,.14)' : 'rgba(0,0,0,.42)');
   ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
 }
 function toast(msg){ var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 2400); }
@@ -275,9 +300,9 @@ document.getElementById('file').addEventListener('change', function(){
 });
 document.getElementById('pname').addEventListener('input', draw);
 document.getElementById('zoom').addEventListener('input', function(){ zoom = this.value / 100; draw(); });
-Array.prototype.forEach.call(document.querySelectorAll('.scene'), function(b){
+Array.prototype.forEach.call(document.querySelectorAll('#scenes .scene'), function(b){
   b.addEventListener('click', function(){
-    Array.prototype.forEach.call(document.querySelectorAll('.scene'), function(x){ x.classList.remove('sel'); });
+    Array.prototype.forEach.call(document.querySelectorAll('#scenes .scene'), function(x){ x.classList.remove('sel'); });
     b.classList.add('sel'); scene = b.getAttribute('data-scene'); draw();
   });
 });
@@ -290,22 +315,35 @@ cv.addEventListener('pointercancel', function(){ drag = null; });
 
 document.getElementById('btnDl').addEventListener('click', function(){
   draw();
-  var a = document.createElement('a');
   var name = (document.getElementById('pname').value || 'birthday').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  a.download = 'wishlink-' + (name || 'birthday') + '-framed.png';
-  a.href = cv.toDataURL('image/png');
-  a.click();
-  toast('Picture downloaded');
+  cv.toBlob(function(blob){
+    if (!blob) { toast('Download failed — try again'); return; }
+    var a = document.createElement('a');
+    a.download = 'wishlink-' + (name || 'birthday') + '-framed.png';
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+    toast('Picture downloaded');
+  }, 'image/png');
 });
 document.getElementById('btnUse').addEventListener('click', function(){
   if (!img) { toast('Add a photo first'); return; }
   draw();
-  var out = document.createElement('canvas'); out.width = 864; out.height = 1080;
-  out.getContext('2d').drawImage(cv, 0, 0, 864, 1080);
+  var out = document.createElement('canvas'); out.width = 864; out.height = Math.round(864 * H / W);
+  out.getContext('2d').drawImage(cv, 0, 0, out.width, out.height);
   try {
     localStorage.setItem('wl_studio_photo', out.toDataURL('image/jpeg', 0.82));
     location.href = '/#maker';
   } catch (e) { toast('Could not pass the picture — please download it instead'); }
+});
+Array.prototype.forEach.call(document.querySelectorAll('#sizes .scene'), function(b){
+  b.addEventListener('click', function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#sizes .scene'), function(x){ x.classList.remove('sel'); });
+    b.classList.add('sel');
+    SIZE = b.getAttribute('data-size'); L = LAYOUTS[SIZE]; H = L.H; cv.height = H;
+    FRAME.y = L.frameY; FRAME.h = L.frameH;
+    draw();
+  });
 });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 draw();
