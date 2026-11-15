@@ -94,15 +94,15 @@ module.exports = async (req, res) => {
         const rec = days[d] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0 };
         last7.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0, edits: rec.edits || 0, paid: rec.paid || 0 });
       }
-      const t = days[today] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, pages: {} };
-      const y = days[yesterday] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0 };
+      const t = days[today] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, paidRs: 0, pages: {} };
+      const y = days[yesterday] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, paidRs: 0 };
       return send(res, 200, {
         live,
-        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, edits: t.edits || 0, paid: t.paid || 0, pages: t.pages || {} },
-        yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0, created: y.created || 0, edits: y.edits || 0, paid: y.paid || 0 },
+        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, edits: t.edits || 0, paid: t.paid || 0, paidRs: t.paidRs || 0, pages: t.pages || {} },
+        yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0, created: y.created || 0, edits: y.edits || 0, paid: y.paid || 0, paidRs: y.paidRs || 0 },
         last7,
         monthVisits,
-        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0, edits: total.edits || 0, paid: total.paid || 0 },
+        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0, edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0 },
       });
     }
 
@@ -136,6 +136,7 @@ module.exports = async (req, res) => {
       created: dayRec.created || 0,
       edits: dayRec.edits || 0,
       paid: dayRec.paid || 0,
+      paidRs: dayRec.paidRs || 0,
       pages,
     });
 
@@ -146,6 +147,7 @@ module.exports = async (req, res) => {
       pages: total.pages || 0,
       edits: total.edits || 0,
       paid: total.paid || 0,
+      paidRs: total.paidRs || 0,
     });
 
     const daysMap = (devRec && devRec.days) || {};

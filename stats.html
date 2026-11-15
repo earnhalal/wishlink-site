@@ -73,14 +73,14 @@ footer .fb{font-family:'Fraunces',serif;color:var(--gold);font-size:20px}
       <div class="stat"><div class="num" id="sTodayU">–</div><div class="lbl">Unique visitors today</div></div>
       <div class="stat"><div class="num" id="sCreated">–</div><div class="lbl">🎂 Pages created today</div></div>
       <div class="stat"><div class="num" id="sEdits">–</div><div class="lbl">🤖 AI edits completed today</div></div>
-      <div class="stat"><div class="num" id="sPaidToday">–</div><div class="lbl">💰 Paid edit earnings today (Rs 30 each)</div></div>
+      <div class="stat"><div class="num" id="sPaidToday">–</div><div class="lbl">💰 Credit top-up earnings today</div></div>
       <div class="stat"><div class="num" id="sYest">–</div><div class="lbl">Visits yesterday</div></div>
       <div class="stat"><div class="num" id="sMonth">–</div><div class="lbl">Visits this month</div></div>
       <div class="stat"><div class="num" id="sTotal">–</div><div class="lbl">All-time visits</div></div>
       <div class="stat"><div class="num" id="sTotalU">–</div><div class="lbl">All-time unique visitors</div></div>
       <div class="stat"><div class="num" id="sTotalPages">–</div><div class="lbl">🎂 Pages created in total</div></div>
       <div class="stat"><div class="num" id="sTotalEdits">–</div><div class="lbl">🤖 AI edits in total</div></div>
-      <div class="stat"><div class="num" id="sTotalPaid">–</div><div class="lbl">💰 Paid edit earnings in total</div></div>
+      <div class="stat"><div class="num" id="sTotalPaid">–</div><div class="lbl">💰 Credit top-up earnings in total</div></div>
     </div>
 
     <div class="card">
@@ -127,14 +127,14 @@ function render(s) {
   el("sTodayU").textContent = s.today.uniques;
   el("sCreated").textContent = s.today.created || 0;
   el("sEdits").textContent = s.today.edits || 0;
-  el("sPaidToday").textContent = "Rs " + ((s.today.paid || 0) * 30);
+  el("sPaidToday").textContent = "Rs " + (s.today.paidRs || 0);
   el("sYest").textContent = s.yesterday.visits;
   el("sMonth").textContent = s.monthVisits;
   el("sTotal").textContent = s.total.visits;
   el("sTotalU").textContent = s.total.uniques;
   el("sTotalPages").textContent = s.total.pages || 0;
   el("sTotalEdits").textContent = s.total.edits || 0;
-  el("sTotalPaid").textContent = "Rs " + ((s.total.paid || 0) * 30);
+  el("sTotalPaid").textContent = "Rs " + (s.total.paidRs || 0);
   var max = 1;
   s.last7.forEach(function(r) { if (r.visits > max) max = r.visits; });
   el("bars").innerHTML = s.last7.map(function(r, i) {

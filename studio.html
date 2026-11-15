@@ -132,6 +132,11 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <p class="note">Tip: drag the photo inside the frame to move it, and use the slider to zoom.</p>
 </div>
 <div id="aiControls" hidden>
+<div class="aistat" id="balBar" style="margin-top:0">🪙 <b>Your balance:</b> <span id="balTxt">checking…</span>
+<div style="font-size:13px;color:#666A85;margin-top:5px">Free credits refill to 20 every 24 hours · paid credits never expire.<br>Your balance code: <b id="balCode" style="color:#2D2A6E;letter-spacing:1px">…</b> — save it. If you ever change phones or lose this browser, enter the code here and your balance comes back.</div>
+<div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap"><input type="text" id="restoreCode" placeholder="Enter a balance code" maxlength="12" style="flex:1;min-width:160px;text-transform:uppercase"><button type="button" class="btn btn-ghost" id="btnRestore" style="width:auto;margin-top:0;min-height:46px;padding:0 20px">Restore balance</button></div>
+<div id="restoreMsg" style="font-size:13.5px;margin-top:6px"></div>
+</div>
 <label class="fl">Choose a scene style</label>
 <div class="scenes" id="aiScenes">
 <button type="button" class="scene sel" data-aistyle="midnight"><span class="sw" style="background:linear-gradient(160deg,#241a08,#0d0a05)"></span><small>Midnight Gold</small></button>
@@ -139,9 +144,9 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <button type="button" class="scene" data-aistyle="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
 </div>
 <p class="note" style="text-align:left">✍️ If you wrote a name above, it will appear in the edit as glowing golden <b>“Happy Birthday”</b> text.</p>
-<p class="note" style="text-align:left">🎁 <b>2 AI edits are FREE</b> on this device. After that, each AI edit is <b>Rs 30</b>.</p>
+<p class="note" style="text-align:left">🪙 <b>1 AI edit = 10 credits.</b> You get <b>20 free credits</b> on this device, refilled every 24 hours. Need more? Add credits any time — <b>Rs 100 = 50 credits</b>.</p>
 <p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>2–4 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
-<button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit</button>
+<button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit · 10 credits</button>
 <div class="aistat" id="aiStat" hidden></div>
 </div>
 </div>
@@ -415,14 +420,26 @@ function deviceId(){
   } catch (e) { return 'dev-anon0000'; }
 }
 function deviceCode(){ try { return deviceId().slice(4, 12).toUpperCase(); } catch (e) { return ''; } }
+function loadBalance(){
+  fetch('/api/studio-wallet?device=' + encodeURIComponent(deviceId()))
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if (j && typeof j.total === 'number') {
+        var bt = document.getElementById('balTxt');
+        if (bt) bt.innerHTML = '<b>' + j.total + ' credits</b> (Free: ' + j.free + ' · Paid: ' + j.paid + ')';
+        var bc = document.getElementById('balCode');
+        if (bc) bc.textContent = j.code || deviceCode();
+      }
+    }).catch(function(){});
+}
 var payShot = null, payTimer = null;
-function payMsg(status, reason){
-  if (status === 'approved') return '✅ <b>Payment approved!</b> One extra AI edit is now unlocked on this device — add your photo above and send it to Laila.';
+function payMsg(status, reason, credits, amount){
+  if (status === 'approved') return '✅ <b>Payment approved!</b>' + (amount ? ' Rs ' + amount + ' received — ' : ' ') + '<b>' + (credits || 0) + ' credits</b> added to your balance above. Now add your photo and send it to Laila!';
   if (status === 'expired') return '⌛ This check expired. Please submit the screenshot again.';
   if (status === 'rejected') {
-    if (reason === 'amount') return '❌ The amount in this screenshot is not Rs 30. Please pay Rs 30 and upload that receipt.';
+    if (reason === 'amount') return '❌ This top-up is below the minimum of Rs 100. Please pay at least Rs 100 (Rs 100 = 50 credits) and upload that receipt.';
     if (reason === 'receiver') return '❌ This payment was not sent to our EasyPaisa number 0333-8739929.';
-    if (reason === 'tid_used') return '❌ This transaction has already been used for an unlock.';
+    if (reason === 'tid_used') return '❌ This transaction has already been used for a top-up.';
     if (reason === 'not_receipt') return '❌ This does not look like an EasyPaisa payment receipt. Please upload the receipt screenshot.';
     return '❌ We could not read this screenshot clearly. Please upload the full, clear EasyPaisa receipt.';
   }
@@ -435,24 +452,26 @@ function pollPay(id){
       .then(function(r){ return r.json(); })
       .then(function(j){
         var st = document.getElementById('payStat');
-        if (st) st.innerHTML = payMsg(j.status, j.reason);
+        if (st) st.innerHTML = payMsg(j.status, j.reason, j.credits, j.amount);
         if (j.status === 'approved' || j.status === 'rejected' || j.status === 'expired') {
           clearInterval(payTimer);
           try { localStorage.removeItem('wl_pay_req'); } catch (e) {}
+          if (j.status === 'approved') loadBalance();
         }
       }).catch(function(){});
   }, 8000);
 }
 function showPaid(){
+  loadBalance();
   var code = deviceCode();
-  aiShow('🎁 <b>Your 2 free AI edits are used.</b><br>Paid AI Edit: <b>Rs 30</b> — pay on EasyPaisa:<br>' +
+  aiShow('🪙 <b>Your credits are finished.</b><br>Add more credits — <b>Rs 100 = 50 credits</b> · Rs 200 = 100 · Rs 500 = 250. Pay any amount (minimum Rs 100) on EasyPaisa:<br>' +
   '<span style="display:inline-block;margin-top:8px;background:#EFEAFB;border:1.5px dashed #2D2A6E;border-radius:10px;padding:8px 16px;font-size:19px;font-weight:800;letter-spacing:1px;color:#2D2A6E">EasyPaisa · 0333-8739929</span><br>' +
-  '<span style="font-size:14px">After paying, upload the payment screenshot right here. It is checked automatically and your extra edit unlocks in about 1–2 minutes — no WhatsApp needed.</span><br>' +
+  '<span style="font-size:14px">After paying, upload the payment screenshot right here. It is checked automatically and the credits land in your balance in about 1–2 minutes — no WhatsApp needed.</span><br>' +
   '<input type="file" id="payFile" accept="image/*" style="margin-top:12px;max-width:100%">' +
   '<div id="payPrev" style="margin-top:8px"></div>' +
   '<button type="button" class="btn btn-pri" id="paySubmit" style="margin-top:10px">✅ Submit screenshot for checking</button>' +
   '<div id="payStat" style="margin-top:10px"></div>' +
-  '<div style="margin-top:12px;font-size:13px;color:#666A85">Any problem? WhatsApp us your screenshot with your code <b>' + code + '</b>: <a target="_blank" rel="noopener" href="https://wa.me/923338739929?text=' + encodeURIComponent('Assalam o Alaikum! WishLink paid AI Edit (Rs 30). My order code is ' + code + '.') + '">💬 WhatsApp</a></div>');
+  '<div style="margin-top:12px;font-size:13px;color:#666A85">Any problem? WhatsApp us your screenshot with your balance code <b>' + code + '</b>: <a target="_blank" rel="noopener" href="https://wa.me/923338739929?text=' + encodeURIComponent('Assalam o Alaikum! WishLink credit top-up. My balance code is ' + code + '.') + '">💬 WhatsApp</a></div>');
   var pf = document.getElementById('payFile');
   pf.addEventListener('change', function(){
     var f = pf.files && pf.files[0]; if (!f) return;
@@ -492,6 +511,7 @@ function setMode(m){
   document.getElementById('aiControls').hidden = !ai;
   document.getElementById('frameStage').hidden = ai;
   document.getElementById('aiStage').hidden = !ai;
+  if (ai) loadBalance();
 }
 document.getElementById('modeFrame').addEventListener('click', function(){ setMode('frame'); });
 document.getElementById('modeAi').addEventListener('click', function(){ setMode('ai'); });
@@ -539,16 +559,17 @@ document.getElementById('btnAi').addEventListener('click', function(){
   fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId() }) })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
     .then(function(x){
-      btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit';
+      btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit · 10 credits';
       if (x.j && x.j.limit) { showPaid(); return; }
       if (!x.ok || !x.j.id) { aiShow('⚠️ ' + ((x.j && x.j.error) || 'Could not send. Please try again.')); return; }
       try { localStorage.setItem('wl_ai_req', x.j.id); } catch (e) {}
+      loadBalance();
       document.getElementById('aiResult').style.display = 'none';
       document.getElementById('btnAiDl').style.display = 'none';
       document.getElementById('btnAiUse').style.display = 'none';
       aiPoll(x.j.id);
     })
-    .catch(function(){ btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit'; aiShow('⚠️ Network problem — please try again.'); });
+    .catch(function(){ btn.disabled = false; btn.textContent = '🤖 Send to Laila for AI Edit · 10 credits'; aiShow('⚠️ Network problem — please try again.'); });
 });
 document.getElementById('btnAiDl').addEventListener('click', function(){
   if (!aiResultUrl) return;
@@ -574,6 +595,23 @@ try {
   var savedPay = localStorage.getItem('wl_pay_req');
   if (savedPay) { setMode('ai'); showPaid(); var pst = document.getElementById('payStat'); if (pst) pst.innerHTML = payMsg('pending'); pollPay(savedPay); }
 } catch (e) {}
+var btnRestoreEl = document.getElementById('btnRestore');
+if (btnRestoreEl) btnRestoreEl.addEventListener('click', function(){
+  var code = (document.getElementById('restoreCode').value || '').trim();
+  var msg = document.getElementById('restoreMsg');
+  if (!code) { msg.textContent = 'Please type your balance code first.'; return; }
+  msg.textContent = 'Checking…';
+  fetch('/api/studio-wallet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: code, device: deviceId() }) })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+    .then(function(x){
+      if (x.ok && x.j.device) {
+        try { localStorage.setItem('wl_device', x.j.device); } catch (e) {}
+        msg.innerHTML = '✅ <b>Balance restored: ' + x.j.total + ' credits.</b>';
+        loadBalance();
+      } else { msg.textContent = '❌ ' + ((x.j && x.j.error) || 'Code not found — please check it and try again.'); }
+    })
+    .catch(function(){ msg.textContent = '❌ Network problem — try again.'; });
+});
 
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 draw();

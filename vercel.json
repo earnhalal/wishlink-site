@@ -25,6 +25,10 @@
       "destination": "/api/studio?a=payagent"
     },
     {
+      "source": "/api/studio-wallet",
+      "destination": "/api/studio?a=wallet"
+    },
+    {
       "source": "/:slug",
       "destination": "/index.html"
     }
