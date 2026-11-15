@@ -132,7 +132,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <button type="button" class="scene" data-aistyle="royal"><span class="sw" style="background:linear-gradient(160deg,#22104a,#0f0820)"></span><small>Royal Violet</small></button>
 </div>
 <p class="note" style="text-align:left">🎁 <b>2 AI edits are FREE</b> on this device. After that, each AI edit is <b>Rs 30</b>.</p>
-<p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>3–8 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
+<p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>2–4 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
 <button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit</button>
 </div>
 </div>
@@ -443,7 +443,7 @@ function aiPoll(id){
         try { localStorage.removeItem('wl_ai_req'); } catch (e) {}
         aiShow('⌛ This request expired. Please send your photo again.');
       } else {
-        aiShow('⏳ <b>Laila is editing your photo…</b><br>Usually 3–8 minutes. Keep this page open — your picture will appear right here.');
+        aiShow('⏳ <b>Laila is editing your photo…</b><br>Usually 2–4 minutes. Keep this page open — your picture will appear right here.');
       }
     }).catch(function(){ /* network hiccup — keep polling */ });
   };
