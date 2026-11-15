@@ -23,7 +23,10 @@ module.exports = async (req, res) => {
       t: String(b.t || "classic").slice(0, 24),
       createdAt: Date.now(),
       reports: 0,
+      seen: { views: 0, opens: 0 },
     };
+    const device = String(b.device || "");
+    if (/^[a-zA-Z0-9-]{8,40}$/.test(device)) content.device = device;
     const slug = slugifyName(name) + "-" + randomCode(10);
 
     /* photos → Storage */
@@ -56,6 +59,9 @@ module.exports = async (req, res) => {
     content.editSalt = editSalt;
 
     await dbSet("pages/" + slug, content);
+    if (content.device) {
+      await dbSet("user_pages/" + content.device + "/" + slug, { n: name, ts: content.createdAt }).catch(() => {});
+    }
     return send(res, 200, { slug, editToken });
   } catch (e) {
     return send(res, 500, { error: "create failed" });

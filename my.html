@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Pages — WishLink</title>
+<meta name="description" content="Your WishLink surprise pages, saved on this device — with link views and PIN opens for each page.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#2D2A6E">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>
+:root{--indigo:#2D2A6E;--indigo-d:#211F55;--coral:#FF6B5B;--gold:#F4B942;--cream:#FFF9F2;--ink:#1B1B2F;--mut:#666A85;--line:#E8E3F0;--tint:#EFEAFB;--ok:#1E8E5A}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream)}
+h1,h2{font-family:'Fraunces',serif;color:var(--indigo);margin:0}
+a{color:var(--indigo)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,249,242,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topin{display:flex;align-items:center;gap:14px;padding:10px 0}
+.logo{font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--indigo);text-decoration:none}
+.logo em{color:var(--coral);font-style:normal}
+.nav{margin-left:auto;display:flex;gap:16px;font-size:14.5px}
+.nav a{color:var(--ink);text-decoration:none}
+.nav a:hover{color:var(--indigo);text-decoration:underline}
+.hero{padding:30px 0 4px;text-align:center}
+.hero h1{font-size:clamp(28px,5.4vw,40px);line-height:1.12}
+.hero h1 em{color:var(--coral);font-style:italic}
+.hero p{color:var(--mut);max-width:520px;margin:10px auto 0}
+.list{padding:22px 0 8px;display:grid;gap:14px}
+.pcard{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 24px rgba(45,42,110,.10);padding:18px 20px}
+.phead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.phead b{font-size:18px;color:var(--indigo)}
+.pdate{color:var(--mut);font-size:13px;margin-left:auto}
+.plink{margin-top:8px;background:var(--tint);border-radius:10px;padding:9px 12px;font-size:14px;word-break:break-all;color:var(--indigo)}
+.pbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pbtns button,.pbtns a{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;color:var(--indigo);text-decoration:none}
+.pbtns button:hover,.pbtns a:hover{border-color:var(--indigo)}
+.pbtns .wa{background:#E9F7EE;border-color:#BFE6CE;color:#177245}
+.pstats{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:14.5px;color:var(--ink)}
+.pstats .notyet{color:var(--mut)}
+.empty{background:#fff;border:1px dashed #C9C2E4;border-radius:16px;padding:30px 22px;text-align:center;color:var(--mut)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:999px;padding:0 26px;min-height:52px;text-decoration:none;margin-top:14px}
+.btn-pri{background:var(--indigo);color:#fff}
+.note{color:var(--mut);font-size:13.5px;text-align:center;padding:6px 0 26px}
+footer{border-top:1px solid var(--line);margin-top:10px}
+.footin{padding:20px 0 26px;text-align:center}
+.footlinks a{color:var(--mut);text-decoration:none;margin:0 8px;font-size:13.5px;line-height:2.1}
+.footlinks a:hover{color:var(--indigo);text-decoration:underline}
+.copyr{color:var(--mut);font-size:13px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--indigo);color:#fff;padding:11px 20px;border-radius:999px;font-weight:700;font-size:14.5px;z-index:50;transition:transform .25s;box-shadow:0 12px 30px rgba(45,42,110,.35)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap topin">
+<a class="logo" href="/">🎂 Wish<em>Link</em></a>
+<nav class="nav"><a href="/">Home</a><a href="/my.html">My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a></nav>
+</div></header>
+
+<section class="hero wrap">
+<h1>My <em>Pages</em> 🎂</h1>
+<p>Every surprise page you made on this device — saved here so a lost link is never lost. You can also see who opened your link, and whether they entered the PIN.</p>
+</section>
+
+<main class="wrap">
+<div class="list" id="list"><div class="empty">⏳ Loading your pages…</div></div>
+<p class="note">🔒 This list lives only on this device — nobody else can see it. Pages you made on a different phone or browser will not appear here.</p>
+</main>
+
+<footer><div class="wrap footin">
+<p class="footlinks"><a href="/">Maker</a><a href="/my.html">My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
+<p class="copyr">© 2026 WishLink — made with 💛 for birthdays.</p>
+</div></footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+function deviceId(){
+  try {
+    var d = localStorage.getItem('wl_device');
+    if (!d) { d = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', d); }
+    return d;
+  } catch (e) { return 'dev-anon0000'; }
+}
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function fmt(ts){
+  if (!ts) return '';
+  var d = new Date(ts);
+  return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) + ', ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+var toastT = null;
+function toast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('show'); }, 2000);
+}
+function copyText(txt, msg){
+  function done(){ toast(msg || 'Copied ✓'); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, done);
+  else {
+    var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    ta.remove(); done();
+  }
+}
+function localPages(){
+  try { return JSON.parse(localStorage.getItem('wl_pages') || '[]'); } catch (e) { return []; }
+}
+function localTokens(){
+  try { return JSON.parse(localStorage.getItem('wl_tokens') || '{}'); } catch (e) { return {}; }
+}
+function card(p, pin){
+  var url = location.origin + '/' + p.slug;
+  var last = '';
+  if (p.opens > 0) last = ' · Last opened ' + esc(fmt(p.lastOpen));
+  else if (p.views > 0) last = ' · Link last seen ' + esc(fmt(p.lastView)) + ' — PIN not entered yet';
+  var waMsg = 'I made a birthday surprise for you 🎁 Open it here: ' + url + (pin ? ' PIN: ' + pin : '');
+  var h = '<div class="pcard"><div class="phead">🎂 <b>For ' + esc(p.n || 'a friend') + '</b><span class="pdate">' + esc(fmt(p.createdAt)) + '</span></div>';
+  h += '<div class="plink">' + esc(url) + '</div>';
+  h += '<div class="pbtns"><button type="button" data-copy="' + esc(url) + '">🔗 Copy link</button><a href="' + esc(url) + '" target="_blank" rel="noopener">Open</a>';
+  if (pin) h += '<button type="button" data-copy="' + esc(pin) + '" data-msg="PIN copied ✓">🔑 PIN: ' + esc(pin) + '</button>';
+  h += '<a class="wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(waMsg) + '">💬 Share on WhatsApp</a></div>';
+  h += '<div class="pstats">👁 Link opened <b>' + p.views + '</b> time' + (p.views === 1 ? '' : 's') + ' · 🔓 Opened with PIN <b>' + p.opens + '</b> time' + (p.opens === 1 ? '' : 's');
+  if (!p.views && !p.opens) h += '<div class="notyet">Not opened yet — share the link to start the surprise 💛</div>';
+  else if (last) h += '<div class="notyet">' + last.replace(' · ', '') + '</div>';
+  h += '</div></div>';
+  return h;
+}
+function render(pages){
+  var el = document.getElementById('list');
+  if (!pages.length) {
+    el.innerHTML = '<div class="empty">You have not made any page on this device yet.<br><a class="btn btn-pri" href="/#maker">✨ Create your first page</a></div>';
+    return;
+  }
+  var pins = {};
+  localPages().forEach(function(p){ pins[p.slug] = p.pin; });
+  el.innerHTML = pages.map(function(p){ return card(p, pins[p.slug] || ''); }).join('');
+  Array.prototype.forEach.call(el.querySelectorAll('[data-copy]'), function(b){
+    b.addEventListener('click', function(){ copyText(b.getAttribute('data-copy'), b.getAttribute('data-msg') || 'Link copied ✓'); });
+  });
+}
+(function load(){
+  var dev = deviceId();
+  var bySlug = {};
+  var order = [];
+  function add(p){ if (!bySlug[p.slug]) { bySlug[p.slug] = p; order.push(p.slug); } }
+  fetch('/api/my-pages?device=' + encodeURIComponent(dev))
+    .then(function(r){ return r.ok ? r.json() : { pages: [] }; })
+    .catch(function(){ return { pages: [] }; })
+    .then(function(j){
+      (j.pages || []).forEach(add);
+      var tokens = localTokens();
+      var missing = localPages().filter(function(p){ return !bySlug[p.slug] && tokens[p.slug]; });
+      var chain = Promise.resolve();
+      missing.forEach(function(p){
+        chain = chain.then(function(){
+          return fetch('/api/page-stats?slug=' + encodeURIComponent(p.slug) + '&token=' + encodeURIComponent(tokens[p.slug]))
+            .then(function(r){ return r.ok ? r.json() : null; })
+            .then(function(s){ if (s) add(s); })
+            .catch(function(){});
+        });
+      });
+      return chain;
+    })
+    .then(function(){
+      var pages = order.map(function(s){ return bySlug[s]; });
+      pages.sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
+      render(pages);
+    });
+})();
+</script>
+</body>
+</html>

@@ -181,6 +181,7 @@ footer b{color:var(--teal-d)}
   <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
   <nav class="nav">
     <a href="/">Home</a>
+    <a href="/my.html">My Pages</a>
     <a href="/blog.html">Blog</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
@@ -379,7 +380,7 @@ footer b{color:var(--teal-d)}
 
 <footer>
   <p style="margin:0 0 6px"><b style="color:var(--indigo);font-family:'Fraunces',serif;font-size:18px">WishLink</b></p>
-  <p class="footlinks"><a href="/">Maker</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
+  <p class="footlinks"><a href="/">Maker</a><a href="/my.html">My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
   <p style="margin-top:10px">© 2026 WishLink</p>
 </footer>
 
@@ -2026,12 +2027,27 @@ function showResult(link, d){
   $("result").scrollIntoView({behavior:"smooth", block:"start"});
 }
 $("waPin").addEventListener("change", updateWa);
+function wlDeviceId(){
+  try{
+    var d = localStorage.getItem("wl_device");
+    if(!d){ d = "dev-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem("wl_device", d); }
+    return d;
+  }catch(e){ return "dev-anon0000"; }
+}
+function saveMyPage(slug, name, pin){
+  try{
+    var ps = JSON.parse(localStorage.getItem("wl_pages") || "[]");
+    ps = ps.filter(function(p){ return p.slug !== slug; });
+    ps.unshift({ slug: slug, n: name, pin: pin, ts: Date.now() });
+    localStorage.setItem("wl_pages", JSON.stringify(ps.slice(0, 50)));
+  }catch(e){}
+}
 function saveToken(slug, token){
   try{ var tk = JSON.parse(localStorage.getItem("wl_tokens") || "{}"); tk[slug] = token; localStorage.setItem("wl_tokens", JSON.stringify(tk)); }catch(e){}
 }
 function apiCreate(d){
   return fetch("/api/create", { method:"POST", headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ n:d.name, f:d.from, pin:d.pin, w:d.wish, l:d.letter, g:d.gift, t:d.t || "classic", images:d.im || [] }) })
+    body: JSON.stringify({ n:d.name, f:d.from, pin:d.pin, w:d.wish, l:d.letter, g:d.gift, t:d.t || "classic", images:d.im || [], device: wlDeviceId() }) })
     .then(function(r){ if(!r.ok) throw new Error("api"); return r.json(); });
 }
 $("btnMake").addEventListener("click", function(){
@@ -2046,6 +2062,7 @@ $("btnMake").addEventListener("click", function(){
   apiCreate(d).then(function(res){
     btn.textContent = "✨ Create my page"; btn.disabled = false;
     saveToken(res.slug, res.editToken);
+    saveMyPage(res.slug, d.name, d.pin);
     window.__WL_TOKEN__ = res.editToken;
     showResult(WL_BASE + "/" + res.slug, d);
   }).catch(function(){
@@ -2131,8 +2148,18 @@ else { runViewer(); }
       })
       .catch(function(){ document.querySelector("#wlErr").textContent = "Something went wrong — please try again."; });
   }
+  function wlIsOwner(){
+    try{
+      var tk = JSON.parse(localStorage.getItem("wl_tokens") || "{}");
+      if(tk[slug]) return true;
+      var ps = JSON.parse(localStorage.getItem("wl_pages") || "[]");
+      for(var i=0;i<ps.length;i++) if(ps[i].slug === slug) return true;
+    }catch(e){}
+    return false;
+  }
   function go(){
     document.body.appendChild(overlay);
+    try{ fetch("/api/seen", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: slug }) }); }catch(e){}
     var pinEl = document.getElementById("wlPin");
     var errEl = document.getElementById("wlErr");
     pinEl.focus();
@@ -2140,7 +2167,7 @@ else { runViewer(); }
       var pin = pinEl.value.trim();
       if(!pin){ errEl.textContent = "Please type the PIN first."; return; }
       errEl.textContent = "Checking…";
-      fetch("/api/unlock", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: slug, pin: pin }) })
+      fetch("/api/unlock", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: slug, pin: pin, owner: wlIsOwner() }) })
         .then(function(r){
           if(r.status === 200) return r.json().then(function(resp){ openWith(pin, resp); });
           if(r.status === 401){ errEl.textContent = "Wrong PIN — try again 💛"; return null; }

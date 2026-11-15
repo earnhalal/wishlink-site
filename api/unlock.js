@@ -2,7 +2,7 @@
    The ONLY way page content leaves the server. Content is returned solely
    after the PIN verifies against its salted hash. Failed attempts are
    rate-limited per IP + page. */
-const { dbGet, verifySecret, readBody, send, clientIp, rateLimited, rateLimitedKey, recordFailure, clearFailures } = require("./_lib");
+const { dbGet, dbUpdate, verifySecret, readBody, send, clientIp, rateLimited, rateLimitedKey, recordFailure, clearFailures } = require("./_lib");
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
@@ -28,6 +28,15 @@ module.exports = async (req, res) => {
     }
     await clearFailures(rl.key);
     await clearFailures(rlPage.key);
+
+    /* seen-tracking: count real recipient opens, not the creator's own
+       (the creator's browser flags owner:true). */
+    if (b.owner !== true) {
+      const seen = page.seen || { views: 0, opens: 0 };
+      await dbUpdate("pages/" + slug, {
+        seen: { views: seen.views || 0, opens: (seen.opens || 0) + 1, lastView: seen.lastView || 0, lastOpen: Date.now() },
+      }).catch(() => {});
+    }
 
     /* content only — never the hashes. Fields pass through as stored:
        new pages carry full texts (w/l/g); legacy pages carry template
