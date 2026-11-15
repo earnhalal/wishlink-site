@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
         await dbUpdate("studio_requests/" + id, { status: "failed" });
         if (rec.device) {
           const u = (await dbGet("studio_usage/" + rec.device)) || { count: 0 };
-          await dbSet("studio_usage/" + rec.device, { count: Math.max(0, (u.count || 0) - 1), ts: Date.now() });
+          await dbSet("studio_usage/" + rec.device, { count: Math.max(0, (u.count || 0) - 1), bonus: u.bonus || 0, ts: Date.now() });
         }
         return send(res, 200, { ok: true });
       }

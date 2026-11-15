@@ -414,8 +414,75 @@ function deviceId(){
     return d;
   } catch (e) { return 'dev-anon0000'; }
 }
+function deviceCode(){ try { return deviceId().slice(4, 12).toUpperCase(); } catch (e) { return ''; } }
+var payShot = null, payTimer = null;
+function payMsg(status, reason){
+  if (status === 'approved') return '✅ <b>Payment approved!</b> One extra AI edit is now unlocked on this device — add your photo above and send it to Laila.';
+  if (status === 'expired') return '⌛ This check expired. Please submit the screenshot again.';
+  if (status === 'rejected') {
+    if (reason === 'amount') return '❌ The amount in this screenshot is not Rs 30. Please pay Rs 30 and upload that receipt.';
+    if (reason === 'receiver') return '❌ This payment was not sent to our EasyPaisa number 0333-8739929.';
+    if (reason === 'tid_used') return '❌ This transaction has already been used for an unlock.';
+    if (reason === 'not_receipt') return '❌ This does not look like an EasyPaisa payment receipt. Please upload the receipt screenshot.';
+    return '❌ We could not read this screenshot clearly. Please upload the full, clear EasyPaisa receipt.';
+  }
+  return '⏳ Checking your screenshot… this usually takes 1–2 minutes. Keep this page open.';
+}
+function pollPay(id){
+  clearInterval(payTimer);
+  payTimer = setInterval(function(){
+    fetch('/api/studio-pay?id=' + encodeURIComponent(id) + '&device=' + encodeURIComponent(deviceId()))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var st = document.getElementById('payStat');
+        if (st) st.innerHTML = payMsg(j.status, j.reason);
+        if (j.status === 'approved' || j.status === 'rejected' || j.status === 'expired') {
+          clearInterval(payTimer);
+          try { localStorage.removeItem('wl_pay_req'); } catch (e) {}
+        }
+      }).catch(function(){});
+  }, 8000);
+}
 function showPaid(){
-  aiShow('🎁 <b>Your 2 free AI edits are used.</b><br>Paid AI Edit: <b>Rs 30 per picture</b>.<br>Pay by JazzCash / EasyPaisa and send the screenshot on WhatsApp — Laila will edit your photo and send it back.<br><a class="btn btn-pri" style="margin-top:12px" target="_blank" rel="noopener" href="https://wa.me/923338739929?text=' + encodeURIComponent('Assalam o Alaikum! I want a paid AI Edit on WishLink (Rs 30). I have paid and will send the screenshot.') + '">💬 Order on WhatsApp — Rs 30</a>');
+  var code = deviceCode();
+  aiShow('🎁 <b>Your 2 free AI edits are used.</b><br>Paid AI Edit: <b>Rs 30</b> — pay on EasyPaisa:<br>' +
+  '<span style="display:inline-block;margin-top:8px;background:#EFEAFB;border:1.5px dashed #2D2A6E;border-radius:10px;padding:8px 16px;font-size:19px;font-weight:800;letter-spacing:1px;color:#2D2A6E">EasyPaisa · 0333-8739929</span><br>' +
+  '<span style="font-size:14px">After paying, upload the payment screenshot right here. It is checked automatically and your extra edit unlocks in about 1–2 minutes — no WhatsApp needed.</span><br>' +
+  '<input type="file" id="payFile" accept="image/*" style="margin-top:12px;max-width:100%">' +
+  '<div id="payPrev" style="margin-top:8px"></div>' +
+  '<button type="button" class="btn btn-pri" id="paySubmit" style="margin-top:10px">✅ Submit screenshot for checking</button>' +
+  '<div id="payStat" style="margin-top:10px"></div>' +
+  '<div style="margin-top:12px;font-size:13px;color:#666A85">Any problem? WhatsApp us your screenshot with your code <b>' + code + '</b>: <a target="_blank" rel="noopener" href="https://wa.me/923338739929?text=' + encodeURIComponent('Assalam o Alaikum! WishLink paid AI Edit (Rs 30). My order code is ' + code + '.') + '">💬 WhatsApp</a></div>');
+  var pf = document.getElementById('payFile');
+  pf.addEventListener('change', function(){
+    var f = pf.files && pf.files[0]; if (!f) return;
+    var img = new Image();
+    img.onload = function(){
+      try {
+        var sc = Math.min(1, 1000 / Math.max(img.width, img.height));
+        var c = document.createElement('canvas');
+        c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        payShot = c.toDataURL('image/jpeg', 0.85);
+      } catch (e) { payShot = null; }
+      document.getElementById('payPrev').innerHTML = payShot ? '<img src="' + payShot + '" alt="Payment screenshot" style="max-width:180px;border-radius:10px;border:1px solid #E8E3F0">' : 'Could not read that image — please try another.';
+    };
+    img.src = URL.createObjectURL(f);
+  });
+  document.getElementById('paySubmit').addEventListener('click', function(){
+    if (!payShot) { toast('Add the payment screenshot first'); return; }
+    var st = document.getElementById('payStat'); st.innerHTML = 'Sending…';
+    fetch('/api/studio-pay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId(), img: payShot }) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (j && j.id) {
+          try { localStorage.setItem('wl_pay_req', j.id); } catch (e) {}
+          st.innerHTML = payMsg('pending');
+          pollPay(j.id);
+        } else { st.innerHTML = '❌ ' + ((j && j.error) || 'Something went wrong — try again.'); }
+      })
+      .catch(function(){ st.innerHTML = '❌ Network problem — try again.'; });
+  });
 }
 function setMode(m){
   var ai = m === 'ai';
@@ -502,6 +569,10 @@ document.getElementById('btnAiUse').addEventListener('click', function(){
 try {
   var savedReq = localStorage.getItem('wl_ai_req');
   if (savedReq) { setMode('ai'); aiShow('⏳ Checking your earlier request…'); aiPoll(savedReq); }
+} catch (e) {}
+try {
+  var savedPay = localStorage.getItem('wl_pay_req');
+  if (savedPay) { setMode('ai'); showPaid(); var pst = document.getElementById('payStat'); if (pst) pst.innerHTML = payMsg('pending'); pollPay(savedPay); }
 } catch (e) {}
 
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);

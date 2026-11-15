@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
     const device = String(b.device || "");
     if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
     const usage = (await dbGet("studio_usage/" + device)) || { count: 0 };
-    if ((usage.count || 0) >= 2)
+    if ((usage.count || 0) >= 2 + (usage.bonus || 0))
       return send(res, 403, { limit: true, error: "Free limit reached — 2 free AI edits per device" });
 
     const ip = clientIp(req);
@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
 
     const id = "sr" + randomCode(12);
     await dbSet("studio_requests/" + id, { img, name, style, device, status: "pending", ts: Date.now() });
-    await dbSet("studio_usage/" + device, { count: (usage.count || 0) + 1, ts: Date.now() });
+    await dbSet("studio_usage/" + device, { count: (usage.count || 0) + 1, bonus: usage.bonus || 0, ts: Date.now() });
     await recordFailure(rl.key, rl.rec, rl.now);
     return send(res, 200, { id });
   } catch (e) {
