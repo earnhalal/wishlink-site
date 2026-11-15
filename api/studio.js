@@ -14,6 +14,20 @@ const { dbGet, dbSet, dbUpdate, dbRemove, readBody, send, clientIp, rateLimited,
 
 const STYLES = ["midnight", "rose", "royal"];
 
+/* analytics counters (best-effort): stats_days/<PKT day>.<field> and
+   stats_total.<field> — a stats failure must never break studio work */
+async function bumpStat(field) {
+  try {
+    const day = new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10);
+    const dayRec = (await dbGet("stats_days/" + day)) || {};
+    const dUpd = {}; dUpd[field] = (dayRec[field] || 0) + 1;
+    await dbUpdate("stats_days/" + day, dUpd);
+    const tot = (await dbGet("stats_total")) || {};
+    const tUpd = {}; tUpd[field] = (tot[field] || 0) + 1;
+    await dbUpdate("stats_total", tUpd);
+  } catch (e) {}
+}
+
 const hRequest = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   try {
@@ -121,6 +135,7 @@ const hAgent = async (req, res) => {
       if (!result.startsWith("data:image/") || result.length > 2500000)
         return send(res, 400, { error: "bad result" });
       await dbUpdate("studio_requests/" + id, { status: "done", result, doneTs: Date.now() });
+      if (rec.status !== "done") await bumpStat("edits");
       return send(res, 200, { ok: true });
     }
     return send(res, 405, { error: "method" });
@@ -259,6 +274,7 @@ const hPayAgent = async (req, res) => {
         const u = (await dbGet("studio_usage/" + rec.device)) || { count: 0 };
         await dbSet("studio_usage/" + rec.device, { count: u.count || 0, bonus: (u.bonus || 0) + 1, ts: now });
         await dbUpdate("pay_requests/" + id, { status: "approved", tid, doneTs: now });
+        await bumpStat("paid");
         return send(res, 200, { ok: true, approved: true });
       }
       const reason = REASONS.includes(b.reason) ? b.reason : "unreadable";
