@@ -6,6 +6,7 @@
 <title>WishLink — Free Birthday Surprise Page Maker (15 Designs, Photos & PIN Lock)</title>
 <meta name="description" content="Create a beautiful birthday surprise page in 2 minutes — free. Choose from 15 designs, add photos in an auto-sliding gallery, lock it with a secret PIN and share one simple link on WhatsApp.">
 <link rel="canonical" href="https://www.wishlink.pp.ua/">
+<meta name="monetag" content="bf6b55bf853f780ff9cce7bd26add33e">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="WishLink">
 <meta property="og:title" content="WishLink — Free Birthday Surprise Page Maker">
@@ -1036,7 +1037,7 @@ function buildPage(d, tier){
     '<h1>' + T.h1 + ' <span class="bname">' + nameLetters + '</span></h1>' +
     '<p class="hero-sub">' + T.heroSub + '</p>' +
     heroVisual +
-    (premium ? '' : '<br><span class="wm-badge">✦ Made with WishLink</span>') +
+    (premium ? '' : '<br><span class="wm-badge">✦ Made with WishLink</span><br><button id="wlReport" type="button" style="margin-top:10px;background:none;border:1px solid rgba(232,180,75,.4);color:rgba(245,233,201,.65);font-size:12px;padding:6px 13px;border-radius:999px;cursor:pointer;font-family:inherit">🚩 Report this page</button>') +
     '<p class="scroll-hint">Scroll for your party<span>⌄</span></p>' +
   '</header>' +
   cdHtml +
@@ -1219,6 +1220,9 @@ function buildPage(d, tier){
     'function rightPin(){ unlocked = true; pinForm.classList.add("success"); lockIcon.textContent = "🔓"; lockBadge.classList.add("open"); setMsg("Correct! Opening your surprise… 🎉", "ok"); pinIn.disabled = true; unlockBtn.disabled = true; setTimeout(showLoading, 1000); }',
     'unlockBtn.addEventListener("click", checkPin);',
     'pinIn.addEventListener("keydown", function(e){ if (e.key === "Enter") checkPin(); });',
+    'if (window.__WL_UNLOCKED__){ pinIn.value = CORRECT; setTimeout(rightPin, 400); }',
+    'var wlRb = document.getElementById("wlReport");',
+    'if (wlRb){ wlRb.addEventListener("click", function(){ if (!window.__WL_SLUG__){ wlRb.textContent = "🚩 Reports work on shared links"; return; } wlRb.disabled = true; wlRb.textContent = "Reporting…"; fetch("/api/report", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: window.__WL_SLUG__ }) }).then(function(r){ wlRb.textContent = r.ok ? "🚩 Reported — thank you ✓" : "🚩 Could not report"; }).catch(function(){ wlRb.textContent = "🚩 Could not report"; }); }); }',
     'function showLoading(){ lockGate.classList.add("gone"); setTimeout(function(){ lockGate.hidden = true; }, 650); loadingGate.hidden = false; runLoading(); }',
     'function runLoading(){',
     '  var fill = document.getElementById("loadFill");',
@@ -1248,6 +1252,7 @@ function buildPage(d, tier){
 
   return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+    '<meta name="robots" content="noindex,nofollow">' +
     '<meta name="color-scheme" content="dark">' +
     '<link rel="icon" href="data:,">' +
     '<title>' + T.h1 + ' ' + eName + '</title>' +
@@ -1448,6 +1453,7 @@ function buildPage2(d, th){
   var html =
 '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">' +
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'<meta name="robots" content="noindex,nofollow">' +
 '<title>Happy Birthday ' + esc(name) + ' 🎂</title>' +
 '<link rel="preconnect" href="https://fonts.googleapis.com">' +
 '<link href="' + fontUrl(th) + '" rel="stylesheet">' +
@@ -1494,12 +1500,12 @@ galHtml +
 '<div id="giftMsg"><p style="text-align:left">' + esc(d.gift) + '</p></div></section>' +
 '<section class="card rv"><h2>💌 A letter for you</h2><div class="lettercard">' + letterParas +
 '<div class="sig">— ' + esc(from) + '</div></div></section>' +
-'<div class="center rv"><span class="badge2">✦ Made with WishLink</span></div>' +
+'<div class="center rv"><span class="badge2">✦ Made with WishLink</span><br><button id="wlReport" type="button" style="margin-top:12px;background:none;border:1.5px solid var(--acc);color:var(--mut);font-size:12px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;font-family:inherit">🚩 Report this page</button></div>' +
 '</main>' +
 '<button id="sndBtn" title="Sound on/off">🔊</button>' +
 '<button id="partyBtn" class="hidden" title="Party!">🎉</button>' +
 '<div id="partyBanner">🎉 Happy Birthday ' + esc(name) + '! 🎂</div>' +
-'<script>var D = ' + JSON.stringify({ name: name, pin: String(d.pin || "surprise"), load: th.load, pinStyle: th.pin }) + ';\n' +
+'<script>var D = ' + JSON.stringify({ name: name, pin: String(d.pin || "surprise"), load: th.load, pinStyle: th.pin, unlocked: !!d.unlocked }) + ';\n' +
 pageScript2() +
 '</scr' + 'ipt></body></html>';
   return html;
@@ -1655,6 +1661,19 @@ document.getElementById('giftBtn').addEventListener('click', function(){
   this.textContent = '💝';
 });
 
+/* ===== report ===== */
+var wlRb2 = document.getElementById('wlReport');
+if(wlRb2){ wlRb2.addEventListener('click', function(){
+  if(!window.__WL_SLUG__){ wlRb2.textContent = '🚩 Reports work on shared links'; return; }
+  wlRb2.disabled = true; wlRb2.textContent = 'Reporting…';
+  fetch('/api/report', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ slug: window.__WL_SLUG__ }) })
+    .then(function(r){ wlRb2.textContent = r.ok ? '🚩 Reported — thank you ✓' : '🚩 Could not report'; })
+    .catch(function(){ wlRb2.textContent = '🚩 Could not report'; });
+}); }
+
+/* ===== server-unlocked: skip the gate, go straight to the celebration ===== */
+if(D.unlocked){ var gEl = document.getElementById('gate'); if(gEl) gEl.classList.add('hidden'); startLoading(); }
+
 /* ===== party ===== */
 document.getElementById('partyBtn').addEventListener('click', function(){
   burst(70); tadaSnd();
@@ -1703,6 +1722,7 @@ fGift.addEventListener("change", function(){
   $("fGiftCustomWrap").classList.toggle("hidden", fGift.value !== "custom");
 });
 pickWish(); useLetter();
+if(!fPin.value){ fPin.value = String(Math.floor(1000 + Math.random()*9000)); }
 
 /* ---- design picker ---- */
 var WL_THEME = "classic";
@@ -1817,7 +1837,7 @@ function makeSlug(name){
   var s = String(name || "friend").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 18) || "friend";
   s = s + "-surprise";
   var chars = "abcdefghjkmnpqrstuvwxyz23456789", r = "";
-  for(var i=0;i<4;i++) r += chars[Math.floor(Math.random()*chars.length)];
+  for(var i=0;i<10;i++) r += chars[Math.floor(Math.random()*chars.length)];
   return s + "-" + r;
 }
 function storePayload(slug, payload){
@@ -1829,26 +1849,43 @@ function storePayload(slug, payload){
 }
 
 var lastD=null, lastHtml="";
+function showResult(link, d){
+  $("shareLink").value = link;
+  $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent("I made a birthday surprise for you 🎁 Open it here: " + link + " PIN: " + d.pin);
+  $("btnOpen").href = link;
+  $("pinNote").innerHTML = "🔑 The page opens with the PIN: <b>" + d.pin + "</b> — it is already included in the WhatsApp message above.";
+  $("pvFrame").srcdoc = lastHtml;
+  $("result").classList.remove("hidden");
+  $("result").scrollIntoView({behavior:"smooth", block:"start"});
+}
+function saveToken(slug, token){
+  try{ var tk = JSON.parse(localStorage.getItem("wl_tokens") || "{}"); tk[slug] = token; localStorage.setItem("wl_tokens", JSON.stringify(tk)); }catch(e){}
+}
+function apiCreate(d){
+  return fetch("/api/create", { method:"POST", headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ n:d.name, f:d.from, pin:d.pin, w:d.wish, l:d.letter, g:d.gift, t:d.t || "classic", images:d.im || [] }) })
+    .then(function(r){ if(!r.ok) throw new Error("api"); return r.json(); });
+}
 $("btnMake").addEventListener("click", function(){
   var d = collect();
   if(!d.name){ alert("Please write the birthday person's name first."); fName.focus(); return; }
+  if(!/^[0-9]{4,8}$/.test(d.pin)){ alert("Please use a PIN of 4 to 8 numbers (digits only) — it keeps the page safe."); fPin.focus(); return; }
   lastD = d;
   lastHtml = withSiteLink(renderPage(d));
-  var payload = linkPayload(d);
   var btn = $("btnMake");
   btn.textContent = "⏳ Creating your link…"; btn.disabled = true;
-  var slug = makeSlug(d.name);
-  storePayload(slug, payload).then(function(ok){
+  apiCreate(d).then(function(res){
     btn.textContent = "✨ Create my page"; btn.disabled = false;
-    var link = ok ? (WL_BASE + "/" + slug)
-                  : (WL_BASE + "/#p=" + encData(payload));
-    $("shareLink").value = link;
-    $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent("🎂 I made a birthday surprise for you! Open it here: " + link + "\n(PIN: " + d.pin + ")");
-    $("btnOpen").href = link;
-    $("pinNote").innerHTML = "🔑 The page opens with the PIN: <b>" + d.pin + "</b> — it is already included in the WhatsApp message above.";
-    $("pvFrame").srcdoc = lastHtml;
-    $("result").classList.remove("hidden");
-    $("result").scrollIntoView({behavior:"smooth", block:"start"});
+    saveToken(res.slug, res.editToken);
+    showResult(WL_BASE + "/" + res.slug, d);
+  }).catch(function(){
+    /* fallback: previous storage route, then a self-contained hash link */
+    var payload = linkPayload(d);
+    var slug = makeSlug(d.name);
+    storePayload(slug, payload).then(function(ok){
+      btn.textContent = "✨ Create my page"; btn.disabled = false;
+      showResult(ok ? (WL_BASE + "/" + slug) : (WL_BASE + "/#p=" + encData(payload)), d);
+    });
   });
 });
 $("btnCopy").addEventListener("click", function(){
@@ -1877,30 +1914,65 @@ function runViewer(){
 if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", runViewer); }
 else { runViewer(); }
 
-/* Pretty link: /<name-slug> — fetch the stored payload, then open the page */
+/* Pretty link: /<name-slug> — the page content stays on the server until
+   the correct PIN is entered (POST /api/unlock). Nothing private is in this page. */
 (function(){
   if(window.__WL_VIEW__) return;
-  var m = location.pathname.match(/^\/([a-z0-9][a-z0-9\-]{2,40})$/);
+  var m = location.pathname.match(/^\/([a-z0-9][a-z0-9\-]{2,48})$/);
   if(!m) return;
   var slug = m[1];
   var overlay = document.createElement("div");
-  overlay.setAttribute("style", "position:fixed;inset:0;z-index:99;background:#f0f7f4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-family:'Segoe UI',system-ui,sans-serif;color:#0a5f55");
-  overlay.innerHTML = '<div style="font-size:52px">🎈</div><div style="font-weight:700;font-size:17px">Opening your surprise…</div>';
-  function dropOverlay(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }
-  function go(){
-    document.body.appendChild(overlay);
-    setTimeout(dropOverlay, 6000);
+  overlay.setAttribute("style", "position:fixed;inset:0;z-index:99;background:#f0f7f4;display:flex;align-items:center;justify-content:center;padding:18px;font-family:'Segoe UI',system-ui,sans-serif");
+  overlay.innerHTML = '<div style="background:#fff;border-radius:22px;box-shadow:0 24px 60px rgba(14,80,70,.18);max-width:360px;width:100%;padding:30px 26px;text-align:center">' +
+    '<div style="font-size:46px">🔒</div>' +
+    '<div style="font-weight:800;font-size:20px;color:#173a34;margin-top:8px">A surprise is locked for you</div>' +
+    '<p style="color:#5d7a72;font-size:14.5px;margin-top:7px;line-height:1.55">Someone made a birthday page for you.<br>Type the secret PIN to open it.</p>' +
+    '<input id="wlPin" type="tel" inputmode="numeric" autocomplete="off" placeholder="••••" style="margin-top:14px;width:190px;padding:13px;border-radius:14px;border:2px solid #0e7a6d;font-size:19px;text-align:center;letter-spacing:6px;font-weight:700;outline:none">' +
+    '<br><button id="wlUnlock" style="margin-top:14px;background:#0e7a6d;color:#fff;border:none;font-weight:700;font-size:16px;padding:13px 32px;border-radius:999px;cursor:pointer;font-family:inherit">Unlock my surprise 🔓</button>' +
+    '<div id="wlErr" style="color:#c0392b;font-size:13.5px;font-weight:700;min-height:19px;margin-top:10px"></div></div>';
+  function openWith(pin, resp){
+    try{
+      var vd = payloadToData(resp);
+      vd.pin = pin; vd.unlocked = true;
+      window.__WL_SLUG__ = slug; window.__WL_UNLOCKED__ = true;
+      var vh = withSiteLink(renderPage(vd));
+      document.open(); document.write(vh); document.close();
+    }catch(e){ window.__WL_ERR__ = e.message; }
+  }
+  function legacyOpen(){
     fetch(WL_DB + "/pages/" + slug + ".json")
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(p){
-        if(!p){ dropOverlay(); return; }
-        try{
-          var vd = payloadToData(p);
-          var vh = withSiteLink(renderPage(vd));
-          document.open(); document.write(vh); document.close();
-        }catch(e){ window.__WL_ERR__ = e.message; }
+        if(!p){ document.querySelector("#wlErr").textContent = "This page could not be found."; return; }
+        var vd = payloadToData(p);
+        vd.unlocked = false;
+        window.__WL_SLUG__ = slug;
+        var vh = withSiteLink(renderPage(vd));
+        document.open(); document.write(vh); document.close();
       })
-      .catch(function(){ dropOverlay(); });
+      .catch(function(){ document.querySelector("#wlErr").textContent = "Something went wrong — please try again."; });
+  }
+  function go(){
+    document.body.appendChild(overlay);
+    var pinEl = document.getElementById("wlPin");
+    var errEl = document.getElementById("wlErr");
+    pinEl.focus();
+    function submit(){
+      var pin = pinEl.value.trim();
+      if(!pin){ errEl.textContent = "Please type the PIN first."; return; }
+      errEl.textContent = "Checking…";
+      fetch("/api/unlock", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: slug, pin: pin }) })
+        .then(function(r){
+          if(r.status === 200) return r.json().then(function(resp){ openWith(pin, resp); });
+          if(r.status === 401){ errEl.textContent = "Wrong PIN — try again 💛"; return null; }
+          if(r.status === 429){ errEl.textContent = "Too many tries — please wait a few minutes."; return null; }
+          if(r.status === 404){ errEl.textContent = "This page could not be found."; return null; }
+          legacyOpen(); return null;
+        })
+        .catch(function(){ legacyOpen(); });
+    }
+    document.getElementById("wlUnlock").addEventListener("click", submit);
+    pinEl.addEventListener("keydown", function(e){ if(e.key === "Enter") submit(); });
   }
   if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", go); }
   else { go(); }

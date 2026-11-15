@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delete a Page — WishLink</title>
+<meta name="description" content="Delete a WishLink birthday page yourself with your edit token.">
+<meta name="robots" content="noindex"><link rel="canonical" href="https://www.wishlink.pp.ua/delete.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🎂</text></svg>">
+<style>
+:root{--teal:#0e7a6d;--teal-d:#0a5f55;--ink:#173a34;--mut:#5d7a72;--bg2:#f0f7f4;--line:#dcebe5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg2);color:var(--ink);line-height:1.6}
+.top{display:flex;align-items:center;gap:14px;padding:14px 20px;max-width:1060px;margin:0 auto}
+.brand{font-weight:800;font-size:21px}
+.brand-emoji{font-size:24px}
+.tagline{text-align:center;color:var(--mut);letter-spacing:2.5px;font-size:11px;font-weight:700;margin-top:-6px}
+.nav{display:flex;gap:20px;align-items:center;margin-left:auto}
+.nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
+.nav a:hover{color:var(--teal)}
+.page{max-width:760px;margin:26px auto 10px;padding:0 18px}
+.page .card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:30px 28px;box-shadow:0 10px 30px rgba(14,80,70,.07)}
+.page h1{font-size:30px;line-height:1.25;margin-bottom:6px}
+.page .lede{color:var(--mut);font-size:16.5px;margin-bottom:14px}
+.page h2{font-size:20px;margin:22px 0 8px}
+.page p{margin:9px 0;font-size:15.5px}
+.page ul,.page ol{margin:9px 0 9px 22px;font-size:15.5px}
+.page li{margin:5px 0}
+.page a{color:var(--teal);font-weight:600}
+.meta{color:var(--mut);font-size:13px;margin-bottom:8px}
+.cta{display:inline-block;margin-top:16px;background:var(--teal);color:#fff!important;text-decoration:none;font-weight:700;padding:13px 28px;border-radius:999px}
+.postcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:16px}
+.postcard{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:20px;text-decoration:none;color:var(--ink);display:block}
+.postcard .pi{font-size:30px}
+.postcard b{display:block;margin:9px 0 5px;font-size:15.5px;line-height:1.35}
+.postcard p{color:var(--mut);font-size:13.5px;line-height:1.55}
+.postcard .more{color:var(--teal);font-weight:700;font-size:13px;margin-top:9px;display:block}
+footer{max-width:900px;margin:34px auto 0;padding:22px 18px 34px;text-align:center;color:var(--mut);font-size:13px;border-top:1.5px solid var(--line)}
+.footcols{display:flex;gap:34px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.footcols div{text-align:left}
+.footcols b{display:block;margin-bottom:7px;font-size:13.5px;color:var(--ink)}
+.footcols a{display:block;color:var(--mut);text-decoration:none;font-size:13px;margin-top:4px}
+.wishbox{background:var(--bg2);border:1.5px dashed var(--teal);border-radius:14px;padding:14px 18px;margin:10px 0;font-size:15px}
+@media(max-width:640px){.nav{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
+  <nav class="nav">
+    <a href="/">Home</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+    <a href="/contact.html">Contact</a>
+  </nav>
+</header>
+<p class="tagline">SURPRISE PAGES &amp; INVITATIONS</p>
+<main class="page"><div class="card">
+
+<h1>Delete a page</h1>
+<p class="lede">Created a page and want it gone? You can delete it yourself — no need to contact us.</p>
+<p>You need two things: the <b>page link</b> and the <b>edit token</b> you were given when the page was created (it is also kept on the device that created the page). Deleting removes the page and its photos permanently.</p>
+<label style="display:block;font-weight:700;margin-top:16px">Page link</label>
+<input id="dLink" type="text" placeholder="https://www.wishlink.pp.ua/name-…" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-top:6px">
+<label style="display:block;font-weight:700;margin-top:14px">Edit token</label>
+<input id="dToken" type="text" placeholder="Your private edit token" style="width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;margin-top:6px">
+<button id="dBtn" class="cta" style="border:none;cursor:pointer;font-family:inherit;font-size:15.5px">🗑 Delete this page</button>
+<p id="dMsg" style="font-weight:700;margin-top:12px"></p>
+<p style="color:var(--mut);font-size:13.5px">Lost your token? <a href="/contact.html">Contact us</a> with the page link and we will help. Pages made before edit tokens existed can also be removed by contacting us.</p>
+<script>
+document.getElementById("dBtn").addEventListener("click", function(){
+  var link = document.getElementById("dLink").value.trim();
+  var token = document.getElementById("dToken").value.trim();
+  var msg = document.getElementById("dMsg");
+  var m = link.match(/wishlink\.pp\.ua\/([a-z0-9][a-z0-9\-]{2,48})/) || link.match(/^([a-z0-9][a-z0-9\-]{2,48})$/);
+  if(!m){ msg.style.color = "#c0392b"; msg.textContent = "That does not look like a WishLink page link."; return; }
+  if(!token){ msg.style.color = "#c0392b"; msg.textContent = "Please paste the edit token."; return; }
+  msg.style.color = "#173a34"; msg.textContent = "Deleting…";
+  fetch("/api/delete", { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ slug: m[1], token: token }) })
+    .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
+    .then(function(x){
+      if(x.ok){ msg.style.color = "#1e8e5a"; msg.textContent = "✓ Page deleted. The link will no longer open."; }
+      else { msg.style.color = "#c0392b"; msg.textContent = "Could not delete: " + (x.j.error || "unknown error"); }
+    })
+    .catch(function(){ msg.style.color = "#c0392b"; msg.textContent = "Something went wrong — please try again."; });
+});
+</script>
+
+</div></main>
+<footer>
+  <div class="footcols">
+    <div><b>Tools</b><a href="/">Birthday Surprise Maker</a><a href="/blog.html">Birthday Ideas Blog</a></div>
+    <div><b>WishLink</b><a href="/about.html">About us</a><a href="/contact.html">Contact</a></div>
+    <div><b>Legal</b><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></div>
+  </div>
+  <p><b>WishLink</b> — Surprise Pages &amp; Invitations. Made with care for birthdays everywhere.</p>
+</footer>
+</body>
+</html>
