@@ -75,7 +75,10 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 .demoba figure{margin:0}
 .demoba img{width:100%;height:290px;object-fit:cover;object-position:top;border-radius:12px;display:block}
 .demoba figcaption{color:#bdb8d9;font-size:13px;margin-top:6px;text-align:center}
-.aistat{background:#fff;border-radius:12px;padding:16px 18px;color:var(--ink);text-align:left;margin-top:14px;font-size:15px}
+.aistat{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;color:var(--ink);text-align:left;margin-top:14px;font-size:15px}
+.upprev{display:flex;align-items:center;gap:10px;background:#EFF8F2;border:1.5px solid #BFE6CE;border-radius:12px;padding:8px 12px;margin-top:10px}
+.upprev img{width:46px;height:46px;object-fit:cover;border-radius:9px;flex:none}
+.upprev b{color:#177245;font-size:14.5px}
 .aiimg{width:100%;max-width:430px;border-radius:10px;margin-top:14px;box-shadow:0 14px 34px rgba(0,0,0,.45)}
 </style>
 </head>
@@ -103,6 +106,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <span>JPG or PNG from your phone or computer</span>
 </label>
 <input type="file" id="file" accept="image/*" hidden>
+<div class="upprev" id="upPrev" hidden><img id="upImg" alt="Your added photo"><b>Photo added ✅ — ready!</b></div>
 <label class="fl" for="pname">Name on the picture</label>
 <input type="text" id="pname" placeholder="e.g. Hamza" maxlength="24">
 <div id="frameControls">
@@ -134,6 +138,7 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <p class="note" style="text-align:left">🎁 <b>2 AI edits are FREE</b> on this device. After that, each AI edit is <b>Rs 30</b>.</p>
 <p class="note" style="text-align:left">⏳ <b>Time lag sakta hai:</b> AI editing usually takes <b>2–4 minutes</b>. Send your photo, keep this page open, and your edited picture will appear here. Your photo is deleted after editing.</p>
 <button class="btn btn-pri" id="btnAi" type="button">🤖 Send to Laila for AI Edit</button>
+<div class="aistat" id="aiStat" hidden></div>
 </div>
 </div>
 
@@ -151,7 +156,6 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <figure><img src="/demo-after.jpg" alt="The same person after Laila's AI edit — birthday scene with cake and balloons" loading="lazy"><figcaption>After — Laila's AI edit ✨</figcaption></figure>
 </div>
 <p class="hint">Demo made with an AI-generated model (not a real person). Your edit will look just like this — with YOUR photo.</p>
-<div class="aistat" id="aiStat" hidden></div>
 <img class="aiimg" id="aiResult" alt="Your AI edited picture" style="display:none">
 <button class="btn btn-coral" id="btnAiDl" type="button" style="max-width:430px;display:none">⬇ Download picture</button>
 <button class="btn btn-pri" id="btnAiUse" type="button" style="max-width:430px;display:none">🎂 Use it in my WishLink page</button>
@@ -341,6 +345,11 @@ document.getElementById('file').addEventListener('change', function(){
       c2.getContext('2d').drawImage(im, 0, 0, c2.width, c2.height);
       uploadDataUrl = c2.toDataURL('image/jpeg', 0.82);
     } catch (e) { uploadDataUrl = null; }
+    if (uploadDataUrl) {
+      document.getElementById('upImg').src = uploadDataUrl;
+      document.getElementById('upPrev').hidden = false;
+      var ub = document.querySelector('.up b'); if (ub) ub.textContent = '✅ Photo added — tap to change';
+    }
   };
   im.onerror = function(){ toast('That file could not be read as a photo'); };
   im.src = url;
@@ -434,6 +443,7 @@ function aiPoll(id){
         document.getElementById('btnAiDl').style.display = '';
         document.getElementById('btnAiUse').style.display = '';
         aiShow('🎉 <b>Your AI edited picture is ready!</b> Download it, or use it in your WishLink page.');
+        setTimeout(function(){ im.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 350);
       } else if (j.status === 'failed') {
         clearInterval(aiTimer); aiTimer = null;
         try { localStorage.removeItem('wl_ai_req'); } catch (e) {}
@@ -453,6 +463,8 @@ function aiPoll(id){
 document.getElementById('btnAi').addEventListener('click', function(){
   if (!uploadDataUrl) { toast('Add a photo first'); return; }
   var btn = this; btn.disabled = true; btn.textContent = 'Sending…';
+  aiShow('⏳ <b>Sending your photo to Laila…</b>');
+  document.getElementById('aiStat').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId() }) })
     .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, j: j }; }); })
     .then(function(x){
