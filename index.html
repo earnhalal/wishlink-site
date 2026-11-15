@@ -1183,20 +1183,78 @@ function decData(s){
   return JSON.parse(decodeURIComponent(escape(atob(s.replace(/-/g,"+").replace(/_/g,"/")))));
 }
 
+function matchWish(text, name, from){
+  for(var c in WISHES){ var arr = WISHES[c];
+    for(var i=0;i<arr.length;i++){ if(fillTokens(arr[i], name, from) === text) return {c:c, i:i}; } }
+  return null;
+}
+function matchLetter(text, name, from){
+  for(var i=0;i<LETTERS.length;i++){ if(fillTokens(LETTERS[i].body, name, from) === text) return i; }
+  return -1;
+}
+function matchGift(text, name, from){
+  for(var i=0;i<GIFTS.length;i++){ if(fillTokens(GIFTS[i], name, from) === text) return i; }
+  return -1;
+}
+/* Short payload: ready-made texts travel as template numbers, not full text */
+function linkPayload(d){
+  var p = { n: d.name, f: d.from, p: d.pin };
+  var mw = matchWish(d.wish, d.name, d.from);
+  if(mw){ p.wc = mw.c; p.wi = mw.i; } else { p.w = d.wish; }
+  var ml = matchLetter(d.letter, d.name, d.from);
+  if(ml >= 0){ p.li = ml; } else { p.l = d.letter; }
+  var mg = matchGift(d.gift, d.name, d.from);
+  if(mg >= 0){ p.gi = mg; } else { p.g = d.gift; }
+  return p;
+}
+function payloadToData(p){
+  if(p.name !== undefined) return p; /* legacy full-text link */
+  var d = { occ: "birthday", name: p.n || "", from: p.f || "", pin: p.p || "surprise" };
+  d.wish = (p.w !== undefined) ? p.w : fillTokens((WISHES[p.wc] || WISHES.heartfelt)[p.wi || 0], d.name, d.from);
+  d.letter = (p.l !== undefined) ? p.l : fillTokens(LETTERS[p.li || 0].body, d.name, d.from);
+  d.gift = (p.g !== undefined) ? p.g : fillTokens(GIFTS[p.gi || 0], d.name, d.from);
+  return d;
+}
+
+var WL_DB = "https://wishlink-e9752-default-rtdb.asia-southeast1.firebasedatabase.app";
+var WL_BASE = "https://www.wishlink.pp.ua";
+function makeSlug(name){
+  var s = String(name || "friend").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 18) || "friend";
+  s = s + "-surprise";
+  var chars = "abcdefghjkmnpqrstuvwxyz23456789", r = "";
+  for(var i=0;i<4;i++) r += chars[Math.floor(Math.random()*chars.length)];
+  return s + "-" + r;
+}
+function storePayload(slug, payload){
+  var ctl = ("AbortController" in window) ? new AbortController() : null;
+  var to = ctl ? setTimeout(function(){ ctl.abort(); }, 6000) : null;
+  return fetch(WL_DB + "/pages/" + slug + ".json", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined })
+    .then(function(r){ if(to) clearTimeout(to); return r.ok; })
+    .catch(function(){ if(to) clearTimeout(to); return false; });
+}
+
 var lastD=null, lastHtml="";
 $("btnMake").addEventListener("click", function(){
   var d = collect();
   if(!d.name){ alert("Please write the birthday person's name first."); fName.focus(); return; }
   lastD = d;
   lastHtml = withSiteLink(buildPage(d, "free"));
-  var link = location.href.split("#")[0] + "#p=" + encData(d);
-  $("shareLink").value = link;
-  $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent("🎂 I made a birthday surprise for you! Open it here: " + link + "\n(PIN: " + d.pin + ")");
-  $("btnOpen").href = link;
-  $("pinNote").innerHTML = "🔑 The page opens with the PIN: <b>" + d.pin + "</b> — it is already included in the WhatsApp message above.";
-  $("pvFrame").srcdoc = lastHtml;
-  $("result").classList.remove("hidden");
-  $("result").scrollIntoView({behavior:"smooth", block:"start"});
+  var payload = linkPayload(d);
+  var btn = $("btnMake");
+  btn.textContent = "⏳ Creating your link…"; btn.disabled = true;
+  var slug = makeSlug(d.name);
+  storePayload(slug, payload).then(function(ok){
+    btn.textContent = "✨ Create my page"; btn.disabled = false;
+    var link = ok ? (WL_BASE + "/" + slug)
+                  : (WL_BASE + "/#p=" + encData(payload));
+    $("shareLink").value = link;
+    $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent("🎂 I made a birthday surprise for you! Open it here: " + link + "\n(PIN: " + d.pin + ")");
+    $("btnOpen").href = link;
+    $("pinNote").innerHTML = "🔑 The page opens with the PIN: <b>" + d.pin + "</b> — it is already included in the WhatsApp message above.";
+    $("pvFrame").srcdoc = lastHtml;
+    $("result").classList.remove("hidden");
+    $("result").scrollIntoView({behavior:"smooth", block:"start"});
+  });
 });
 $("btnCopy").addEventListener("click", function(){
   var i=$("shareLink"); i.select(); i.setSelectionRange(0, 99999);
@@ -1216,13 +1274,36 @@ $("btnAgain").addEventListener("click", function(){
 function runViewer(){
   if(!window.__WL_VIEW__) return;
   try{
-    var vd = decData(window.__WL_VIEW__);
+    var vd = payloadToData(decData(window.__WL_VIEW__));
     var vh = withSiteLink(buildPage(vd, "free"));
     document.open(); document.write(vh); document.close();
   }catch(e){ window.__WL_ERR__ = e.message; }
 }
 if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", runViewer); }
 else { runViewer(); }
+
+/* Pretty link: /<name-slug> — fetch the stored payload, then open the page */
+(function(){
+  if(window.__WL_VIEW__) return;
+  var m = location.pathname.match(/^\/([a-z0-9][a-z0-9\-]{2,40})$/);
+  if(!m) return;
+  var slug = m[1];
+  function go(){
+    fetch(WL_DB + "/pages/" + slug + ".json")
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(p){
+        if(!p) return;
+        try{
+          var vd = payloadToData(p);
+          var vh = withSiteLink(buildPage(vd, "free"));
+          document.open(); document.write(vh); document.close();
+        }catch(e){ window.__WL_ERR__ = e.message; }
+      })
+      .catch(function(){});
+  }
+  if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", go); }
+  else { go(); }
+})();
 </script>
 </body>
 </html>
