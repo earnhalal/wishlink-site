@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WishLink — Free Birthday Surprise Page Maker (15 Designs, Photos & PIN Lock)</title>
-<meta name="description" content="Create a beautiful birthday surprise page in 2 minutes — free. Choose from 15 designs, add photos in an auto-sliding gallery, lock it with a secret PIN and share one simple link on WhatsApp.">
+<title>WishLink — Free Surprise Page Maker: Birthday, Love, Friendship, Anniversary & More (15 Designs, PIN Lock)</title>
+<meta name="description" content="Create a beautiful surprise page in 2 minutes — free. Birthday, love, friendship, New Year, anniversary and invitation pages: choose a design, add photos, lock it with a secret PIN and share one simple link on WhatsApp.">
 <link rel="canonical" href="https://www.wishlink.pp.ua/">
 <meta name="monetag" content="bf6b55bf853f780ff9cce7bd26add33e">
 <script>
@@ -99,6 +99,13 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal)}
 .theme-card .hotb{font-style:normal;background:linear-gradient(120deg,#ff512f,#dd2476);color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:999px;vertical-align:2px;letter-spacing:.3px;white-space:nowrap}
 .theme-card .trec{color:#b8860b;font-weight:800}
 .theme-card .tused{font-weight:600}
+.theme-card .tlock{font-weight:700;color:#b8860b}
+.theme-card.locked{border-style:dashed}
+.prembar{border:2px solid #E8A62E;background:#FFF8E6;border-radius:14px;padding:14px;margin-top:10px}
+.prembar p{margin:0 0 8px;font-size:14px;color:var(--ink)}
+.dcard{text-decoration:none;color:inherit}
+.dcard .big{font-size:42px;display:block;line-height:1.15}
+.dcard .pill.prem{background:linear-gradient(120deg,#b8860b,#E8A62E);color:#fff}
 .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .thumb{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:2px solid #dcebe5}
 .thumb img{width:100%;height:100%;object-fit:cover;display:block}
@@ -256,31 +263,37 @@ footer b{color:var(--teal-d)}
   </div>
 
   <div class="card" id="maker">
-    <h2>🎂 Birthday Surprise Maker</h2>
-    <p class="sub">⏱ Takes about 30 seconds — the wish, letter and PIN are already filled in for you. Just add two names and tap Create.</p>
+    <h2 id="makerTitle">🎂 Birthday Surprise Maker</h2>
+    <p class="sub" id="makerSub">⏱ Takes about 30 seconds — the wish, letter and PIN are already filled in for you. Just add two names and tap Create.</p>
     <form id="makerForm" autocomplete="off">
       <div class="mprog"><span id="mStepLabel">Step 1 of 2 · Names & design</span><div class="mbar"><i id="mBar"></i></div></div>
 
       <div class="mstep" data-step="1">
-        <label for="fName">Birthday person's name</label>
+        <label for="fName" id="nameLabel">Birthday person's name</label>
         <input type="text" id="fName" placeholder="e.g. Hamza" maxlength="40">
         <p class="ferr hidden" id="nameErr">Please write their name first — the whole page is built around it.</p>
         <label for="fFrom">Your name <small>(who is this surprise from?)</small></label>
         <input type="text" id="fFrom" placeholder="e.g. Waseem" maxlength="40">
-        <label>Choose a design <small>(15 designs — Midnight Gold is already picked for you; tap another only if you want)</small></label>
+        <label>Choose a design <small id="designNote">(15 designs — Midnight Gold is already picked for you; tap another only if you want)</small></label>
         <div class="theme-grid" id="themeGrid"></div>
         <button type="button" id="themeChange" class="genbtn wide hidden">🎨 Change design</button>
+        <div id="premiumBar" class="prembar hidden">
+          <p id="premiumText"></p>
+          <button type="button" id="btnUnlock" class="genbtn wide">👑 Unlock this design — 50 credits</button>
+          <p class="sub" id="premiumBal" style="margin-top:8px"></p>
+          <p class="sub">No credits? Get them in the <a href="/studio.html">Photo Studio</a> (top-up) or earn free credits by watching ads in our <a href="https://t.me/WishLinkSurpriseBot" target="_blank" rel="noopener">Telegram app</a>.</p>
+        </div>
         <div class="mnav"><button class="btn btn-main" id="btnNext1" type="button">Next: wish, photos &amp; PIN →</button></div>
       </div>
 
       <div class="mstep hidden" data-step="2">
-        <label for="fWish">Birthday wish <small>(already filled in for you — shuffle for another, or write your own)</small></label>
+        <label for="fWish" id="wishLabel">Birthday wish <small>(already filled in for you — shuffle for another, or write your own)</small></label>
         <textarea id="fWish" maxlength="600" placeholder="Your birthday wish will appear here…"></textarea>
         <button class="genbtn wide" id="btnGenWish" type="button">🔀 Shuffle — show me another wish</button>
         <label for="fLetter">Letter <small>(already filled in too — edit it any way you like)</small></label>
         <textarea id="fLetter" maxlength="1800" style="min-height:150px" placeholder="A letter for them will appear here…"></textarea>
         <details class="styledisc">
-          <summary>🎨 Change style — 11 wish styles · 5 letters</summary>
+          <summary id="styleSummary">🎨 Change style — 11 wish styles · 5 letters</summary>
           <label for="fWishCat">Wish style</label>
           <select id="fWishCat">
           <option value="heartfelt">Heartfelt</option>
@@ -366,24 +379,16 @@ footer b{color:var(--teal-d)}
 
 
 <section class="dsec">
-  <h2>🎨 15 designs — tap one to start with it</h2>
-  <p class="dsub">Every design has its own colours, PIN screen, loading style, music and cake.</p>
+  <h2>🎉 Pick an occasion — every occasion has its own designs</h2>
+  <p class="dsub">Tap an occasion to see its designs and start with one. Birthday alone has 15 designs — and inside every occasion you will find a few 👑 Premium designs, unlockable with credits.</p>
   <div class="dgrid">
-    <button class="dcard" type="button" data-theme="classic"><i class="pill hot">🔥 HOT</i><i class="pill rec">★ RECOMMENDED</i><img src="/thumbs/classic.jpg" alt="Midnight Gold design preview" loading="lazy"><b>Midnight Gold</b><span>The timeless classic</span><span class="used">👥 9,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="pastel"><img src="/thumbs/pastel.jpg" alt="Pastel Sky design preview" loading="lazy"><b>Pastel Sky</b><span>Soft &amp; dreamy</span><span class="used">👥 5,200+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="neon"><i class="pill hot">🔥 HOT</i><img src="/thumbs/neon.jpg" alt="Neon Galaxy design preview" loading="lazy"><b>Neon Galaxy</b><span>Bold night glow</span><span class="used">👥 5,900+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="rose"><i class="pill hot">🔥 HOT</i><img src="/thumbs/rose.jpg" alt="Rose Royal design preview" loading="lazy"><b>Rose Royal</b><span>Romantic roses</span><span class="used">👥 6,400+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="ocean"><img src="/thumbs/ocean.jpg" alt="Ocean Breeze design preview" loading="lazy"><b>Ocean Breeze</b><span>Fresh sea air</span><span class="used">👥 2,900+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="sunset"><img src="/thumbs/sunset.jpg" alt="Sunset Peach design preview" loading="lazy"><b>Sunset Peach</b><span>Warm golden hour</span><span class="used">👥 4,100+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="lavender"><img src="/thumbs/lavender.jpg" alt="Lavender Dream design preview" loading="lazy"><b>Lavender Dream</b><span>Calm &amp; gentle</span><span class="used">👥 2,600+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="emerald"><i class="pill hot">🔥 HOT</i><img src="/thumbs/emerald.jpg" alt="Emerald Royal design preview" loading="lazy"><b>Emerald Royal</b><span>Rich &amp; elegant</span><span class="used">👥 3,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="candy"><img src="/thumbs/candy.jpg" alt="Candy Pop design preview" loading="lazy"><b>Candy Pop</b><span>Sweet &amp; playful</span><span class="used">👥 4,700+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="vintage"><img src="/thumbs/vintage.jpg" alt="Vintage Paper design preview" loading="lazy"><b>Vintage Paper</b><span>Old-letter charm</span><span class="used">👥 620+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="noir"><img src="/thumbs/noir.jpg" alt="Cherry Noir design preview" loading="lazy"><b>Cherry Noir</b><span>Dark &amp; dramatic</span><span class="used">👥 1,400+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="mint"><img src="/thumbs/mint.jpg" alt="Sky Mint design preview" loading="lazy"><b>Sky Mint</b><span>Light &amp; fresh</span><span class="used">👥 1,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="royal"><img src="/thumbs/royal.jpg" alt="Royal Purple design preview" loading="lazy"><b>Royal Purple</b><span>Regal violet</span><span class="used">👥 3,300+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="honey"><img src="/thumbs/honey.jpg" alt="Golden Honey design preview" loading="lazy"><b>Golden Honey</b><span>Warm &amp; cosy</span><span class="used">👥 2,200+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="snow"><img src="/thumbs/snow.jpg" alt="Snow White design preview" loading="lazy"><b>Snow White</b><span>Pure &amp; minimal</span><span class="used">👥 950+ pages made</span></button>
+    <a class="dcard" href="/birthday.html"><span class="big">🎂</span><b>Birthday</b><span>The original surprise</span><span class="used">🎨 15 designs</span></a>
+    <a class="dcard" href="/love.html"><i class="pill prem">👑 Premium inside</i><span class="big">❤️</span><b>Love</b><span>For someone special</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/friendship.html"><span class="big">👯</span><b>Best Friend</b><span>For your partner in crime</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/new-year.html"><span class="big">🎆</span><b>New Year</b><span>Start 2027 with a bang</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/anniversary.html"><i class="pill prem">👑 Premium inside</i><span class="big">💍</span><b>Anniversary</b><span>Another year of love</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/invitation.html"><i class="pill prem">👑 Premium inside</i><span class="big">💌</span><b>Invitation</b><span>A prettier way to invite</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/custom-design.html"><span class="big">✨</span><b>Custom Design</b><span>Made to order, just for you</span><span class="used">💬 Order on WhatsApp</span></a>
   </div>
 </section>
 
@@ -402,7 +407,7 @@ footer b{color:var(--teal-d)}
   <details><summary>How does the person open my surprise?</summary><p>You send them one link (WhatsApp works best). The page asks for the secret PIN you chose — tell them the PIN in your message. Once it opens, the celebration starts: music, confetti, cake, your photos, a gift box and your letter.</p></details>
   <details><summary>Can I add our photos?</summary><p>Yes — up to 4 photos. They are resized in your browser and stored securely with your page on our servers, then shown as an auto-sliding gallery the birthday person can also swipe through.</p></details>
   <details><summary>Do I need to install an app or create an account?</summary><p>No. WishLink works entirely in the browser, on any phone or computer. There are no accounts and no passwords to remember — just the PIN on each page.</p></details>
-  <details><summary>What occasions does WishLink support?</summary><p>Birthday pages are live now with 15 designs. Anniversary, wedding, baby, Eid and New Year pages are in the works — the same idea, made for each celebration.</p></details>
+  <details><summary>What occasions does WishLink support?</summary><p>Birthday (15 designs), Love, Best Friend, New Year, Anniversary and Invitation pages are all live — tap an occasion above to see its designs. Most designs are free; a few 👑 Premium designs unlock forever with credits. And if you want something fully personal, order a Custom Design on WhatsApp.</p></details>
 </section>
 
 <section class="blogteaser">
@@ -515,10 +520,207 @@ function collect(){
   };
 }
 
+
+/* ================= Occasions (2026-11-16) =================
+   Every occasion reuses the same 15 visual designs; what changes is the
+   wording: maker labels, ready wishes/letters/gifts, the page headline and
+   the share message. Premium designs are marked in PREMIUM_THEMES and are
+   enforced server-side (api/create.js + api/studio.js buydesign). */
+var PREMIUM_THEMES = { rose: 1, emerald: 1, royal: 1, noir: 1, honey: 1 };
+var PREMIUM_PRICE = 50;
+var OCCASIONS = {
+  birthday: {
+    name: "Birthday", emoji: "🎂", page: "/birthday.html",
+    makerTitle: "🎂 Birthday Surprise Maker",
+    nameLabel: "Birthday person's name", namePh: "e.g. Hamza",
+    wishLabel: "Birthday wish", wishPh: "Your birthday wish will appear here…",
+    headline: "Happy Birthday",
+    blurb: "The original surprise — cake, candles, photos and a letter, all behind a secret PIN.",
+    themes: ["classic", "pastel", "neon", "rose", "ocean", "sunset", "lavender", "emerald", "candy", "vintage", "noir", "mint", "royal", "honey", "snow"],
+    share: "I made a birthday surprise for you 🎁 Open it here: {link} PIN: {pin}"
+  },
+  love: {
+    name: "Love", emoji: "❤️", page: "/love.html",
+    makerTitle: "❤️ Love Page Maker",
+    nameLabel: "Your partner's name", namePh: "e.g. Ayesha",
+    wishLabel: "Love message", wishPh: "Your love message will appear here…",
+    headline: "With All My Love",
+    blurb: "For the one who makes ordinary days feel like celebrations — sweet, decent and from the heart.",
+    themes: ["rose", "sunset", "lavender", "noir", "honey", "pastel"],
+    share: "I made a love page for you ❤️ Open it here: {link} PIN: {pin}"
+  },
+  friendship: {
+    name: "Best Friend", emoji: "👯", page: "/friendship.html",
+    makerTitle: "👯 Best Friend Page Maker",
+    nameLabel: "Your best friend's name", namePh: "e.g. Ali",
+    wishLabel: "Friendship wish", wishPh: "Your friendship wish will appear here…",
+    headline: "Happy Friendship Day",
+    blurb: "For your partner in crime — the friend who laughs before the punchline and stays for everything after.",
+    themes: ["candy", "neon", "sunset", "mint", "pastel", "ocean"],
+    share: "I made a friendship page for you 👯 Open it here: {link} PIN: {pin}"
+  },
+  newyear: {
+    name: "New Year", emoji: "🎆", page: "/new-year.html",
+    makerTitle: "🎆 New Year Page Maker",
+    nameLabel: "Their name", namePh: "e.g. Hamza",
+    wishLabel: "New Year wish", wishPh: "Your New Year wish will appear here…",
+    headline: "Happy New Year 2027",
+    blurb: "Start their year with a bang — a page full of hope, duas and big plans for 2027.",
+    themes: ["neon", "classic", "royal", "snow", "honey", "ocean"],
+    share: "I made a New Year page for you 🎆 Open it here: {link} PIN: {pin}"
+  },
+  anniversary: {
+    name: "Anniversary", emoji: "💍", page: "/anniversary.html",
+    makerTitle: "💍 Anniversary Page Maker",
+    nameLabel: "Couple's names", namePh: "e.g. Ahmed & Fatima",
+    wishLabel: "Anniversary wish", wishPh: "Your anniversary wish will appear here…",
+    headline: "Happy Anniversary",
+    blurb: "Another year of love, still going strong — celebrate the couple with photos and a letter.",
+    themes: ["classic", "rose", "royal", "vintage", "honey", "lavender"],
+    share: "I made an anniversary page for you 💍 Open it here: {link} PIN: {pin}"
+  },
+  invitation: {
+    name: "Invitation", emoji: "💌", page: "/invitation.html",
+    makerTitle: "💌 Invitation Page Maker",
+    nameLabel: "Host or event name", namePh: "e.g. The Khan Family",
+    wishLabel: "Invitation wording", wishPh: "Your invitation wording will appear here…",
+    headline: "You're Invited",
+    blurb: "A prettier way to invite — one link with the wording, the details and a little celebration built in.",
+    themes: ["classic", "emerald", "royal", "vintage", "snow", "mint"],
+    share: "You're invited! 💌 See your invitation here: {link} PIN: {pin}"
+  }
+};
+var OCC_ORDER = ["birthday", "love", "friendship", "newyear", "anniversary", "invitation"];
+
+var OCC_WISHES = {
+  love: {
+    heartfelt: [
+      "To {name}: some people search their whole lives for what I found in you. Thank you for your kindness, your patience and the way you make even ordinary days feel like little celebrations. You are loved more than words can hold.",
+      "{name}, this page is small, but what it carries is not: my gratitude for every day with you, my pride in the person you are, and my promise to keep choosing you — today, tomorrow, and on all the ordinary days in between.",
+      "For {name}: if I could give you one thing, it would be the ability to see yourself through my eyes — only then would you know how special you are to me, and how bright you make my world."
+    ],
+    romantic: [
+      "My dearest {name}, every love story is beautiful, but ours is my favourite. Thank you for your smile that fixes bad days and your heart that makes room for everyone. This little page is just a reminder: you are so, so loved.",
+      "{name}, they say home is a place. They are wrong — home is a person, and for me that person is you. Wherever you are, that is where my heart wants to be.",
+      "To the one who holds my heart, {name}: loving you was never a choice I had to think about — it was the easiest, truest thing I have ever done. Here is to us, and to every year still waiting for us."
+    ],
+    short: [
+      "For {name}: you are my favourite hello, my hardest goodbye, and every happy moment in between. ❤️",
+      "{name} — just a little page to say what I feel every day: I love you, and I am grateful for you. 💛",
+      "To {name}: of all the gifts life has given me, you are the one I thank Allah for the most. ❤️"
+    ]
+  },
+  friendship: {
+    heartfelt: [
+      "To {name}: siblings are given, but friends like you are chosen — and I chose spectacularly. Thank you for every rescue, every secret kept and every laugh shared. Life is genuinely better with you in it.",
+      "{name}, a best friend is someone who knows the song in your heart and sings it back when you forget. Thank you for always knowing my song. Here is to many more years of us.",
+      "For {name}: thank you for being the family I got to choose. Your loyalty, your honesty and your ridiculous sense of humour have carried me through more days than you know."
+    ],
+    funny: [
+      "{name}!! OFFICIAL BESTIE APPRECIATION PAGE: this certifies that you are my partner in crime, my unpaid therapist, and the only person who laughs at my jokes before the punchline. This honour cannot be returned or exchanged. 🎉",
+      "To {name}: congratulations on being my best friend — the pay is terrible, the hours are 24/7, and the snacks are shared unfairly (mostly by me). But the laughs are unlimited, and so is my loyalty.",
+      "{name}, if we were on a sinking ship and there was only one life jacket… I would miss you a lot, and I would think about you fondly every single day. That is true friendship. 😄"
+    ],
+    short: [
+      "For {name}: good friends are like stars — you do not always see them, but you know they are always there. ⭐",
+      "{name} — partner in crime, keeper of secrets, sharer of fries. Best friends forever. 👯",
+      "To {name}: a true friend accepts you as you are — and still tells you when there is food in your teeth. 😄"
+    ]
+  },
+  newyear: {
+    heartfelt: [
+      "Happy New Year, {name}! May 2027 be the year your quiet hard work finally meets its reward — health that never fails you, success you have truly earned, and a happiness so steady that even hard days cannot shake it.",
+      "To {name}: a new year is a blank page, and nobody deserves a beautiful story more than you. May this year bring you closer to every dream you whispered about last year. I will be cheering for you in every chapter.",
+      "{name}, my dua for you this New Year is simple and big: may Allah bless your rizq, protect your family, ease every difficulty before it reaches you, and fill 2027 with reasons to smile."
+    ],
+    funny: [
+      "Happy New Year, {name}! This year we are definitely going to the gym, saving money and sleeping early. (This page will self-destruct before February, like all our resolutions.) 😄",
+      "To {name}: my New Year resolution is to stop making resolutions — but for you I made one exception: more laughter, more chai, and more of your favourite people around you in 2027.",
+      "{name}, congratulations on surviving another year of my friendship! Your reward: a whole new year of it. No refunds, no exchanges. Happy New Year! 🎆"
+    ],
+    short: [
+      "Happy New Year, {name}! May 2027 be your best year yet. 🎆",
+      "To {name}: new year, new chances, same wonderful you. Shine bright in 2027! ✨",
+      "{name} — wishing you health, rizq and happiness in every month of the New Year. 🎇"
+    ]
+  },
+  anniversary: {
+    heartfelt: [
+      "Happy Anniversary, {name}! Another year of love, patience and partnership — proof that the best decision two people can make is to keep choosing each other, every single day. May the years ahead be even gentler than the ones behind you.",
+      "To {name}: your love is the kind people write duas about — steady in hard times, joyful in good ones. May Allah bless your home with barakah, your hearts with peace, and your story with many more beautiful chapters.",
+      "{name}, congratulations on another year of us. Thank you for every sacrifice nobody saw, every laugh everybody heard, and every day you made this family feel like the safest place in the world."
+    ],
+    romantic: [
+      "Happy Anniversary, {name}. If I had my life to live over again, I would find you sooner — so I could love you longer. Thank you for being my calm, my laughter and my favourite place in the world.",
+      "To {name}: they say the first years are the sweetest, but they clearly never watched two people grow old together gracefully. Every year with you is better than the last — here is to forever, one year at a time.",
+      "{name}, my favourite love story is not in any book — it is the one we are writing together, page by page, year by year. Happy Anniversary to my favourite co-author."
+    ],
+    short: [
+      "Happy Anniversary, {name}! Another year of love, still going strong. 💍",
+      "To {name}: every year with you is my favourite year. Here is to many more. 💛",
+      "{name} — congratulations on another year of choosing each other. Happy Anniversary! ✨"
+    ]
+  },
+  invitation: {
+    birthday: [
+      "You are warmly invited to a birthday celebration for {name}! Join us for cake, laughter and good company — your presence is the best present of all. Details are in the letter below, and we cannot wait to celebrate together.",
+      "It's a party! {name} is celebrating a birthday, and you are on the guest list. Come hungry, bring your best smile, and get ready for an evening of cake, music and memories.",
+      "With joyful hearts, we invite you to the birthday celebration of {name}. An evening of happiness is incomplete without you — please honour us with your presence."
+    ],
+    party: [
+      "You are invited! {name} is hosting a get-together, and no gathering is complete without you. Good food, great company and an evening to remember — all the details are in the letter below.",
+      "Mark your calendar! {name} warmly invites you to a special gathering. Join us for food, laughter and celebration — your presence will make it complete.",
+      "It's celebration time! {name} invites you and your family to an evening of joy. Please come, eat, laugh and make memories with us — details below."
+    ],
+    formal: [
+      "With the blessings of Allah, {name} cordially invites you to grace our celebration with your esteemed presence. Your attendance and duas are respectfully requested — the details follow in the letter below.",
+      "{name} requests the honour of your presence at our upcoming celebration. It would be our privilege to host you; kindly find the date, time and venue in the letter below.",
+      "We are delighted to invite you to a celebration hosted by {name}. Your presence is eagerly awaited, and your prayers are the most precious gift."
+    ]
+  }
+};
+
+var OCC_LETTERS = {
+  love: [
+    { label: "Romantic & Sweet", body: "My dearest {name},\n\nSome people write letters because they have something to say. I am writing because no single day is enough to celebrate you — but this page is a good place to start.\n\nThank you for your smile that fixes bad days, your heart that makes room for everyone, and simply for being you. My wish is that this year treats you as gently as you treat the people you love — and that I get to be standing next to you for every good part of it.\n\nYou are so loved — today, tomorrow, and on all the ordinary days in between." },
+    { label: "Heartfelt Long", body: "My dear {name},\n\nEveryone will tell you that you are special. I want to tell you why.\n\nYou are the calm in my chaos and the light in my ordinary days. Your kindness, your strength and the way you love without keeping score — these are the things I thank Allah for, quietly, every day.\n\nWhatever this year brings, remember: you never walk alone. I am beside you in your celebrations, and even closer in your struggles.\n\nWith all my love, today and always." }
+  ],
+  friendship: [
+    { label: "Bestie Fun", body: "Dear {name},\n\nOFFICIAL BESTIE NOTICE: This letter confirms that you are my favourite person to laugh with, my emergency contact for every crisis (real or snack-related), and the co-owner of approximately 400 inside jokes nobody else will ever understand.\n\nThank you for every rescue, every secret kept and every 3 a.m. conversation. Siblings are given — but I chose you, and I chose spectacularly.\n\nHere is to many more years of us." },
+    { label: "Heartfelt", body: "Dear {name},\n\nThey say a true friend is one soul in two bodies — and honestly, nobody else could survive my mood swings, my voice notes and my life decisions the way you do.\n\nThank you for standing behind me in my struggles even more than in my celebrations. My prayer for you is simple: may life give you back all the loyalty and love you pour into everyone around you — multiplied.\n\nYour best friend, always." }
+  ],
+  newyear: [
+    { label: "Heartfelt New Year", body: "Dear {name},\n\nA new year is standing at the door, and before it walks in, I wanted you to hear this from me: I am proud of the person you were this year — your patience, your hard work and the way you kept going even when it was hard.\n\nMy dua for your 2027 is simple and big: health that never fails you, rizq that grows with barakah, and a happiness so steady that even hard days cannot shake it.\n\nHappy New Year. This year is yours — go and take it." },
+    { label: "Short & Bright", body: "Dear {name},\n\nJust a short letter for a brand-new year: thank you for being one of the best parts of the year that passed.\n\nMay 2027 bring you good health, true happiness, and every single thing you are quietly working towards. I will be cheering for you in every month of it.\n\nHappy New Year!" }
+  ],
+  anniversary: [
+    { label: "Heartfelt Long", body: "Dear {name},\n\nAnother year of your beautiful story — and what a story it is. Through every season, you two have shown everyone around you what patience, partnership and true love actually look like.\n\nMy prayer for you is that the years ahead are even gentler than the ones behind you: a home full of barakah, hearts full of peace, and laughter that never grows old.\n\nHappy Anniversary. Here is to forever — one beautiful year at a time." },
+    { label: "Sweet & Simple", body: "Dear {name},\n\nHappy Anniversary! This letter is short, because some things are too big for words: thank you for showing us all that real love is not a feeling — it is a choice you make, kindly, every single day.\n\nMay this year bring you both health, peace and many more reasons to celebrate each other." }
+  ],
+  invitation: [
+    { label: "With Details", body: "Assalamu Alaikum,\n\nYou are warmly invited to join us for a celebration hosted by {name}. It would be our honour and happiness to have you with us.\n\n📅 Date: (write the date here)\n🕰 Time: (write the time here)\n📍 Venue: (write the address here)\n\nYour presence and your duas are the most precious gifts. We look forward to welcoming you.\n\nWith warm regards,\n{from}" },
+    { label: "Simple & Warm", body: "Dear guest,\n\n{name} invites you to a celebration! Please join us for food, laughter and good company.\n\n📅 Date: (write the date here)\n🕰 Time: (write the time here)\n📍 Venue: (write the address here)\n\nWe cannot wait to see you there.\n\n— {from}" }
+  ]
+};
+
+var OCC_GIFTS = [
+  "Inside this box there is no toy and no gadget — there is something better: a promise. Whatever this year brings — big dreams, hard days and everything in between — you will never face any of it alone. I am in your corner, today and always. 💛",
+  "Your gift is a whole year of my time, my prayers and my best advice — on demand, whenever you need it, no questions asked. 🎁",
+  "This box holds a hug, a smile, and a reminder that you are truly loved. (And yes — a real gift is on its way in the real world too.) 🤗",
+  "Inside is a wish I made just for you: health that never fails, success you have truly earned, and happiness that stays. Now go make this year yours! ✨"
+];
+
+/* the active text library for an occasion (birthday uses the big globals) */
+function occLib(occ) {
+  if (!occ || occ === "birthday" || !OCC_WISHES[occ]) return { wishes: WISHES, letters: LETTERS, gifts: GIFTS };
+  return { wishes: OCC_WISHES[occ], letters: OCC_LETTERS[occ], gifts: OCC_GIFTS };
+}
+
 function buildPage(d, tier){
   var premium = (tier === "premium");
   var ANN = (d.occ === "anniversary");
   var NY = (d.occ === "newyear"), WED = (d.occ === "wedding"), BBY = (d.occ === "baby"), EID = (d.occ === "eid");
+  var FRD = (d.occ === "friendship"), LOV = (d.occ === "love"), INV = (d.occ === "invitation");
   var T = {
     h1: ANN ? "Happy Anniversary" : "Happy Birthday",
     heroDate: ANN ? "Today is all about you two" : "Today is all about you",
@@ -554,7 +756,26 @@ function buildPage(d, tier){
       cutWish: "Eid Mubarak!", again: "Eid Mubarak once again," };
     heroEmoji = "🌙"; starTag = "The Eid Star";
   }
+  if(FRD){
+    T = { h1: "Happy Friendship Day", heroDate: "Today is all about my favourite person",
+      heroSub: "Siblings are given — best friends are chosen. Below is a whole celebration made just for you — <strong>candles to blow, a gift to open</strong> and a letter with your name on it.",
+      cutWish: "Happy Friendship Day!", again: "Happy Friendship Day once again," };
+    heroEmoji = "👯"; starTag = "My Best Friend";
+  }
+  if(LOV){
+    T = { h1: "For The One I Love", heroDate: "Today is all about you",
+      heroSub: "Some feelings deserve more than a message. Below is a whole celebration made just for you — <strong>candles to blow, a gift to open</strong> and a letter with your name on it.",
+      cutWish: "With all my love!", again: "With all my love, once again," };
+    heroEmoji = "❤️"; starTag = "My Favourite Person";
+  }
+  if(INV){
+    T = { h1: "You Are Invited", heroDate: "Save the date",
+      heroSub: "With joyful hearts, you are cordially invited. Everything is on this one page — <strong>the wording, the details</strong>, plus candles, a gift and a letter from your host.",
+      cutWish: "See you there!", again: "See you there," };
+    heroEmoji = "💌"; starTag = "Your Host";
+  }
   var letterHead = { h2: "And One Wish Above <em>All Others</em>", sub: "Some wishes are too big for a card. This one needed a letter.", title: "A Letter For <em>You</em>" };
+  if(INV) letterHead = { h2: "The Official <em>Invitation</em>", sub: "Every detail that matters — written out with love.", title: "You Are <em>Invited</em>" };
   if(WED) letterHead = { h2: "The Official <em>Invitation</em>", sub: "Every detail that matters — written out with love.", title: "You Are <em>Invited</em>" };
   if(BBY) letterHead = { h2: "A Message From <em>The Parents</em>", sub: "Straight from the proudest hearts in the room.", title: "With Full <em>Hearts</em>" };
   var name = d.name || "Your Person";
@@ -685,6 +906,9 @@ function buildPage(d, tier){
   if(WED) letterFallback = "Assalam-o-Alaikum,\n\nWith joyful hearts we invite you to celebrate the wedding of " + name + ". All the details are on this page — your presence and your duas are the greatest gift.";
   if(BBY) letterFallback = "Hello everyone,\n\nWith full hearts we announce the arrival of " + name + ". Please keep our little one in your duas.";
   if(EID) letterFallback = "Dear " + name + ",\n\nEid Mubarak! May your day be full of hugs, mithaas and the people you love most.";
+  if(FRD) letterFallback = "Dear " + name + ",\n\nHappy Friendship Day! Thank you for every laugh, every rescue and every secret kept — life is better with you in it.";
+  if(LOV) letterFallback = "My dear " + name + ",\n\nThis page is small, but what it carries is not: you are loved, today and every day. Thank you for being you.";
+  if(INV) letterFallback = "Assalam-o-Alaikum,\n\nWith joyful hearts, " + name + " invites you to celebrate with us. All the details are on this page — your presence and your duas are the greatest gift.";
   var letterSrc = (d.letter || "").trim() || letterFallback;
   var letterHtml = letterSrc.split(/\n\s*\n/).map(function(par){
     return "<p>" + esc(par).replace(/\n/g, "<br>") + "</p>";
@@ -961,6 +1185,36 @@ function buildPage(d, tier){
       '<div class="stat"><div class="num"><span class="count" data-target="5">0</span></div><div class="lbl">Candles To Blow</div><div class="sub">waiting on the cake below</div><div class="bar"><i data-w="85"></i></div></div>' +
     '</div>' +
   '</section>';
+  if(FRD) statsHtml =
+  '<section aria-label="Friendship numbers">' +
+    '<div class="sec-head"><h2>' + eName + ', By The <em>Numbers</em></h2><p>The official bestie statistics — scientifically unverifiable, emotionally 100% accurate.</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="stats" id="stats">' +
+      '<div class="stat"><div class="num">∞</div><div class="lbl">Inside Jokes</div><div class="sub">and counting, daily</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="100">0</span>%</div><div class="lbl">Loyalty Level</div><div class="sub">tested in every crisis</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="5">0</span></div><div class="lbl">Candles To Blow</div><div class="sub">waiting on the cake below</div><div class="bar"><i data-w="90"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="365">0</span></div><div class="lbl">Days Of Backup</div><div class="sub">this year, all yours</div><div class="bar"><i data-w="85"></i></div></div>' +
+    '</div>' +
+  '</section>';
+  if(LOV) statsHtml =
+  '<section aria-label="Love numbers">' +
+    '<div class="sec-head"><h2>' + eName + ', By The <em>Numbers</em></h2><p>The official love statistics — updated live by a heart that keeps count.</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="stats" id="stats">' +
+      '<div class="stat"><div class="num">∞</div><div class="lbl">Reasons I Love You</div><div class="sub">a new one appears daily</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="100">0</span>%</div><div class="lbl">Of My Heart</div><div class="sub">yours, completely</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="5">0</span></div><div class="lbl">Candles To Blow</div><div class="sub">waiting on the cake below</div><div class="bar"><i data-w="90"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="365">0</span></div><div class="lbl">Days Of Us</div><div class="sub">this year, and counting</div><div class="bar"><i data-w="85"></i></div></div>' +
+    '</div>' +
+  '</section>';
+  if(INV) statsHtml =
+  '<section aria-label="Invitation numbers">' +
+    '<div class="sec-head"><h2>The Celebration, By The <em>Numbers</em></h2><p>The official invitation statistics — counted with excitement.</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="stats" id="stats">' +
+      '<div class="stat"><div class="num">1</div><div class="lbl">Special Day</div><div class="sub">marked on every calendar</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num">∞</div><div class="lbl">Warm Welcomes</div><div class="sub">for every guest</div><div class="bar"><i data-w="100"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="100">0</span>%</div><div class="lbl">Excitement Level</div><div class="sub">and rising daily</div><div class="bar"><i data-w="95"></i></div></div>' +
+      '<div class="stat"><div class="num"><span class="count" data-target="5">0</span></div><div class="lbl">Candles To Blow</div><div class="sub">waiting on the cake below</div><div class="bar"><i data-w="85"></i></div></div>' +
+    '</div>' +
+  '</section>';
   var wishCardsHtml = ANN ? (
   '<section aria-label="Anniversary wishes">' +
     '<div class="sec-head"><h2>Wishes For <em>You Two</em></h2><p>A few cards, written from the heart (and a little from the funny bone).</p><div class="divider"><i>\u2726</i></div></div>' +
@@ -1020,6 +1274,36 @@ function buildPage(d, tier){
       '<article class="wish-card"><span class="qmark">“</span><p>May your Eid be full of <strong>galay milna, mithaas</strong> and zero elaichi surprises in the biryani.</p><div class="from">— From the heart</div></article>' +
       '<article class="wish-card"><span class="qmark">“</span><p>After a month of patience, this joy is earned. <strong>May every dua be answered.</strong></p><div class="from">— With duas</div></article>' +
       '<article class="wish-card"><span class="qmark">“</span><p>Official Eid ruling: second helpings of sheer khurma are <strong>compulsory</strong>.</p><div class="from">— The Eid committee</div></article>' +
+    '</div>' +
+  '</section>';
+  if(FRD) wishCardsHtml =
+  '<section aria-label="Friendship wishes">' +
+    '<div class="sec-head"><h2>Wishes For <em>You</em></h2><p>A few cards, written from the heart (and a little from the funny bone).</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="cards">' +
+      '<article class="wish-card featured-card"><span class="wchip">★ The bestie wish</span><p>' + wishHtml + '</p><div class="from">— From ' + eFrom + ', with love</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Good friends are like stars — you don\'t always see them, but you know they are <strong>always there</strong>.</p><div class="from">— From the heart</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>A true friend accepts you as you are — and still tells you when there is <strong>food in your teeth</strong>.</p><div class="from">— With a wink</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Official ruling: best friends split the last slice. Unless it is cake. Then we duel for it. <strong>Those are the rules.</strong></p><div class="from">— The bestie committee</div></article>' +
+    '</div>' +
+  '</section>';
+  if(LOV) wishCardsHtml =
+  '<section aria-label="Love wishes">' +
+    '<div class="sec-head"><h2>Words For <em>You</em></h2><p>A few cards, written from the heart.</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="cards">' +
+      '<article class="wish-card featured-card"><span class="wchip">★ The love note</span><p>' + wishHtml + '</p><div class="from">— From ' + eFrom + ', with love</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Home was never a place. It is a person — and for me, that person is <strong>you</strong>.</p><div class="from">— From the heart</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Of all the gifts life has given me, you are the one I thank Allah for <strong>the most</strong>.</p><div class="from">— With gratitude</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Every love story is beautiful — but <strong>ours</strong> is my favourite.</p><div class="from">— Forever yours</div></article>' +
+    '</div>' +
+  '</section>';
+  if(INV) wishCardsHtml =
+  '<section aria-label="Invitation cards">' +
+    '<div class="sec-head"><h2>The <em>Invitation</em></h2><p>Everything you need to know — with a little celebration on top.</p><div class="divider"><i>✦</i></div></div>' +
+    '<div class="cards">' +
+      '<article class="wish-card featured-card"><span class="wchip">★ You are invited</span><p>' + wishHtml + '</p><div class="from">— From ' + eFrom + ', with love</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Your presence is the <strong>best present</strong> of all — please just bring yourself (and your best smile).</p><div class="from">— From the heart</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Good food, great company and an evening to remember — <strong> incomplete without you</strong>.</p><div class="from">— With excitement</div></article>' +
+      '<article class="wish-card"><span class="qmark">“</span><p>Official ruling: calories at a celebration do not count. <strong>Those are the rules.</strong></p><div class="from">— The party committee</div></article>' +
     '</div>' +
   '</section>';
   var reasonsHtml = ANN ? (
@@ -1423,7 +1707,20 @@ function fontUrl(th){
   return "https://fonts.googleapis.com/css2?" + parts.join("&") + "&display=swap";
 }
 
+var OCC2 = {
+  birthday:    { title: "Happy Birthday", headline: "Happy Birthday", script: "happy birthday to you", speak: "Happy Birthday, ", type: "Happy Birthday!", emoji: "🎂", hero: "🎂 🎉 🎈" },
+  love:        { title: "With All My Love", headline: "With All My Love", script: "for the one i love", speak: "For you, ", type: "With All My Love…", emoji: "❤️", hero: "❤️ 🎉 ❤️" },
+  friendship:  { title: "Happy Friendship Day", headline: "Happy Friendship Day", script: "best friends forever", speak: "Happy Friendship Day, ", type: "Best Friends Forever!", emoji: "👯", hero: "👯 🎉 🎈" },
+  newyear:     { title: "Happy New Year", headline: "Happy New Year 2027", script: "happy new year", speak: "Happy New Year, ", type: "Happy New Year!", emoji: "🎆", hero: "🎆 🎉 🎇" },
+  anniversary: { title: "Happy Anniversary", headline: "Happy Anniversary", script: "happy anniversary", speak: "Happy Anniversary, ", type: "Happy Anniversary!", emoji: "💍", hero: "💍 🎉 💛" },
+  invitation:  { title: "You're Invited", headline: "You're Invited", script: "you are invited", speak: "You are invited, ", type: "You're Invited!", emoji: "💌", hero: "💌 🎉 💌" },
+  wedding:     { title: "The Wedding", headline: "The Wedding Of", script: "with joyful hearts", speak: "Mubarak, ", type: "Mubarak!", emoji: "💍", hero: "💍 🎉 💛" },
+  baby:        { title: "Welcome, Little One", headline: "Welcome To The World", script: "welcome, little one", speak: "Welcome, ", type: "Welcome!", emoji: "👶", hero: "👶 🎉 🍼" },
+  eid:         { title: "Eid Mubarak", headline: "Eid Mubarak", script: "eid mubarak", speak: "Eid Mubarak, ", type: "Eid Mubarak!", emoji: "🌙", hero: "🌙 🎉 ✨" }
+};
+
 function buildPage2(d, th){
+  var O2 = OCC2[d.occ] || OCC2.birthday;
   var name = d.name || "Friend", from = d.from || "Someone who loves you";
   var decoArr = DECO_EMOJI[th.deco] || [];
   var decoHtml = "";
@@ -1454,7 +1751,7 @@ function buildPage2(d, th){
   if(d.im && d.im.length){
     var slides = "", dots = "";
     d.im.forEach(function(src, i){
-      slides += '<div class="slide' + (i === 0 ? " active" : "") + '"><img src="' + src + '" alt="Birthday photo ' + (i + 1) + '"></div>';
+      slides += '<div class="slide' + (i === 0 ? " active" : "") + '"><img src="' + src + '" alt="Photo ' + (i + 1) + '"></div>';
       dots += '<span class="gdot' + (i === 0 ? " on" : "") + '"></span>';
     });
     galHtml =
@@ -1580,7 +1877,7 @@ function buildPage2(d, th){
 '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">' +
 '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
 '<meta name="robots" content="noindex,nofollow">' +
-'<title>Happy Birthday ' + esc(name) + ' 🎂</title>' +
+'<title>' + O2.title + ' ' + esc(name) + ' ' + O2.emoji + '</title>' +
 '<link rel="preconnect" href="https://fonts.googleapis.com">' +
 '<link href="' + fontUrl(th) + '" rel="stylesheet">' +
 '<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">' +
@@ -1604,9 +1901,9 @@ gateBalloon + pinDots +
 /* page */
 '<main id="page" class="hidden">' +
 '<div class="card hero rv">' +
-'<div style="font-size:30px;letter-spacing:7px">🎂 🎉 🎈</div>' +
-(th.script ? '<div class="script">happy birthday to you</div>' : '') +
-'<div class="bname">Happy Birthday<br>' + esc(name) + '!</div>' +
+'<div style="font-size:30px;letter-spacing:7px">' + O2.hero + '</div>' +
+(th.script ? '<div class="script">' + O2.script + '</div>' : '') +
+'<div class="bname">' + O2.headline + '<br>' + esc(name) + '!</div>' +
 '<p class="fromline">With love and a hundred good wishes,<br>from <b>' + esc(from) + '</b> 💌</p>' +
 '</div>' +
 galHtml +
@@ -1630,14 +1927,14 @@ galHtml +
 '</main>' +
 '<button id="sndBtn" title="Sound on/off">🔊</button>' +
 '<button id="partyBtn" class="hidden" title="Party!">🎉</button>' +
-'<div id="partyBanner">🎉 Happy Birthday ' + esc(name) + '! 🎂</div>' +
+'<div id="partyBanner">🎉 ' + O2.headline + ' ' + esc(name) + '! ' + O2.emoji + '</div>' +
 '<script>var D = ' + JSON.stringify({ name: name, pin: String(d.pin || "surprise"), load: th.load, pinStyle: th.pin, unlocked: !!d.unlocked }) + ';\n' +
-pageScript2() +
+pageScript2(O2.speak, O2.type) +
 '</scr' + 'ipt></body></html>';
   return html;
 }
 
-function pageScript2(){
+function pageScript2(speakPrefix, typeText){
   return `
 /* ===== sound (synthesized, no files) ===== */
 var AC = null, soundOn = true;
@@ -1650,7 +1947,7 @@ function whooshSnd(){ noiseBurst(.6, 480, .28); }
 function tadaSnd(){ [523,659,784,1046].forEach(function(f,i){ tone(f, i*.09, .4, 'triangle', .14); }); }
 var MELODY = [[392,.75],[392,.25],[440,1],[392,1],[523,1],[494,1.75],[0,.25],[392,.75],[392,.25],[440,1],[392,1],[587,1],[523,2]];
 function playMelody(){ var beat = .30, at = .05; MELODY.forEach(function(n){ if(n[0]>0){ tone(n[0], at, n[1]*beat*.96, 'triangle', .15); tone(n[0]/2, at, n[1]*beat*.96, 'sine', .05); } at += n[1]*beat; }); }
-function speakWish(){ if(!soundOn || !('speechSynthesis' in window)) return; try{ speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance('Happy Birthday, ' + D.name + '!'); u.rate = .96; u.pitch = 1.12; var vs = speechSynthesis.getVoices(); var en = vs.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('en')===0; }); if(en.length) u.voice = en[0]; speechSynthesis.speak(u); }catch(e){} }
+function speakWish(){ if(!soundOn || !('speechSynthesis' in window)) return; try{ speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(${JSON.stringify(speakPrefix || "Happy Birthday, ")} + D.name + '!'); u.rate = .96; u.pitch = 1.12; var vs = speechSynthesis.getVoices(); var en = vs.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('en')===0; }); if(en.length) u.voice = en[0]; speechSynthesis.speak(u); }catch(e){} }
 document.getElementById('sndBtn').addEventListener('click', function(){ soundOn = !soundOn; this.textContent = soundOn ? '🔊' : '🔇'; if(soundOn){ ac(); chimeSnd(); } else if('speechSynthesis' in window){ speechSynthesis.cancel(); } });
 
 /* ===== confetti (canvas, burst only) ===== */
@@ -1707,7 +2004,7 @@ function startLoading(){
   document.getElementById('gate').classList.add('hidden');
   var loader = document.getElementById('loader'); loader.classList.remove('hidden');
   var pct = 0, mi = 0;
-  var typeFull = 'Happy Birthday!';
+  var typeFull = ${JSON.stringify(typeText || "Happy Birthday!")};
   var msgIv = setInterval(function(){ mi = Math.min(mi+1, LOAD_MSGS.length-1); document.getElementById('loadMsg').textContent = LOAD_MSGS[mi]; }, 620);
   var iv = setInterval(function(){
     pct += Math.ceil(Math.random()*7) + 2;
@@ -1837,11 +2134,13 @@ function $(id){ return document.getElementById(id); }
 var fName=$("fName"), fFrom=$("fFrom"), fPin=$("fPin"), fWish=$("fWish"), fWishCat=$("fWishCat"),
     fLetter=$("fLetter"), fLetterSel=$("fLetterSel"), fGift=$("fGift"), fGiftCustom=$("fGiftCustom");
 
+function curLib(){ return occLib(typeof WL_OCC !== "undefined" ? WL_OCC : "birthday"); }
 function pickWish(){
-  var arr = WISHES[fWishCat.value] || WISHES.heartfelt;
+  var L = curLib();
+  var arr = L.wishes[fWishCat.value] || L.wishes[Object.keys(L.wishes)[0]];
   fWish.value = arr[Math.floor(Math.random()*arr.length)];
 }
-function useLetter(){ var L = LETTERS[parseInt(fLetterSel.value,10)] || LETTERS[1]; fLetter.value = (L && L.body) ? L.body : ""; }
+function useLetter(){ var L = curLib(); var Lt = L.letters[parseInt(fLetterSel.value,10)] || L.letters[0]; fLetter.value = (Lt && Lt.body) ? Lt.body : ""; }
 $("btnGenWish").addEventListener("click", pickWish);
 $("btnUseLetter").addEventListener("click", useLetter);
 fGift.addEventListener("change", function(){
@@ -1859,14 +2158,16 @@ var themeGrid = $("themeGrid");
 THEME_META.forEach(function(m){
   var b = document.createElement("button");
   b.type = "button"; b.className = "theme-card" + (m.id === "classic" ? " sel" : "");
+  b.setAttribute("data-tid", m.id);
   var dz = WL_DESIGN[m.id] || {};
-  b.innerHTML = '<span class="dots">' + m.colors.map(function(c){ return '<i style="background:' + c + '"></i>'; }).join("") + '</span><b>' + m.name + (dz.h ? ' <em class="hotb">🔥 HOT</em>' : '') + '</b>' + (dz.r ? '<span class="trec">★ Recommended</span>' : '') + '<span>' + m.tag + '</span>' + (dz.u ? '<span class="tused">👥 ' + dz.u + ' pages made</span>' : '');
+  b.innerHTML = '<span class="dots">' + m.colors.map(function(c){ return '<i style="background:' + c + '"></i>'; }).join("") + '</span><b>' + m.name + (dz.h ? ' <em class="hotb">🔥 HOT</em>' : '') + '</b>' + (dz.r ? '<span class="trec">★ Recommended</span>' : '') + '<span>' + m.tag + '</span>' + (dz.u ? '<span class="tused">👥 ' + dz.u + ' pages made</span>' : '') + '<span class="tlock"></span>';
   b.addEventListener("click", function(){
     WL_THEME = m.id;
     themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.classList.remove("sel"); });
     b.classList.add("sel");
     saveDraft();
-    collapseThemes();
+    updatePremiumBar();
+    if(!isLockedPremium()) collapseThemes();
   });
   themeGrid.appendChild(b);
 });
@@ -1880,10 +2181,138 @@ function collapseThemes(){
   if(themeChange) themeChange.classList.remove("hidden");
 }
 function expandThemes(){
-  themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.style.display = ""; });
+  var O = OCCASIONS[typeof WL_OCC !== "undefined" ? WL_OCC : "birthday"] || OCCASIONS.birthday;
+  themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.style.display = (O.themes.indexOf(x.getAttribute("data-tid")) >= 0) ? "" : "none"; });
   if(themeChange) themeChange.classList.add("hidden");
 }
 if(themeChange) themeChange.addEventListener("click", expandThemes);
+
+/* ---- occasions + premium designs ---- */
+var WL_OCC = "birthday";
+var WL_UNLOCKED = {};
+var WL_BALANCE = null;
+function themeNameOf(id){ for(var i=0;i<THEME_META.length;i++) if(THEME_META[i].id===id) return THEME_META[i].name; return id; }
+function isLockedPremium(){ return !!PREMIUM_THEMES[WL_THEME] && !WL_UNLOCKED[WL_THEME]; }
+function renderPremiumStates(){
+  themeGrid.querySelectorAll(".theme-card").forEach(function(c){
+    var id = c.getAttribute("data-tid"); var s = c.querySelector(".tlock"); if(!s) return;
+    if(!PREMIUM_THEMES[id]){ s.textContent = ""; c.classList.remove("locked"); return; }
+    if(WL_UNLOCKED[id]){ s.textContent = "👑 Premium · Unlocked ✓"; c.classList.remove("locked"); }
+    else { s.textContent = "👑 Premium · " + PREMIUM_PRICE + " credits"; c.classList.add("locked"); }
+  });
+}
+function updatePremiumBar(){
+  var bar = $("premiumBar"); if(!bar) return;
+  if(PREMIUM_THEMES[WL_THEME] && !WL_UNLOCKED[WL_THEME]){
+    bar.classList.remove("hidden");
+    $("premiumText").innerHTML = "👑 <b>" + themeNameOf(WL_THEME) + "</b> is a Premium design. Unlock it <b>forever</b> for <b>" + PREMIUM_PRICE + " credits</b> — then use it in every occasion, as many times as you like.";
+    $("premiumBal").textContent = (WL_BALANCE === null) ? "Checking your credits balance…" :
+      ("Your balance: " + WL_BALANCE + " credits" + (WL_BALANCE >= PREMIUM_PRICE ? " — enough to unlock it right now." : " — you need " + (PREMIUM_PRICE - WL_BALANCE) + " more."));
+  } else bar.classList.add("hidden");
+}
+function catLabel(c){
+  return { heartfelt:"Heartfelt", funny:"Funny", short:"Short & Sweet", brother:"For Brother", sister:"For Sister", friend:"For Friend", mother:"For Mother", father:"For Father", girlfriend:"For Girlfriend", boyfriend:"For Boyfriend", bestie:"For Bestie", romantic:"Romantic", birthday:"Birthday Party", party:"Party / Get-together", formal:"Formal" }[c] || c;
+}
+function rebuildTextPickers(){
+  var L = curLib();
+  var wc = fWishCat.value;
+  fWishCat.innerHTML = "";
+  Object.keys(L.wishes).forEach(function(c){
+    var o = document.createElement("option"); o.value = c; o.textContent = catLabel(c); fWishCat.appendChild(o);
+  });
+  if(L.wishes[wc]) fWishCat.value = wc;
+  fLetterSel.innerHTML = "";
+  L.letters.forEach(function(Lt, i){ var o = document.createElement("option"); o.value = i; o.textContent = Lt.label; fLetterSel.appendChild(o); });
+  fLetterSel.value = (WL_OCC === "birthday" && L.letters.length > 1) ? "1" : "0";
+  var sc = $("styleSummary");
+  if(sc) sc.textContent = "🎨 Change style — " + Object.keys(L.wishes).length + " wish styles · " + L.letters.length + " letters";
+  pickWish(); useLetter();
+}
+function setOccasion(occ, design){
+  if(!OCCASIONS[occ]) occ = "birthday";
+  WL_OCC = occ;
+  var O = OCCASIONS[occ];
+  $("makerTitle").textContent = O.makerTitle;
+  $("makerSub").textContent = "⏱ Takes about 30 seconds — the wish, letter and PIN are already filled in for you. Just add the names and tap Create.";
+  $("nameLabel").textContent = O.nameLabel;
+  fName.placeholder = O.namePh;
+  $("wishLabel").innerHTML = O.wishLabel + " <small>(already filled in for you — shuffle for another, or write your own)</small>";
+  fWish.placeholder = O.wishPh;
+  $("designNote").textContent = "(" + O.themes.length + " designs for " + O.name + (occ === "birthday" ? " — Midnight Gold is already picked for you; tap another only if you want" : " — tap one to pick it") + ")";
+  expandThemes();
+  var want = design || (O.themes.indexOf(WL_THEME) >= 0 ? WL_THEME : O.themes[0]);
+  WL_THEME = want;
+  themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.classList.toggle("sel", x.getAttribute("data-tid") === want); });
+  if(design) collapseThemes();
+  rebuildTextPickers();
+  renderPremiumStates();
+  updatePremiumBar();
+  saveDraft();
+}
+/* device fingerprint (same recipe as the Photo Studio) so the wallet —
+   and with it the premium unlocks — follows the person, not the browser */
+var _fpPromise = null;
+function wlFp(){
+  if(_fpPromise) return _fpPromise;
+  _fpPromise = (async function(){
+    try{
+      var nav = navigator, scr = window.screen || {};
+      var w = Math.min(scr.width || 0, scr.height || 0), h = Math.max(scr.width || 0, scr.height || 0);
+      var gpu = "";
+      try{
+        var gc = document.createElement("canvas");
+        var gl = gc.getContext("webgl") || gc.getContext("experimental-webgl");
+        if(gl){
+          var ext = gl.getExtension("WEBGL_debug_renderer_info");
+          var r = String((ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)) || "");
+          var gm = /(Adreno|Mali|PowerVR|Immortalis|Apple GPU)[^\s,)]*(?:\s*\d+)?/i.exec(r);
+          gpu = gm ? gm[0].replace(/\(TM\)/gi, "").replace(/\s+/g, "").toLowerCase() : r.slice(0, 32).toLowerCase();
+        }
+      }catch(e){}
+      var parts = [w + "x" + h, scr.colorDepth || "", window.devicePixelRatio || "", nav.maxTouchPoints || 0, nav.hardwareConcurrency || "", (window.Intl && Intl.DateTimeFormat ? Intl.DateTimeFormat().resolvedOptions().timeZone : "") || "", nav.language || "", gpu];
+      var s = parts.join("|");
+      if(window.crypto && crypto.subtle && crypto.subtle.digest){
+        var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+        return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ("0" + b.toString(16)).slice(-2); }).join("");
+      }
+      return "";
+    }catch(e){ return ""; }
+  })();
+  return _fpPromise;
+}
+function loadWalletState(){
+  wlFp().then(function(fp){
+    return fetch("/api/studio-wallet?device=" + encodeURIComponent(wlDeviceId()) + "&fp=" + encodeURIComponent(fp || ""));
+  }).then(function(r){ return r.json(); }).then(function(j){
+    if(j && j.device && j.device !== wlDeviceId()){ try{ localStorage.setItem("wl_device", j.device); }catch(e){} }
+    if(j && j.designs && j.designs.unlocked) j.designs.unlocked.forEach(function(t){ WL_UNLOCKED[t] = 1; });
+    if(j && typeof j.total === "number") WL_BALANCE = j.total;
+    renderPremiumStates(); updatePremiumBar();
+  }).catch(function(){});
+}
+loadWalletState();
+$("btnUnlock").addEventListener("click", function(){
+  var btn = this;
+  btn.disabled = true; btn.textContent = "⏳ Unlocking…";
+  wlFp().then(function(fp){
+    return fetch("/api/studio-buydesign", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ device: wlDeviceId(), fp: fp || "", theme: WL_THEME }) });
+  }).then(function(r){ return r.json().then(function(j){ return { code: r.status, j: j }; }); })
+  .then(function(x){
+    btn.disabled = false; btn.textContent = "👑 Unlock this design — " + PREMIUM_PRICE + " credits";
+    if(x.code === 200 && x.j && x.j.ok){
+      (x.j.unlocked || [WL_THEME]).forEach(function(t){ WL_UNLOCKED[t] = 1; });
+      if(typeof x.j.total === "number") WL_BALANCE = x.j.total;
+      renderPremiumStates(); updatePremiumBar(); collapseThemes();
+    } else if(x.j && x.j.error === "need_credits"){
+      if(typeof x.j.total === "number") WL_BALANCE = x.j.total;
+      updatePremiumBar();
+      alert("Not enough credits yet — you have " + (x.j.total || 0) + " and this design needs " + PREMIUM_PRICE + ". Top up in the Photo Studio, or earn free credits by watching ads in the Telegram Mini App.");
+    } else alert("Unlock failed — please try again.");
+  }).catch(function(){
+    btn.disabled = false; btn.textContent = "👑 Unlock this design — " + PREMIUM_PRICE + " credits";
+    alert("Network problem — please try again.");
+  });
+});
 
 /* ---- 4-step maker, draft autosave, preview, design grid ---- */
 var STEP_LABELS = {1:"Step 1 of 2 · Names & design", 2:"Step 2 of 2 · Wish, photos & PIN"};
@@ -1895,7 +2324,7 @@ function goStep(n){
   if (anchor) { var y = anchor.getBoundingClientRect().top + window.pageYOffset - 76; window.scrollTo({ top: Math.max(0, y), behavior: "smooth" }); }
 }
 function saveDraft(){
-  try{ localStorage.setItem("wl_draft", JSON.stringify({ n:fName.value, f:fFrom.value, pin:fPin.value, wc:fWishCat.value, w:fWish.value, ls:fLetterSel.value, l:fLetter.value, g:fGift.value, gc:fGiftCustom.value, t:WL_THEME })); }catch(e){}
+  try{ localStorage.setItem("wl_draft", JSON.stringify({ n:fName.value, f:fFrom.value, pin:fPin.value, wc:fWishCat.value, w:fWish.value, ls:fLetterSel.value, l:fLetter.value, g:fGift.value, gc:fGiftCustom.value, t:WL_THEME, o:WL_OCC })); }catch(e){}
 }
 $("btnNext1").addEventListener("click", function(){
   if(!fName.value.trim()){ $("nameErr").classList.remove("hidden"); fName.focus(); return; }
@@ -1909,6 +2338,7 @@ $("makerForm").addEventListener("change", saveDraft);
   var d = null;
   try{ d = JSON.parse(localStorage.getItem("wl_draft") || "null"); }catch(e){}
   if(!d) return;
+  if(d.o && OCCASIONS[d.o] && d.o !== "birthday") setOccasion(d.o, d.t || null);
   if(d.n) fName.value = d.n;
   if(d.f) fFrom.value = d.f;
   if(d.pin) fPin.value = d.pin;
@@ -1918,15 +2348,30 @@ $("makerForm").addEventListener("change", saveDraft);
   if(d.l) fLetter.value = d.l;
   if(d.g && fGift.querySelector('option[value="' + d.g + '"]')){ fGift.value = d.g; $("fGiftCustomWrap").classList.toggle("hidden", d.g !== "custom"); }
   if(d.gc) fGiftCustom.value = d.gc;
-  if(d.t && d.t !== "classic"){
+  if(d.t && d.t !== "classic" && !(d.o && OCCASIONS[d.o] && d.o !== "birthday")){
     var idx = THEME_META.map(function(m){ return m.id; }).indexOf(d.t);
     if(idx > 0 && themeGrid.children[idx]) themeGrid.children[idx].click();
   }
-  if(d.t) collapseThemes();
+  if(d.t && !(d.o && OCCASIONS[d.o] && d.o !== "birthday")) collapseThemes();
+})();
+/* Arriving from an occasion page: /?occ=love&design=rose#maker */
+(function(){
+  try{
+    var q = new URLSearchParams(location.search);
+    var occ = q.get("occ"), des = q.get("design");
+    if(occ && OCCASIONS[occ]) setOccasion(occ, des || null);
+    else if(des && THEME_META.some(function(m){ return m.id === des; })){
+      WL_THEME = des;
+      themeGrid.querySelectorAll(".theme-card").forEach(function(x){ x.classList.toggle("sel", x.getAttribute("data-tid") === des); });
+      updatePremiumBar();
+      collapseThemes();
+    }
+  }catch(e){}
 })();
 $("btnPreview").addEventListener("click", function(){
   var d = collect();
   if(!d.name){ goStep(1); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
+  if(isLockedPremium()){ goStep(1); updatePremiumBar(); $("premiumBar").scrollIntoView({ behavior:"smooth", block:"center" }); return; }
   lastHtml = withSiteLink(renderPage(d));
   var pv = $("pvFrame"); pv.srcdoc = lastHtml; pv.classList.remove("hidden");
   pv.scrollIntoView({behavior:"smooth", block:"nearest"});
@@ -1981,8 +2426,9 @@ try {
 function collect(){
   var name=fName.value.trim(), from=fFrom.value.trim(), pin=fPin.value.trim().toLowerCase();
   if(!pin){ pin=((name.split(/\s+/)[0]||"surprise").toLowerCase().replace(/[^a-z0-9]/g,"")||"surprise"); }
-  var gift=(fGift.value==="custom") ? fGiftCustom.value.trim() : (GIFTS[parseInt(fGift.value,10)]||GIFTS[0]);
-  return { occ:"birthday", name:name, from:from, pin:pin, t: WL_THEME, im: WL_IMAGES.slice(),
+  var LG = curLib().gifts;
+  var gift=(fGift.value==="custom") ? fGiftCustom.value.trim() : (LG[parseInt(fGift.value,10)]||LG[0]);
+  return { occ: WL_OCC, name:name, from:from, pin:pin, t: WL_THEME, im: WL_IMAGES.slice(),
     wish: fillTokens(fWish.value.trim(), name, from),
     letter: fillTokens(fLetter.value.trim(), name, from),
     gift: fillTokens(gift, name, from) };
@@ -1999,16 +2445,19 @@ function decData(s){
 }
 
 function matchWish(text, name, from){
-  for(var c in WISHES){ var arr = WISHES[c];
+  var W = curLib().wishes;
+  for(var c in W){ var arr = W[c];
     for(var i=0;i<arr.length;i++){ if(fillTokens(arr[i], name, from) === text) return {c:c, i:i}; } }
   return null;
 }
 function matchLetter(text, name, from){
-  for(var i=0;i<LETTERS.length;i++){ if(fillTokens(LETTERS[i].body, name, from) === text) return i; }
+  var L = curLib().letters;
+  for(var i=0;i<L.length;i++){ if(fillTokens(L[i].body, name, from) === text) return i; }
   return -1;
 }
 function matchGift(text, name, from){
-  for(var i=0;i<GIFTS.length;i++){ if(fillTokens(GIFTS[i], name, from) === text) return i; }
+  var G = curLib().gifts;
+  for(var i=0;i<G.length;i++){ if(fillTokens(G[i], name, from) === text) return i; }
   return -1;
 }
 /* Short payload: ready-made texts travel as template numbers, not full text */
@@ -2021,15 +2470,18 @@ function linkPayload(d){
   var mg = matchGift(d.gift, d.name, d.from);
   if(mg >= 0){ p.gi = mg; } else { p.g = d.gift; }
   if(d.t && d.t !== "classic"){ p.t = d.t; }
+  if(d.occ && d.occ !== "birthday"){ p.o = d.occ; }
   if(d.im && d.im.length){ p.im = d.im; }
   return p;
 }
 function payloadToData(p){
   if(p.name !== undefined) return p; /* legacy full-text link */
-  var d = { occ: "birthday", name: p.n || "", from: p.f || "", pin: p.p || "surprise" };
-  d.wish = (p.w !== undefined) ? p.w : fillTokens((WISHES[p.wc] || WISHES.heartfelt)[p.wi || 0], d.name, d.from);
-  d.letter = (p.l !== undefined) ? p.l : fillTokens(LETTERS[p.li || 0].body, d.name, d.from);
-  d.gift = (p.g !== undefined) ? p.g : fillTokens(GIFTS[p.gi || 0], d.name, d.from);
+  var occ = (p.o && OCCASIONS[p.o]) ? p.o : "birthday";
+  var L = occLib(occ);
+  var d = { occ: occ, name: p.n || "", from: p.f || "", pin: p.p || "surprise" };
+  d.wish = (p.w !== undefined) ? p.w : fillTokens((L.wishes[p.wc] || L.wishes[Object.keys(L.wishes)[0]])[p.wi || 0], d.name, d.from);
+  d.letter = (p.l !== undefined) ? p.l : fillTokens(L.letters[p.li || 0].body, d.name, d.from);
+  d.gift = (p.g !== undefined) ? p.g : fillTokens(L.gifts[p.gi || 0], d.name, d.from);
   d.t = p.t || "classic";
   d.im = p.im || [];
   return d;
@@ -2055,8 +2507,15 @@ function storePayload(slug, payload){
 var lastD=null, lastHtml="";
 var lastLink = "", lastPin = "";
 function updateWa(){
-  var msg = (window.WL_T ? WL_T("wa_msg") : "I made a birthday surprise for you 🎁 Open it here: ") + lastLink;
-  if($("waPin").checked) msg += " PIN: " + lastPin;
+  var msg;
+  if(typeof WL_OCC !== "undefined" && WL_OCC !== "birthday" && OCCASIONS[WL_OCC]){
+    var t = OCCASIONS[WL_OCC].share;
+    if($("waPin").checked) msg = t.split("{link}").join(lastLink).split("{pin}").join(lastPin);
+    else msg = t.split("{link}").join(lastLink).replace(/ PIN: \{pin\}$/, "");
+  } else {
+    msg = (window.WL_T ? WL_T("wa_msg") : "I made a birthday surprise for you 🎁 Open it here: ") + lastLink;
+    if($("waPin").checked) msg += " PIN: " + lastPin;
+  }
   $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent(msg);
 }
 function showResult(link, d){
@@ -2065,7 +2524,7 @@ function showResult(link, d){
   $("pinShow").value = d.pin;
   updateWa();
   $("btnOpen").href = link;
-  $("pinNote").innerHTML = (window.WL_T ? WL_T("pin_note") : "🔑 The page opens with the PIN: <b>{pin}</b> — share it only with the birthday person.").replace("{pin}", d.pin);
+  $("pinNote").innerHTML = (window.WL_T ? WL_T("pin_note") : "🔑 The page opens with the PIN: <b>{pin}</b> — share it only with the person it is made for.").replace("{pin}", d.pin);
   var pv = $("pvFrame"); pv.srcdoc = lastHtml; pv.classList.remove("hidden");
   var dn = $("delNote");
   if(window.__WL_TOKEN__){
@@ -2095,13 +2554,19 @@ function saveToken(slug, token){
   try{ var tk = JSON.parse(localStorage.getItem("wl_tokens") || "{}"); tk[slug] = token; localStorage.setItem("wl_tokens", JSON.stringify(tk)); }catch(e){}
 }
 function apiCreate(d){
+  var body = { n:d.name, f:d.from, pin:d.pin, w:d.wish, l:d.letter, g:d.gift, t:d.t || "classic", images:d.im || [], device: wlDeviceId() };
+  if(d.occ && d.occ !== "birthday") body.o = d.occ;
   return fetch("/api/create", { method:"POST", headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ n:d.name, f:d.from, pin:d.pin, w:d.wish, l:d.letter, g:d.gift, t:d.t || "classic", images:d.im || [], device: wlDeviceId() }) })
-    .then(function(r){ if(!r.ok) throw new Error("api"); return r.json(); });
+    body: JSON.stringify(body) })
+    .then(function(r){
+      if(!r.ok) return r.json().catch(function(){ return {}; }).then(function(j){ var e = new Error("api"); e.wlError = j.error || ""; throw e; });
+      return r.json();
+    });
 }
 $("btnMake").addEventListener("click", function(){
   var d = collect();
   if(!d.name){ goStep(1); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
+  if(isLockedPremium()){ goStep(1); updatePremiumBar(); $("premiumBar").scrollIntoView({ behavior:"smooth", block:"center" }); return; }
   if(!/^[0-9]{4,8}$/.test(d.pin)){ $("pinErr").classList.remove("hidden"); fPin.focus(); return; }
   $("pinErr").classList.add("hidden");
   lastD = d;
@@ -2114,7 +2579,13 @@ $("btnMake").addEventListener("click", function(){
     saveMyPage(res.slug, d.name, d.pin);
     window.__WL_TOKEN__ = res.editToken;
     showResult(WL_BASE + "/" + res.slug, d);
-  }).catch(function(){
+  }).catch(function(err){
+    if((err && err.wlError === "premium_locked") || isLockedPremium()){
+      btn.textContent = "✨ Create my page"; btn.disabled = false;
+      goStep(1); updatePremiumBar();
+      $("premiumBar").scrollIntoView({ behavior:"smooth", block:"center" });
+      return;
+    }
     /* fallback: previous storage route, then a self-contained hash link */
     var payload = linkPayload(d);
     var slug = makeSlug(d.name);
@@ -2139,7 +2610,7 @@ $("btnCopyPin").addEventListener("click", function(){
 });
 $("btnDl").addEventListener("click", function(e){
   e.preventDefault();
-  if(lastD){ downloadHtml(lastHtml, "birthday-surprise-for-" + slugOf(lastD.name) + ".html"); }
+  if(lastD){ downloadHtml(lastHtml, (lastD.occ || "birthday") + "-page-for-" + slugOf(lastD.name) + ".html"); }
 });
 $("btnAgain").addEventListener("click", function(){
   $("result").classList.add("hidden");
@@ -2255,7 +2726,14 @@ else { runViewer(); }
     });
     fetch("/api/gate?slug=" + encodeURIComponent(slug))
       .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(j){ if(j && j.t) applyTheme(j.t); })
+      .then(function(j){
+        if(j && j.t) applyTheme(j.t);
+        if(j && j.o && j.o !== "birthday"){
+          var names = { love: "love", friendship: "friendship", newyear: "New Year", anniversary: "anniversary", invitation: "invitation", wedding: "wedding", baby: "new-baby", eid: "Eid" };
+          var el = document.getElementById("wlSub");
+          if(el && names[j.o]) el.innerHTML = "Someone made a " + names[j.o] + " page for you.<br>Type the secret PIN to open it.";
+        }
+      })
       .catch(function(){});
     pinEl.focus();
     function submit(){

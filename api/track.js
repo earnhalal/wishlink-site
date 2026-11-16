@@ -128,7 +128,7 @@ async function buildStats() {
     opens: rec.opens || 0, views: rec.views || 0,
     pages: rec.pages || {}, countries: rec.countries || {}, devtypes: rec.devtypes || {},
     oses: rec.oses || {}, browsers: rec.browsers || {},
-    sources: rec.sources || {}, themes: rec.themes || {},
+    sources: rec.sources || {}, themes: rec.themes || {}, occs: rec.occs || {},
   });
   const tt = dayOut(t); tt.date = today;
   const yy = dayOut(y); yy.date = yesterday;
@@ -140,7 +140,7 @@ async function buildStats() {
       edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0,
       opens: total.opens || 0, views: total.views || 0, adGranted: total.adGranted || 0,
       countries: total.countries || {}, devtypes: total.devtypes || {}, oses: total.oses || {},
-      browsers: total.browsers || {}, sources: total.sources || {}, themes: total.themes || {},
+      browsers: total.browsers || {}, sources: total.sources || {}, themes: total.themes || {}, occs: total.occs || {},
     },
   };
 }
@@ -242,6 +242,7 @@ module.exports = async (req, res) => {
       opens: dayRec.opens || 0,
       views: dayRec.views || 0,
       themes: dayRec.themes || {},
+      occs: dayRec.occs || {},
       pages,
       countries: bumpMap(dayRec.countries, cc),
       devtypes: bumpMap(dayRec.devtypes, vd.type),
@@ -262,6 +263,7 @@ module.exports = async (req, res) => {
       views: total.views || 0,
       adGranted: total.adGranted || 0,
       themes: total.themes || {},
+      occs: total.occs || {},
       countries: bumpMap(total.countries, cc),
       devtypes: bumpMap(total.devtypes, vd.type),
       oses: bumpMap(total.oses, vd.os),

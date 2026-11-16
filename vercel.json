@@ -29,6 +29,10 @@
       "destination": "/api/studio?a=wallet"
     },
     {
+      "source": "/api/studio-buydesign",
+      "destination": "/api/studio?a=buydesign"
+    },
+    {
       "source": "/:slug",
       "destination": "/index.html"
     }

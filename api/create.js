@@ -27,6 +27,19 @@ module.exports = async (req, res) => {
     };
     const device = String(b.device || "");
     if (/^[a-zA-Z0-9-]{8,40}$/.test(device)) content.device = device;
+    /* occasion: birthday is the default and stays implicit (old records
+       have no field); any other known occasion is stored as content.o */
+    const OCCS = ["love", "friendship", "newyear", "anniversary", "invitation", "wedding", "baby", "eid"];
+    const occ = String(b.o || "birthday");
+    if (OCCS.includes(occ)) content.o = occ;
+    /* premium designs: a premium theme may only be used by a device that
+       unlocked it (credits purchase recorded by /api/studio?a=buydesign) */
+    const PREMIUM_THEMES = ["rose", "emerald", "royal", "noir", "honey"];
+    if (PREMIUM_THEMES.includes(content.t)) {
+      if (!content.device) return send(res, 403, { error: "premium_locked" });
+      const un = await dbGet("design_unlocks/" + content.device + "/" + content.t).catch(() => null);
+      if (!un) return send(res, 403, { error: "premium_locked" });
+    }
     const slug = slugifyName(name) + "-" + randomCode(10);
 
     /* photos → Storage */
@@ -68,11 +81,16 @@ module.exports = async (req, res) => {
       const theme = String(content.t || "classic");
       const dThemes = Object.assign({}, dayRec.themes || {});
       dThemes[theme] = (dThemes[theme] || 0) + 1;
-      await dbUpdate("stats_days/" + day, { created: (dayRec.created || 0) + 1, themes: dThemes });
+      const occKey = String(content.o || "birthday");
+      const dOccs = Object.assign({}, dayRec.occs || {});
+      dOccs[occKey] = (dOccs[occKey] || 0) + 1;
+      await dbUpdate("stats_days/" + day, { created: (dayRec.created || 0) + 1, themes: dThemes, occs: dOccs });
       const tot = (await dbGet("stats_total")) || {};
       const tThemes = Object.assign({}, tot.themes || {});
       tThemes[theme] = (tThemes[theme] || 0) + 1;
-      await dbUpdate("stats_total", { pages: (tot.pages || 0) + 1, themes: tThemes });
+      const tOccs = Object.assign({}, tot.occs || {});
+      tOccs[occKey] = (tOccs[occKey] || 0) + 1;
+      await dbUpdate("stats_total", { pages: (tot.pages || 0) + 1, themes: tThemes, occs: tOccs });
     } catch (e) {}
 
     if (content.device) {

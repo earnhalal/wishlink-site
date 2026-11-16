@@ -39,6 +39,9 @@ async function bumpStatN(field, n) {
    - one AI edit costs 10 credits; free credits are spent first
    Legacy studio_usage bonus edits migrate to paid credits (1 bonus = 10). */
 const FREE_CAP = 20, EDIT_COST = 10, DAY_MS = 24 * 3600 * 1000, MIN_TOPUP_RS = 100;
+/* Premium page designs: unlocked once per design, forever, for DESIGN_PRICE
+   credits. create.js enforces the same list server-side. */
+const PREMIUM_THEMES = ["rose", "emerald", "royal", "noir", "honey"], DESIGN_PRICE = 50;
 
 async function getWallet(device) {
   let w = await dbGet("studio_wallets/" + device);
@@ -112,6 +115,16 @@ async function spendCredits(device) {
   if ((w.free || 0) + (w.paid || 0) < EDIT_COST) return null;
   const ff = Math.min(w.free || 0, EDIT_COST);
   const fp = EDIT_COST - ff;
+  w.free = (w.free || 0) - ff; w.paid = (w.paid || 0) - fp; w.ts = Date.now();
+  await dbSet("studio_wallets/" + device, w);
+  return { ff, fp };
+}
+
+async function spendAmount(device, amount) {
+  const w = await getWallet(device);
+  if ((w.free || 0) + (w.paid || 0) < amount) return null;
+  const ff = Math.min(w.free || 0, amount);
+  const fp = amount - ff;
   w.free = (w.free || 0) - ff; w.paid = (w.paid || 0) - fp; w.ts = Date.now();
   await dbSet("studio_wallets/" + device, w);
   return { ff, fp };
@@ -411,6 +424,42 @@ const hPayAgent = async (req, res) => {
   }
 };
 
+/* POST /api/studio-buydesign { device, fp, theme } — unlock a premium page
+   design forever for DESIGN_PRICE credits (free credits first, then paid).
+   The unlock lives at design_unlocks/<device>/<theme>; /api/create refuses
+   premium themes without it. */
+const hBuyDesign = async (req, res) => {
+  if (req.method !== "POST") return send(res, 405, { error: "method" });
+  try {
+    const ip = clientIp(req);
+    const rl = await rateLimited(ip, "buydesign", 10, 10 * 60 * 1000);
+    if (rl.limited) return send(res, 429, { error: "too many tries — wait a few minutes" });
+    const b = await readBody(req);
+    let device = String(b.device || "");
+    if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
+    const theme = String(b.theme || "");
+    if (!PREMIUM_THEMES.includes(theme)) return send(res, 400, { error: "not a premium design" });
+    const resolved = await resolveWallet(device, String(b.fp || ""), ip);
+    device = resolved.device;
+    const unlocks = (await dbGet("design_unlocks/" + device).catch(() => null)) || {};
+    const w0 = resolved.wallet;
+    if (unlocks[theme]) {
+      return send(res, 200, { ok: true, already: true, device, free: w0.free || 0, paid: w0.paid || 0, total: (w0.free || 0) + (w0.paid || 0), unlocked: Object.keys(unlocks) });
+    }
+    const spend = await spendAmount(device, DESIGN_PRICE);
+    if (!spend) {
+      const w = await getWallet(device);
+      return send(res, 402, { error: "need_credits", need: DESIGN_PRICE, free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0) });
+    }
+    await dbSet("design_unlocks/" + device + "/" + theme, Date.now());
+    unlocks[theme] = Date.now();
+    const w = await getWallet(device);
+    return send(res, 200, { ok: true, device, theme, free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0), unlocked: Object.keys(unlocks) });
+  } catch (e) {
+    return send(res, 500, { error: "buydesign failed" });
+  }
+};
+
 /* /api/studio-wallet — the credits wallet door.
    GET  ?device=         → { free, paid, total, code } — creates/migrates
                            the wallet and applies the 24h free refill.
@@ -425,7 +474,8 @@ const hWallet = async (req, res) => {
       const fp = String((req.query && req.query.fp) || "");
       const resolved = await resolveWallet(device, fp, clientIp(req));
       const w = resolved.wallet;
-      return send(res, 200, { device: resolved.device, free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0), code: resolved.device.slice(4, 12).toUpperCase() });
+      const unlocks = (await dbGet("design_unlocks/" + resolved.device).catch(() => null)) || {};
+      return send(res, 200, { device: resolved.device, free: w.free || 0, paid: w.paid || 0, total: (w.free || 0) + (w.paid || 0), code: resolved.device.slice(4, 12).toUpperCase(), designs: { price: DESIGN_PRICE, premium: PREMIUM_THEMES, unlocked: Object.keys(unlocks) } });
     }
     if (req.method === "POST") {
       const ip = clientIp(req);
@@ -522,6 +572,7 @@ module.exports = async (req, res) => {
   if (a === "pay") return hPay(req, res);
   if (a === "payagent") return hPayAgent(req, res);
   if (a === "wallet") return hWallet(req, res);
+  if (a === "buydesign") return hBuyDesign(req, res);
   if (a === "adstart") return hAdStart(req, res);
   if (a === "adreward") return hAdReward(req, res);
   return send(res, 404, { error: "unknown studio action" });

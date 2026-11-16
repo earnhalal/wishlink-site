@@ -3,10 +3,10 @@
 import io, os
 
 CSS = """
-:root{--teal:#2D2A6E;--teal-d:#211F55;--ink:#1B1B2F;--mut:#666A85;--bg2:#FFF9F2;--line:#E8E3F0}
+:root{--teal:#AD2E5D;--teal-d:#7E1F45;--ink:#571F30;--mut:#886A75;--bg2:#FFFBF7;--line:#F3D9E2}
 *{box-sizing:border-box;margin:0;padding:0}
-h1,h2,h3,.brand{font-family:'Fraunces',Georgia,serif}
-:focus-visible{outline:3px solid #F4B942;outline-offset:2px}
+h1,h2,h3,.brand{font-family:'Newsreader',Georgia,serif}
+:focus-visible{outline:3px solid #E8A62E;outline-offset:2px}
 body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg2);color:var(--ink);line-height:1.6}
 .top{display:flex;align-items:center;gap:14px;padding:14px 20px;max-width:1060px;margin:0 auto}
 .brand{font-weight:800;font-size:21px}
@@ -15,8 +15,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .nav{display:flex;gap:20px;align-items:center;margin-left:auto}
 .nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
 .nav a:hover{color:var(--teal)}
-.mypill{margin-left:12px;background:#2D2A6E;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(45,42,110,.25)}
-.mypill:hover{background:#211F55}
+.langsel{margin-left:12px;border:1.5px solid #F3D9E2;background:#fff;color:#AD2E5D;font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
+.mypill{margin-left:12px;background:#AD2E5D;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(173,46,93,.25)}
+.mypill:hover{background:#7E1F45}
+.menubtn{display:none;background:#fff;border:1.5px solid #F3D9E2;color:#AD2E5D;font-size:18px;line-height:1;padding:8px 13px;border-radius:999px;cursor:pointer;margin-left:10px}
+@media(max-width:860px){.menubtn{display:block}.langsel{margin-left:auto}.nav{display:none!important}.nav.open{display:flex!important;position:absolute;top:60px;right:12px;left:12px;flex-direction:column;align-items:stretch;gap:2px;background:#fff;border:1.5px solid #F3D9E2;border-radius:16px;padding:8px;box-shadow:0 18px 40px rgba(173,46,93,.18);z-index:80;margin-left:0}.nav.open a{padding:12px 14px;border-radius:10px;font-size:15.5px;text-decoration:none}.topin,header.top{position:relative}}
+
 .page{max-width:760px;margin:26px auto 10px;padding:0 18px}
 .page .card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:30px 28px;box-shadow:0 10px 30px rgba(14,80,70,.07)}
 .page h1{font-size:30px;line-height:1.25;margin-bottom:6px}
@@ -34,10 +38,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .postcard b{display:block;margin:9px 0 5px;font-size:15.5px;line-height:1.35}
 .postcard p{color:var(--mut);font-size:13.5px;line-height:1.55}
 .postcard .more{color:var(--teal);font-weight:700;font-size:13px;margin-top:9px;display:block}
-footer{background:#0B0B12;margin-top:40px;padding:30px 18px 36px;text-align:center;color:#A9AAC4;font-size:13px}
+footer{background:#4A1225;margin-top:40px;padding:30px 18px 36px;text-align:center;color:#A9AAC4;font-size:13px}
 .footlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 18px}
 .footlinks a{color:#C9CAE0;text-decoration:none;font-size:13.5px;line-height:2}
-.footlinks a:hover{color:#F4B942;text-decoration:underline}
+.footlinks a:hover{color:#E8A62E;text-decoration:underline}
 .wishbox{background:var(--bg2);border:1.5px dashed var(--teal);border-radius:14px;padding:14px 18px;margin:10px 0;font-size:15px}
 @media(max-width:640px){.nav{display:none}.mypill{margin-left:auto}}
 """
@@ -58,30 +62,35 @@ def shell(title, desc, path, body):
 <meta property="og:url" content="https://www.wishlink.pp.ua%s">
 <meta property="og:image" content="https://www.wishlink.pp.ua/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#2D2A6E">
+<meta name="theme-color" content="#FFFBF7">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>%s</style>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
 </head>
 <body>
 <header class="top">
   <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
-  <nav class="nav">
+  <nav class="nav" id="wlNav">
     <a href="/">Home</a>
+    <a href="/#maker">Make a page</a>
+    <a href="/studio.html">Photo Studio</a>
+    <a href="/my.html">Track My Pages</a>
     <a href="/blog.html">Blog</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </nav>
-  <a class="mypill" href="/my.html">📊 Track My Pages</a>
+  <select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
+  <button id="wlMenuBtn" class="menubtn" aria-label="Menu">☰</button>
 </header>
 <p class="tagline">BIRTHDAY SURPRISE PAGES</p>
 <main class="page"><div class="card">
 %s
 </div></main>
 <footer>
-  <p style="margin:0 0 6px"><b style="color:#F4B942;font-family:'Fraunces',serif;font-size:18px">WishLink</b></p>
+  <p style="margin:0 0 6px"><b style="color:#E8A62E;font-family:'Newsreader',serif;font-size:18px">WishLink</b></p>
   <p class="footlinks"><a href="/">Maker</a><a href="/my.html">Track My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/delete.html">Delete a page</a></p>
   <p style="margin-top:10px">© 2026 WishLink</p>
 </footer>
@@ -93,12 +102,13 @@ def shell(title, desc, path, body):
     if (!dev) { dev = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', dev); }
     var page = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '').replace(/\//g, '-') || 'home';
     if (!/^[a-z0-9-]{1,40}$/.test(page)) page = 'other';
-    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t }), keepalive: true }).catch(function(){}); }
+    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t, ref: (document.referrer ? document.referrer.split('/')[2] : '') || '' }), keepalive: true }).catch(function(){}); }
     send('visit');
     setInterval(function(){ send('ping'); }, 30000);
   } catch (e) {}
 })();
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>""" % (title, desc, path, title, desc, path, CSS, body)
 
@@ -443,6 +453,92 @@ BLOG_INDEX_BODY = """
 <a class="cta" href="/">✨ Make a birthday page</a>
 """
 
+THEME_INFO = {
+    "classic": ("Midnight Gold", "The timeless classic", "9,800+"),
+    "pastel": ("Pastel Sky", "Soft & dreamy", "5,200+"),
+    "neon": ("Neon Galaxy", "Bold night glow", "5,900+"),
+    "rose": ("Rose Royal", "Romantic roses", "6,400+"),
+    "ocean": ("Ocean Breeze", "Fresh sea air", "2,900+"),
+    "sunset": ("Sunset Peach", "Warm golden hour", "4,100+"),
+    "lavender": ("Lavender Dream", "Calm & gentle", "2,600+"),
+    "emerald": ("Emerald Royal", "Rich & elegant", "3,800+"),
+    "candy": ("Candy Pop", "Sweet & playful", "4,700+"),
+    "vintage": ("Vintage Paper", "Old-letter charm", "620+"),
+    "noir": ("Cherry Noir", "Dark & dramatic", "1,400+"),
+    "mint": ("Sky Mint", "Light & fresh", "1,800+"),
+    "royal": ("Royal Purple", "Regal violet", "3,300+"),
+    "honey": ("Golden Honey", "Warm & cosy", "2,200+"),
+    "snow": ("Snow White", "Pure & minimal", "950+"),
+}
+PREMIUM_THEMES_PY = {"rose", "emerald", "royal", "noir", "honey"}
+
+OCC_PAGES = [
+    ("birthday.html", "birthday", "🎂", "Birthday Designs — 15 Surprise Page Designs",
+     "All 15 WishLink birthday designs in one place. Tap any design to start making a birthday surprise page with it — free, with photos, a secret PIN and one simple link.",
+     "Every design has its own colours, PIN screen, loading style, music and cake. Most are completely free — the ones marked 👑 PREMIUM unlock forever with credits, and then they are yours in every occasion.",
+     ["classic", "pastel", "neon", "rose", "ocean", "sunset", "lavender", "emerald", "candy", "vintage", "noir", "mint", "royal", "honey", "snow"]),
+    ("love.html", "love", "❤️", "Love Designs — Surprise Pages for Someone Special",
+     "Six designs chosen for love pages: romantic colours, a heartfelt letter and your photos, locked with a secret PIN only the two of you know. Tap a design to start.",
+     "Sweet, decent and from the heart — a love page carries your message, your photos, a gift box and a letter, all behind a secret PIN. Designs marked 👑 PREMIUM unlock forever with credits.",
+     ["rose", "sunset", "lavender", "noir", "honey", "pastel"]),
+    ("friendship.html", "friendship", "👯", "Best Friend Designs — Friendship Surprise Pages",
+     "Six bright, playful designs for your partner in crime. Tap any design to start a friendship page with ready-made bestie wishes and letters built in.",
+     "For the friend who laughs before the punchline: a page with your photos, a gift box, funny and heartfelt wishes, and a letter — locked with a secret PIN. Designs marked 👑 PREMIUM unlock forever with credits.",
+     ["candy", "neon", "sunset", "mint", "pastel", "ocean"]),
+    ("new-year.html", "newyear", "🎆", "New Year Designs — Happy New Year 2027 Pages",
+     "Six designs for New Year pages: fireworks energy, a live feeling of celebration and hopeful wishes for 2027. Tap a design to start.",
+     "Start their year with a bang — a New Year page with your photos, a gift box and a letter full of duas for 2027, locked with a secret PIN. Designs marked 👑 PREMIUM unlock forever with credits.",
+     ["neon", "classic", "royal", "snow", "honey", "ocean"]),
+    ("anniversary.html", "anniversary", "💍", "Anniversary Designs — Pages for the Happy Couple",
+     "Six elegant designs for anniversary pages: the couple's names, their photos and a letter, all behind a secret PIN. Tap a design to start.",
+     "Another year of love, still going strong — celebrate it with a page made just for the couple. Designs marked 👑 PREMIUM unlock forever with credits, and then they are yours in every occasion.",
+     ["classic", "rose", "royal", "vintage", "honey", "lavender"]),
+    ("invitation.html", "invitation", "💌", "Invitation Designs — A Prettier Way to Invite",
+     "Six designs for invitation pages: the wording, the date, the venue and a little celebration, all in one link your guests open with a PIN. Tap a design to start.",
+     "A prettier way to invite: ready-made invitation wordings (birthday party, get-together and formal) plus a details letter with space for the date, time and venue. Designs marked 👑 PREMIUM unlock forever with credits.",
+     ["classic", "emerald", "royal", "vintage", "snow", "mint"]),
+]
+
+def occasion_body(occ_id, emoji, title, desc, intro, theme_ids):
+    cards = []
+    for tid in theme_ids:
+        name, tag, used = THEME_INFO[tid]
+        pill = '<span class="pill2">👑 PREMIUM</span>' if tid in PREMIUM_THEMES_PY else ''
+        cards.append(
+            '<a class="postcard" href="/?occ=%s&design=%s#maker">%s<img class="dimg" src="/thumbs/%s.jpg" alt="%s design preview" loading="lazy"><b>%s</b><p>%s</p><span class="more">👥 %s pages made · Start with this design →</span></a>'
+            % (occ_id, tid, pill, tid, name, name, tag, used))
+    return """
+<style>
+.dimg{width:100%%;border-radius:12px;display:block;margin-bottom:6px}
+.pill2{display:inline-block;background:linear-gradient(120deg,#b8860b,#E8A62E);color:#fff;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;letter-spacing:.4px;margin-bottom:8px}
+</style>
+<h1>%s %s</h1>
+<p class="lede">%s</p>
+<p>%s</p>
+<div class="postcards">%s</div>
+<h2>How it works</h2>
+<ol>
+<li><b>Tap a design</b> — the maker opens with that design and this occasion already chosen.</li>
+<li><b>Add the names</b> — the wish, letter and PIN are filled in for you; edit anything you like, and add up to 4 photos.</li>
+<li><b>Share one link</b> — send it on WhatsApp. They type the secret PIN and the celebration begins.</li>
+</ol>
+<p>👑 <b>Premium designs</b> unlock once for 50 credits and stay yours forever, in every occasion. Earn credits free by watching ads in our Telegram Mini App, or top up in the <a href="/studio.html">Photo Studio</a>.</p>
+""" % (emoji, title, desc, intro, "".join(cards))
+
+CUSTOM_BODY = """
+<h1>✨ Custom Design — Made To Order</h1>
+<p class="lede">Want a page that is truly one of a kind? Tell us the occasion, the person and the feeling — and we will design a custom surprise page just for you.</p>
+<p>A custom design can carry your own colours, your own style of celebration and wording written for your person alone. It is made by a human-guided design process (with a little help from Laila, our AI artist), not picked from a list.</p>
+<h2>How to order</h2>
+<ol>
+<li><b>Message us on WhatsApp</b> with the occasion, their name, and anything you dream of — colours, theme, photos, a special line.</li>
+<li><b>We confirm the price and time</b> before starting — no surprises, no obligation.</li>
+<li><b>You receive your page link + PIN</b>, ready to share, with revisions until it feels right.</li>
+</ol>
+<p><a href="https://wa.me/923338739929?text=Assalamu%20Alaikum!%20I%20want%20a%20CUSTOM%20design%20page%20on%20WishLink." target="_blank" rel="noopener" style="display:inline-block;background:#25D366;color:#fff;font-weight:700;padding:13px 22px;border-radius:12px;text-decoration:none">💬 Order a Custom Design on WhatsApp</a></p>
+<p>Prefer to make it yourself right now? The <a href="/">free maker</a> has designs for birthday, love, friendship, New Year, anniversary and invitations.</p>
+"""
+
 def write_all(base="."):
     files = {
         "about.html": shell("About WishLink — Surprise Pages & Invitations", "What WishLink is, how birthday surprise pages work, what they cost, and who makes them.", "/about.html", ABOUT),
@@ -451,10 +547,13 @@ def write_all(base="."):
         "contact.html": shell("Contact — WishLink", "Contact WishLink (MintNest Studio): help with a page, page removal, ideas and business enquiries.", "/contact.html", CONTACT),
         "delete.html": shell("Delete a Page — WishLink", "Delete a WishLink birthday page yourself with your edit token.", "/delete.html", DELETE_BODY).replace('<link rel="canonical"', '<meta name="robots" content="noindex"><link rel="canonical"'),
         "blog.html": shell("Blog — WishLink | Birthday Guides, Wishes & Ideas", "Birthday guides, wishes and surprise ideas from the WishLink blog.", "/blog.html", BLOG_INDEX_BODY),
+        "custom-design.html": shell("Custom Design — WishLink | A Surprise Page Made To Order", "Order a one-of-a-kind custom surprise page design on WishLink — your occasion, your colours, your words. Order on WhatsApp.", "/custom-design.html", CUSTOM_BODY),
     }
+    for fname, occ_id, emoji, title, desc, intro, theme_ids in OCC_PAGES:
+        files[fname] = shell(title + " | WishLink", desc, "/" + fname, occasion_body(occ_id, emoji, title, desc, intro, theme_ids))
     for fname, title, desc, path, body in POSTS:
         files[fname] = shell(title, desc, path, body)
-    urls = ["/", "/studio.html", "/blog.html", "/about.html", "/privacy.html", "/terms.html", "/contact.html"] + [p[3] for p in POSTS]
+    urls = ["/", "/studio.html", "/blog.html", "/about.html", "/privacy.html", "/terms.html", "/contact.html", "/custom-design.html"] + ["/" + p[0] for p in OCC_PAGES] + [p[3] for p in POSTS]
     sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in urls:
         sm.append("<url><loc>https://www.wishlink.pp.ua%s</loc></url>" % u)

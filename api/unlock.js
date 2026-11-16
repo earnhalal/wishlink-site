@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
        new pages carry full texts (w/l/g); legacy pages carry template
        indexes (wc/wi/li/gi) which the client resolves locally. */
     const out = {};
-    for (const k of ["n", "f", "w", "l", "g", "wc", "wi", "li", "gi", "t", "im"]) {
+    for (const k of ["n", "f", "w", "l", "g", "wc", "wi", "li", "gi", "t", "im", "o"]) {
       if (page[k] !== undefined) out[k] = page[k];
     }
     if (!out.t) out.t = "classic";

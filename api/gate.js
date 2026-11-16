@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     if (!/^[a-zA-Z0-9][a-zA-Z0-9-]{2,48}$/.test(slug)) return send(res, 400, { error: "bad slug" });
     const page = await dbGet("pages/" + slug);
     if (!page) return send(res, 404, { error: "not found" });
-    return send(res, 200, { t: page.t || "classic" });
+    return send(res, 200, { t: page.t || "classic", o: page.o || "birthday" });
   } catch (e) {
     return send(res, 500, { error: "gate failed" });
   }

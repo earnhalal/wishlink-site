@@ -170,6 +170,13 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
     </div>
 
     <div class="card">
+      <h2>Occasions people choose</h2>
+      <table class="pages"><tbody id="occBody"></tbody></table>
+      <p class="mut" id="occEmpty" style="display:none">No occasion data yet — counting starts with the next page anyone creates.</p>
+      <p class="mut" id="occTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
       <h2>Countries — today</h2>
       <table class="pages"><tbody id="countriesBody"></tbody></table>
       <p class="mut" id="countriesEmpty" style="display:none">No country data yet today.</p>
@@ -201,7 +208,7 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
 <footer>WishLink Analytics — private owner dashboard. Numbers are visible only with the stats PIN.</footer>
 
 <script>
-var LABELS = { home: "Homepage & Maker", surprise: "Surprise pages (shared links)", studio: "Photo Studio", "my-pages": "Track My Pages", app: "Telegram Mini App", blog: "Blog", about: "About", contact: "Contact", privacy: "Privacy Policy", terms: "Terms", "delete": "Delete a page" };
+var LABELS = { home: "Homepage & Maker", surprise: "Surprise pages (shared links)", studio: "Photo Studio", "my-pages": "Track My Pages", app: "Telegram Mini App", blog: "Blog", about: "About", contact: "Contact", privacy: "Privacy Policy", terms: "Terms", "delete": "Delete a page", birthday: "Birthday designs page", love: "Love designs page", friendship: "Best Friend designs page", "new-year": "New Year designs page", anniversary: "Anniversary designs page", invitation: "Invitation designs page", "custom-design": "Custom Design page" };
 var THEME_NAMES = { classic: "🌙 Midnight Gold", pastel: "☁️ Pastel Sky", neon: "🌌 Neon Galaxy", rose: "🌹 Rose Royal", ocean: "🌊 Ocean Breeze", sunset: "🌅 Sunset Peach", lavender: "💜 Lavender Dream", emerald: "💚 Emerald Royal", candy: "🍬 Candy Pop", vintage: "📜 Vintage Paper", noir: "🍒 Cherry Noir", mint: "🌿 Sky Mint", royal: "👑 Royal Purple", honey: "🍯 Golden Honey", snow: "❄️ Snow White" };
 var SRC_ICONS = { WhatsApp: "💬", Facebook: "📘", Instagram: "📸", TikTok: "🎵", Telegram: "✈️", YouTube: "▶️", Google: "🔍", Direct: "🔗", Other: "🌐" };
 var COUNTRY_NAMES = { PK: "Pakistan", IN: "India", US: "United States", GB: "United Kingdom", AE: "UAE", SA: "Saudi Arabia", BD: "Bangladesh", CA: "Canada", AU: "Australia", DE: "Germany", FR: "France", IT: "Italy", ES: "Spain", TR: "Türkiye", ID: "Indonesia", MY: "Malaysia", SG: "Singapore", QA: "Qatar", KW: "Kuwait", OM: "Oman", NP: "Nepal", LK: "Sri Lanka", PH: "Philippines", EG: "Egypt", ZA: "South Africa", NG: "Nigeria", KE: "Kenya", BR: "Brazil", MX: "Mexico", NL: "Netherlands", SE: "Sweden", NO: "Norway", DK: "Denmark", IE: "Ireland", NZ: "New Zealand", JP: "Japan", KR: "South Korea", CN: "China", RU: "Russia", UA: "Ukraine", PL: "Poland", TH: "Thailand", VN: "Vietnam", IR: "Iran", IQ: "Iraq", AF: "Afghanistan" };
@@ -331,6 +338,13 @@ function render(s) {
   el("themeBody").innerHTML = tents.map(function(e) { return "<tr><td>" + (THEME_NAMES[e[0]] || e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
   var tAll = sortedEntries(s.total.themes).slice(0, 5);
   el("themeTotal").textContent = tAll.length ? "All time: " + tAll.map(function(e) { return (THEME_NAMES[e[0]] || e[0]) + " " + e[1]; }).join(" · ") : "";
+  /* occasions */
+  var OCC_NAMES = { birthday: "🎂 Birthday", love: "❤️ Love", friendship: "👯 Best Friend", newyear: "🎆 New Year", anniversary: "💍 Anniversary", invitation: "💌 Invitation", wedding: "💒 Wedding", baby: "👶 Baby", eid: "🌙 Eid" };
+  var oents = sortedEntries(s.today.occs || {});
+  el("occEmpty").style.display = oents.length ? "none" : "block";
+  el("occBody").innerHTML = oents.map(function(e) { return "<tr><td>" + (OCC_NAMES[e[0]] || e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  var oAll = sortedEntries(s.total.occs || {}).slice(0, 6);
+  el("occTotal").textContent = oAll.length ? "All time: " + oAll.map(function(e) { return (OCC_NAMES[e[0]] || e[0]) + " " + e[1]; }).join(" · ") : "";
   /* economy */
   var eco = s.economy || { wallets: 0, creditsFree: 0, creditsPaid: 0, recentTopups: [] };
   el("ecoBody").innerHTML =
