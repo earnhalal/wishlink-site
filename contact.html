@@ -31,6 +31,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .nav{display:flex;gap:20px;align-items:center;margin-left:auto}
 .nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
 .nav a:hover{color:var(--teal)}
+.langsel{margin-left:12px;border:1.5px solid #E8E3F0;background:#fff;color:#2D2A6E;font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
 .mypill{margin-left:12px;background:#2D2A6E;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(45,42,110,.25)}
 .mypill:hover{background:#211F55}
 .page{max-width:760px;margin:26px auto 10px;padding:0 18px}
@@ -67,6 +68,7 @@ footer{background:#0B0B12;margin-top:40px;padding:30px 18px 36px;text-align:cent
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </nav>
+  <select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
   <a class="mypill" href="/my.html">📊 Track My Pages</a>
 </header>
 <p class="tagline">BIRTHDAY SURPRISE PAGES</p>
@@ -125,5 +127,6 @@ document.getElementById("cBtn").addEventListener("click", function(){
   } catch (e) {}
 })();
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

@@ -119,6 +119,7 @@ footer b{color:var(--teal-d)}
 .brand-emoji{font-size:25px}
 .tagline{text-align:center;color:var(--mut);letter-spacing:2.5px;font-size:11px;font-weight:700;margin-top:2px}
 .nav{display:flex;gap:20px;align-items:center;margin-left:18px}
+.langsel{margin-left:12px;border:1.5px solid #E8E3F0;background:#fff;color:#2D2A6E;font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
 .mypill{margin-left:auto;background:#2D2A6E;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(45,42,110,.25)}
 .mypill:hover{background:#211F55}
 .nav a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px}
@@ -220,6 +221,7 @@ footer b{color:var(--teal-d)}
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </nav>
+  <select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
   <a class="mypill" href="/my.html">📊 Track My Pages</a>
   
 </header>
@@ -240,27 +242,7 @@ footer b{color:var(--teal-d)}
   </div>
 </section>
 
-<section class="dsec">
-  <h2>🎨 15 designs — tap one to start with it</h2>
-  <p class="dsub">Every design has its own colours, PIN screen, loading style, music and cake.</p>
-  <div class="dgrid">
-    <button class="dcard" type="button" data-theme="classic"><i class="pill hot">🔥 HOT</i><i class="pill rec">★ RECOMMENDED</i><img src="/thumbs/classic.jpg" alt="Midnight Gold design preview" loading="lazy"><b>Midnight Gold</b><span>The timeless classic</span><span class="used">👥 9,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="pastel"><img src="/thumbs/pastel.jpg" alt="Pastel Sky design preview" loading="lazy"><b>Pastel Sky</b><span>Soft &amp; dreamy</span><span class="used">👥 5,200+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="neon"><i class="pill hot">🔥 HOT</i><img src="/thumbs/neon.jpg" alt="Neon Galaxy design preview" loading="lazy"><b>Neon Galaxy</b><span>Bold night glow</span><span class="used">👥 5,900+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="rose"><i class="pill hot">🔥 HOT</i><img src="/thumbs/rose.jpg" alt="Rose Royal design preview" loading="lazy"><b>Rose Royal</b><span>Romantic roses</span><span class="used">👥 6,400+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="ocean"><img src="/thumbs/ocean.jpg" alt="Ocean Breeze design preview" loading="lazy"><b>Ocean Breeze</b><span>Fresh sea air</span><span class="used">👥 2,900+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="sunset"><img src="/thumbs/sunset.jpg" alt="Sunset Peach design preview" loading="lazy"><b>Sunset Peach</b><span>Warm golden hour</span><span class="used">👥 4,100+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="lavender"><img src="/thumbs/lavender.jpg" alt="Lavender Dream design preview" loading="lazy"><b>Lavender Dream</b><span>Calm &amp; gentle</span><span class="used">👥 2,600+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="emerald"><i class="pill hot">🔥 HOT</i><img src="/thumbs/emerald.jpg" alt="Emerald Royal design preview" loading="lazy"><b>Emerald Royal</b><span>Rich &amp; elegant</span><span class="used">👥 3,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="candy"><img src="/thumbs/candy.jpg" alt="Candy Pop design preview" loading="lazy"><b>Candy Pop</b><span>Sweet &amp; playful</span><span class="used">👥 4,700+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="vintage"><img src="/thumbs/vintage.jpg" alt="Vintage Paper design preview" loading="lazy"><b>Vintage Paper</b><span>Old-letter charm</span><span class="used">👥 620+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="noir"><img src="/thumbs/noir.jpg" alt="Cherry Noir design preview" loading="lazy"><b>Cherry Noir</b><span>Dark &amp; dramatic</span><span class="used">👥 1,400+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="mint"><img src="/thumbs/mint.jpg" alt="Sky Mint design preview" loading="lazy"><b>Sky Mint</b><span>Light &amp; fresh</span><span class="used">👥 1,800+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="royal"><img src="/thumbs/royal.jpg" alt="Royal Purple design preview" loading="lazy"><b>Royal Purple</b><span>Regal violet</span><span class="used">👥 3,300+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="honey"><img src="/thumbs/honey.jpg" alt="Golden Honey design preview" loading="lazy"><b>Golden Honey</b><span>Warm &amp; cosy</span><span class="used">👥 2,200+ pages made</span></button>
-    <button class="dcard" type="button" data-theme="snow"><img src="/thumbs/snow.jpg" alt="Snow White design preview" loading="lazy"><b>Snow White</b><span>Pure &amp; minimal</span><span class="used">👥 950+ pages made</span></button>
-  </div>
-</section>
+
 
 <div class="wrap">
   <div class="steps">
@@ -271,27 +253,23 @@ footer b{color:var(--teal-d)}
 
   <div class="card" id="maker">
     <h2>🎂 Birthday Surprise Maker</h2>
-    <p class="sub">Fill this in — your page, your share link and your download are created instantly.</p>
+    <p class="sub">⏱ Takes about 30 seconds — the wish, letter and PIN are already filled in for you. Just add two names and tap Create.</p>
     <form id="makerForm" autocomplete="off">
-      <div class="mprog"><span id="mStepLabel">Step 1 of 4 · Pick a design</span><div class="mbar"><i id="mBar"></i></div></div>
+      <div class="mprog"><span id="mStepLabel">Step 1 of 2 · Names & design</span><div class="mbar"><i id="mBar"></i></div></div>
 
       <div class="mstep" data-step="1">
-        <label>Choose a design <small>(15 designs — every one has its own colours, PIN screen and loading style)</small></label>
-        <div class="theme-grid" id="themeGrid"></div>
-        <button type="button" id="themeChange" class="genbtn wide hidden">🎨 Change design</button>
-        <div class="mnav"><button class="btn btn-main" id="btnNext1" type="button">Next: their name →</button></div>
-      </div>
-
-      <div class="mstep hidden" data-step="2">
         <label for="fName">Birthday person's name</label>
         <input type="text" id="fName" placeholder="e.g. Hamza" maxlength="40">
         <p class="ferr hidden" id="nameErr">Please write their name first — the whole page is built around it.</p>
         <label for="fFrom">Your name <small>(who is this surprise from?)</small></label>
         <input type="text" id="fFrom" placeholder="e.g. Waseem" maxlength="40">
-        <div class="mnav"><button class="btn btn-ghost" id="btnBack2" type="button">← Back</button><button class="btn btn-main" id="btnNext2" type="button">Next: wish &amp; letter →</button></div>
+        <label>Choose a design <small>(15 designs — Midnight Gold is already picked for you; tap another only if you want)</small></label>
+        <div class="theme-grid" id="themeGrid"></div>
+        <button type="button" id="themeChange" class="genbtn wide hidden">🎨 Change design</button>
+        <div class="mnav"><button class="btn btn-main" id="btnNext1" type="button">Next: wish, photos &amp; PIN →</button></div>
       </div>
 
-      <div class="mstep hidden" data-step="3">
+      <div class="mstep hidden" data-step="2">
         <label for="fWish">Birthday wish <small>(already filled in for you — shuffle for another, or write your own)</small></label>
         <textarea id="fWish" maxlength="600" placeholder="Your birthday wish will appear here…"></textarea>
         <button class="genbtn wide" id="btnGenWish" type="button">🔀 Shuffle — show me another wish</button>
@@ -325,10 +303,6 @@ footer b{color:var(--teal-d)}
             <button class="genbtn" id="btnUseLetter" type="button">💌 Use this letter</button>
           </div>
         </details>
-        <div class="mnav"><button class="btn btn-ghost" id="btnBack3" type="button">← Back</button><button class="btn btn-main" id="btnNext3" type="button">Next: photos &amp; PIN →</button></div>
-      </div>
-
-      <div class="mstep hidden" data-step="4">
         <label for="fPhotos">Add photos <small>(optional — up to 4; they appear as an auto-sliding gallery on the page)</small></label>
         <input type="file" id="fPhotos" accept="image/*" multiple>
         <div class="thumbs" id="thumbs"></div>
@@ -354,8 +328,7 @@ footer b{color:var(--teal-d)}
         <p class="ferr hidden" id="pinErr">The PIN must be 4 to 8 numbers (digits only) — it keeps the page safe.</p>
         <button class="btn btn-ghost" id="btnPreview" type="button" style="margin-top:18px">👁 Preview my page</button>
         <iframe id="pvFrame" class="hidden" title="Page preview"></iframe>
-        <div class="mnav"><button class="btn btn-ghost" id="btnBack4" type="button">← Back</button></div>
-        <button class="btn btn-main" id="btnMake" type="button">✨ Create my page</button>
+        <div class="mnav"><button class="btn btn-ghost" id="btnBack2" type="button">← Back</button><button class="btn btn-main" id="btnMake" type="button">✨ Create my page</button></div>
       </div>
     </form>
 
@@ -387,6 +360,28 @@ footer b{color:var(--teal-d)}
 </div>
 
 
+
+<section class="dsec">
+  <h2>🎨 15 designs — tap one to start with it</h2>
+  <p class="dsub">Every design has its own colours, PIN screen, loading style, music and cake.</p>
+  <div class="dgrid">
+    <button class="dcard" type="button" data-theme="classic"><i class="pill hot">🔥 HOT</i><i class="pill rec">★ RECOMMENDED</i><img src="/thumbs/classic.jpg" alt="Midnight Gold design preview" loading="lazy"><b>Midnight Gold</b><span>The timeless classic</span><span class="used">👥 9,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="pastel"><img src="/thumbs/pastel.jpg" alt="Pastel Sky design preview" loading="lazy"><b>Pastel Sky</b><span>Soft &amp; dreamy</span><span class="used">👥 5,200+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="neon"><i class="pill hot">🔥 HOT</i><img src="/thumbs/neon.jpg" alt="Neon Galaxy design preview" loading="lazy"><b>Neon Galaxy</b><span>Bold night glow</span><span class="used">👥 5,900+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="rose"><i class="pill hot">🔥 HOT</i><img src="/thumbs/rose.jpg" alt="Rose Royal design preview" loading="lazy"><b>Rose Royal</b><span>Romantic roses</span><span class="used">👥 6,400+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="ocean"><img src="/thumbs/ocean.jpg" alt="Ocean Breeze design preview" loading="lazy"><b>Ocean Breeze</b><span>Fresh sea air</span><span class="used">👥 2,900+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="sunset"><img src="/thumbs/sunset.jpg" alt="Sunset Peach design preview" loading="lazy"><b>Sunset Peach</b><span>Warm golden hour</span><span class="used">👥 4,100+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="lavender"><img src="/thumbs/lavender.jpg" alt="Lavender Dream design preview" loading="lazy"><b>Lavender Dream</b><span>Calm &amp; gentle</span><span class="used">👥 2,600+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="emerald"><i class="pill hot">🔥 HOT</i><img src="/thumbs/emerald.jpg" alt="Emerald Royal design preview" loading="lazy"><b>Emerald Royal</b><span>Rich &amp; elegant</span><span class="used">👥 3,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="candy"><img src="/thumbs/candy.jpg" alt="Candy Pop design preview" loading="lazy"><b>Candy Pop</b><span>Sweet &amp; playful</span><span class="used">👥 4,700+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="vintage"><img src="/thumbs/vintage.jpg" alt="Vintage Paper design preview" loading="lazy"><b>Vintage Paper</b><span>Old-letter charm</span><span class="used">👥 620+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="noir"><img src="/thumbs/noir.jpg" alt="Cherry Noir design preview" loading="lazy"><b>Cherry Noir</b><span>Dark &amp; dramatic</span><span class="used">👥 1,400+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="mint"><img src="/thumbs/mint.jpg" alt="Sky Mint design preview" loading="lazy"><b>Sky Mint</b><span>Light &amp; fresh</span><span class="used">👥 1,800+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="royal"><img src="/thumbs/royal.jpg" alt="Royal Purple design preview" loading="lazy"><b>Royal Purple</b><span>Regal violet</span><span class="used">👥 3,300+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="honey"><img src="/thumbs/honey.jpg" alt="Golden Honey design preview" loading="lazy"><b>Golden Honey</b><span>Warm &amp; cosy</span><span class="used">👥 2,200+ pages made</span></button>
+    <button class="dcard" type="button" data-theme="snow"><img src="/thumbs/snow.jpg" alt="Snow White design preview" loading="lazy"><b>Snow White</b><span>Pure &amp; minimal</span><span class="used">👥 950+ pages made</span></button>
+  </div>
+</section>
 
 <section class="features">
   <div class="feature"><div class="fi">🔒</div><b>Secret PIN lock</b><p>Every page opens only with a PIN you choose — like a little locked gift box they unlock on their phone.</p></div>
@@ -1887,26 +1882,22 @@ function expandThemes(){
 if(themeChange) themeChange.addEventListener("click", expandThemes);
 
 /* ---- 4-step maker, draft autosave, preview, design grid ---- */
-var STEP_LABELS = {1:"Step 1 of 4 · Pick a design", 2:"Step 2 of 4 · Names", 3:"Step 3 of 4 · Wish & letter", 4:"Step 4 of 4 · Photos, gift & PIN"};
+var STEP_LABELS = {1:"Step 1 of 2 · Names & design", 2:"Step 2 of 2 · Wish, photos & PIN"};
 function goStep(n){
   document.querySelectorAll(".mstep").forEach(function(st){ st.classList.toggle("hidden", parseInt(st.getAttribute("data-step"),10) !== n); });
-  $("mBar").style.width = (n*25) + "%";
-  $("mStepLabel").textContent = STEP_LABELS[n];
+  $("mBar").style.width = (n*50) + "%";
+  $("mStepLabel").textContent = (window.WL_T ? WL_T(STEP_LABELS[n]) : STEP_LABELS[n]);
   var anchor = document.querySelector(".mprog") || document.getElementById("maker");
   if (anchor) { var y = anchor.getBoundingClientRect().top + window.pageYOffset - 76; window.scrollTo({ top: Math.max(0, y), behavior: "smooth" }); }
 }
 function saveDraft(){
   try{ localStorage.setItem("wl_draft", JSON.stringify({ n:fName.value, f:fFrom.value, pin:fPin.value, wc:fWishCat.value, w:fWish.value, ls:fLetterSel.value, l:fLetter.value, g:fGift.value, gc:fGiftCustom.value, t:WL_THEME })); }catch(e){}
 }
-$("btnNext1").addEventListener("click", function(){ goStep(2); });
-$("btnBack2").addEventListener("click", function(){ goStep(1); });
-$("btnNext2").addEventListener("click", function(){
+$("btnNext1").addEventListener("click", function(){
   if(!fName.value.trim()){ $("nameErr").classList.remove("hidden"); fName.focus(); return; }
-  $("nameErr").classList.add("hidden"); goStep(3);
+  $("nameErr").classList.add("hidden"); goStep(2);
 });
-$("btnBack3").addEventListener("click", function(){ goStep(2); });
-$("btnNext3").addEventListener("click", function(){ goStep(4); });
-$("btnBack4").addEventListener("click", function(){ goStep(3); });
+$("btnBack2").addEventListener("click", function(){ goStep(1); });
 $("btnPinGen").addEventListener("click", function(){ fPin.value = String(Math.floor(1000 + Math.random()*9000)); $("pinErr").classList.add("hidden"); saveDraft(); });
 $("makerForm").addEventListener("input", saveDraft);
 $("makerForm").addEventListener("change", saveDraft);
@@ -1931,7 +1922,7 @@ $("makerForm").addEventListener("change", saveDraft);
 })();
 $("btnPreview").addEventListener("click", function(){
   var d = collect();
-  if(!d.name){ goStep(2); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
+  if(!d.name){ goStep(1); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
   lastHtml = withSiteLink(renderPage(d));
   var pv = $("pvFrame"); pv.srcdoc = lastHtml; pv.classList.remove("hidden");
   pv.scrollIntoView({behavior:"smooth", block:"nearest"});
@@ -2060,7 +2051,7 @@ function storePayload(slug, payload){
 var lastD=null, lastHtml="";
 var lastLink = "", lastPin = "";
 function updateWa(){
-  var msg = "I made a birthday surprise for you 🎁 Open it here: " + lastLink;
+  var msg = (window.WL_T ? WL_T("wa_msg") : "I made a birthday surprise for you 🎁 Open it here: ") + lastLink;
   if($("waPin").checked) msg += " PIN: " + lastPin;
   $("btnWa").href = "https://wa.me/?text=" + encodeURIComponent(msg);
 }
@@ -2070,7 +2061,7 @@ function showResult(link, d){
   $("pinShow").value = d.pin;
   updateWa();
   $("btnOpen").href = link;
-  $("pinNote").innerHTML = "🔑 The page opens with the PIN: <b>" + d.pin + "</b> — share it only with the birthday person.";
+  $("pinNote").innerHTML = (window.WL_T ? WL_T("pin_note") : "🔑 The page opens with the PIN: <b>{pin}</b> — share it only with the birthday person.").replace("{pin}", d.pin);
   var pv = $("pvFrame"); pv.srcdoc = lastHtml; pv.classList.remove("hidden");
   var dn = $("delNote");
   if(window.__WL_TOKEN__){
@@ -2106,7 +2097,7 @@ function apiCreate(d){
 }
 $("btnMake").addEventListener("click", function(){
   var d = collect();
-  if(!d.name){ goStep(2); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
+  if(!d.name){ goStep(1); $("nameErr").classList.remove("hidden"); fName.focus(); return; }
   if(!/^[0-9]{4,8}$/.test(d.pin)){ $("pinErr").classList.remove("hidden"); fPin.focus(); return; }
   $("pinErr").classList.add("hidden");
   lastD = d;
@@ -2284,5 +2275,6 @@ else { runViewer(); }
   else { go(); }
 })();
 </script>
+<script src="/i18n.js"></script>
 </body>
 </html>

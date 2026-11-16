@@ -21,6 +21,7 @@ a{color:var(--indigo)}
 .wrap{max-width:760px;margin:0 auto;padding:0 18px}
 .top{position:sticky;top:0;z-index:20;background:rgba(255,249,242,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .topin{display:flex;align-items:center;gap:14px;padding:10px 0}
+.langsel{margin-left:auto;border:1.5px solid var(--line);background:#fff;color:var(--indigo);font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
 .logo{font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--indigo);text-decoration:none}
 .logo em{color:var(--coral);font-style:normal}
 .nav{margin-left:auto;display:flex;gap:16px;font-size:14.5px}
@@ -68,6 +69,7 @@ footer{background:#0B0B12;margin-top:10px}
 <header class="top"><div class="wrap topin">
 <a class="logo" href="/">🎂 Wish<em>Link</em></a>
 <nav class="nav"><a href="/">Home</a><a href="/my.html">Track My Pages</a><a href="/studio.html">Photo Studio</a><a href="/blog.html">Blog</a></nav>
+<select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
 </div></header>
 
 <section class="hero wrap">
@@ -164,6 +166,7 @@ function render(pages){
   if (!pages.length) {
     if (sb) sb.hidden = true;
     el.innerHTML = '<div class="empty">You have not made any page on this device yet.<br><a class="btn btn-pri" href="/#maker">✨ Create your first page</a></div>';
+    if (window.WL18N) WL18N.apply();
     return;
   }
   var tv = 0, to = 0;
@@ -177,6 +180,7 @@ function render(pages){
   var pins = {};
   localPages().forEach(function(p){ pins[p.slug] = p.pin; });
   el.innerHTML = pages.map(function(p){ return card(p, pins[p.slug] || ''); }).join('');
+  if (window.WL18N) WL18N.apply();
   Array.prototype.forEach.call(el.querySelectorAll('[data-copy]'), function(b){
     b.addEventListener('click', function(){ copyText(b.getAttribute('data-copy'), b.getAttribute('data-msg') || 'Link copied ✓'); });
   });
@@ -233,5 +237,6 @@ setInterval(function(){ if (!document.hidden) load(); }, 45000);
 </script>
 <script>(function(s){s.dataset.zone='12272506',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>(function(s){s.dataset.zone='12272509',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="/i18n.js"></script>
 </body>
 </html>

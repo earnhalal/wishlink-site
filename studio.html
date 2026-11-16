@@ -30,6 +30,7 @@ a{color:var(--indigo)}
 .logo{font-family:'Fraunces',serif;font-weight:700;font-size:22px;color:var(--indigo);text-decoration:none}
 .logo em{color:var(--coral);font-style:normal}
 .nav{margin-left:auto;display:flex;gap:16px;font-size:14.5px}
+.langsel{margin-left:12px;border:1.5px solid #E8E3F0;background:#fff;color:#2D2A6E;font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
 .mypill{margin-left:12px;background:#2D2A6E;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(45,42,110,.25)}
 .mypill:hover{background:#211F55}
 .nav a{color:var(--ink);text-decoration:none}
@@ -97,7 +98,8 @@ canvas#cv{width:100%;max-width:430px;height:auto;border-radius:10px;box-shadow:0
 <header class="top"><div class="wrap topin">
 <a class="logo" href="/">Wish<em>Link</em></a>
 <nav class="nav"><a href="/#designs">Designs</a><a href="/#maker" class="keep">Make a page</a><a href="/blog.html">Blog</a></nav>
-<a class="mypill" href="/my.html">📊 Track My Pages</a>
+<select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
+  <a class="mypill" href="/my.html">📊 Track My Pages</a>
 </div></header>
 
 <main class="wrap">
@@ -720,5 +722,6 @@ setMode('ai');
 </script>
 <script>(function(s){s.dataset.zone='12272506',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 <script>(function(s){s.dataset.zone='12272509',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+<script src="/i18n.js"></script>
 </body>
 </html>
