@@ -34,6 +34,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .langsel{margin-left:12px;border:1.5px solid #E8E3F0;background:#fff;color:#2D2A6E;font:600 13.5px 'DM Sans',sans-serif;padding:8px 10px;border-radius:999px;cursor:pointer;max-width:150px}
 .mypill{margin-left:12px;background:#2D2A6E;color:#fff!important;text-decoration:none;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(45,42,110,.25)}
 .mypill:hover{background:#211F55}
+.menubtn{display:none;background:#fff;border:1.5px solid #E8E3F0;color:#2D2A6E;font-size:18px;line-height:1;padding:8px 13px;border-radius:999px;cursor:pointer;margin-left:10px}
+@media(max-width:860px){.menubtn{display:block}.langsel{margin-left:auto}.nav{display:none!important}.nav.open{display:flex!important;position:absolute;top:60px;right:12px;left:12px;flex-direction:column;align-items:stretch;gap:2px;background:#fff;border:1.5px solid #E8E3F0;border-radius:16px;padding:8px;box-shadow:0 18px 40px rgba(45,42,110,.18);z-index:80;margin-left:0}.nav.open a{padding:12px 14px;border-radius:10px;font-size:15.5px;text-decoration:none}.topin,header.top{position:relative}}
+
 .page{max-width:760px;margin:26px auto 10px;padding:0 18px}
 .page .card{background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:30px 28px;box-shadow:0 10px 30px rgba(14,80,70,.07)}
 .page h1{font-size:30px;line-height:1.25;margin-bottom:6px}
@@ -62,14 +65,17 @@ footer{background:#0B0B12;margin-top:40px;padding:30px 18px 36px;text-align:cent
 <body>
 <header class="top">
   <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
-  <nav class="nav">
+  <nav class="nav" id="wlNav">
     <a href="/">Home</a>
+    <a href="/#maker">Make a page</a>
+    <a href="/studio.html">Photo Studio</a>
+    <a href="/my.html">Track My Pages</a>
     <a href="/blog.html">Blog</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </nav>
   <select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
-  <a class="mypill" href="/my.html">📊 Track My Pages</a>
+  <button id="wlMenuBtn" class="menubtn" aria-label="Menu">☰</button>
 </header>
 <p class="tagline">BIRTHDAY SURPRISE PAGES</p>
 <main class="page"><div class="card">

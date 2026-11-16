@@ -361,6 +361,17 @@
   st.textContent = "html[lang='ur'][dir='rtl'] body, html[lang='ur'][dir='rtl'] input, html[lang='ur'][dir='rtl'] textarea, html[lang='ur'][dir='rtl'] select, html[lang='ur'][dir='rtl'] button { font-family: 'Noto Nastaliq Urdu', 'Jameel Noori Nastaleeq', serif; } html[lang='ur'][dir='rtl'] body { line-height: 2.05; } html[lang='ur'][dir='rtl'] input, html[lang='ur'][dir='rtl'] textarea { line-height: 1.9; } html[lang='ur'][dir='rtl'] .linkrow input, html[lang='ur'][dir='rtl'] .plink { direction: ltr; text-align: left; }";
   document.head.appendChild(st);
 
+  DICT["▶ See a live demo first"] = { r: "▶ Pehle live demo dekho", u: "▶ پہلے لائیو ڈیمو دیکھیں", h: "▶ पहले लाइव डेमो देखें" };
+  DICT["· PIN:"] = { r: "· PIN:", u: "· پن:", h: "· PIN:" };
+
+  /* header menu (mobile): the ☰ button toggles the nav panel */
+  var mb = document.getElementById("wlMenuBtn");
+  var nv = document.getElementById("wlNav") || document.querySelector(".nav");
+  if (mb && nv) {
+    mb.addEventListener("click", function () { nv.classList.toggle("open"); });
+    nv.addEventListener("click", function (e) { if (e.target.tagName === "A") nv.classList.remove("open"); });
+  }
+
   var sel = document.getElementById("wlLangSel");
   if (sel) {
     sel.value = cur;

@@ -186,12 +186,15 @@ footer b{color:var(--teal-d)}
 .dsec{max-width:1060px;margin:32px auto 0;padding:0 18px}
 .dsec h2{text-align:center;font-size:24px}
 .dsec .dsub{text-align:center;color:var(--mut);font-size:14.5px;margin-top:5px}
-.hero2{display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center;max-width:1060px;margin:0 auto;padding:40px 18px 6px}
+.hero2{max-width:780px;margin:0 auto;padding:54px 18px 8px;text-align:center}
+.demolink{margin-top:16px;font-size:14.5px;color:var(--mut)}
+.demolink a{color:var(--teal);font-weight:700;text-decoration:none}
+.demolink a:hover{text-decoration:underline}
 .hero2 h1{font-size:clamp(30px,4.6vw,44px);line-height:1.14}
 .hero2 h1 em{font-style:normal;color:var(--teal)}
 .hero2 .txt p{color:var(--mut);font-size:16.5px;margin-top:12px;line-height:1.6}
 .hero2 .cta{display:inline-block;margin-top:20px;background:var(--teal);color:#fff;text-decoration:none;font-weight:700;font-size:16.5px;padding:15px 32px;border-radius:999px;box-shadow:0 10px 24px rgba(45,42,110,.3)}
-.hero2 .trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.hero2 .trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;justify-content:center}
 .hero2 .trust span{background:#fff;border:1.5px solid var(--line);color:var(--ink);font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:999px}
 .herodemo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:26px 10px}
 .demo-btn.ghostbig{background:#fff;color:var(--indigo);border:2px solid var(--indigo);font-size:16.5px;padding:13px 30px;min-height:54px;border-radius:999px}
@@ -199,8 +202,11 @@ footer b{color:var(--teal-d)}
 .studiobtn:hover{border-color:var(--indigo)}
 .demo-btn.big{font-size:19px;padding:17px 42px;min-height:62px;border-radius:999px}
 .phonecap{text-align:center;color:var(--mut);font-size:13px;margin-top:9px}
-@media(max-width:820px){.hero2{grid-template-columns:1fr;padding-top:28px}.hero2 .txt{text-align:center}.hero2 .trust{justify-content:center}}
+@media(max-width:820px){.hero2{padding-top:36px}}
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+.menubtn{display:none;background:#fff;border:1.5px solid #E8E3F0;color:#2D2A6E;font-size:18px;line-height:1;padding:8px 13px;border-radius:999px;cursor:pointer;margin-left:10px}
+@media(max-width:860px){.menubtn{display:block}.langsel{margin-left:auto}.nav{display:none!important}.nav.open{display:flex!important;position:absolute;top:60px;right:12px;left:12px;flex-direction:column;align-items:stretch;gap:2px;background:#fff;border:1.5px solid #E8E3F0;border-radius:16px;padding:8px;box-shadow:0 18px 40px rgba(45,42,110,.18);z-index:80;margin-left:0}.nav.open a{padding:12px 14px;border-radius:10px;font-size:15.5px;text-decoration:none}.topin,header.top{position:relative}}
 </style>
 <script>
 /* Viewer mode: a shared link (#p=...) opens the birthday page itself */
@@ -214,15 +220,17 @@ footer b{color:var(--teal-d)}
 <body>
 <header class="top">
   <a class="brand" href="/" style="text-decoration:none;color:inherit"><span class="brand-emoji">🎂</span> WishLink</a>
-  <nav class="nav">
+  <nav class="nav" id="wlNav">
     <a href="/">Home</a>
+    <a href="/#maker">Make a page</a>
+    <a href="/studio.html">Photo Studio</a>
     <a href="/my.html">Track My Pages</a>
     <a href="/blog.html">Blog</a>
     <a href="/about.html">About</a>
     <a href="/contact.html">Contact</a>
   </nav>
   <select id="wlLangSel" class="langsel" aria-label="Language"><option value="en">🌐 English</option><option value="roman">Roman Urdu</option><option value="ur">اردو</option><option value="hi">हिन्दी</option></select>
-  <a class="mypill" href="/my.html">📊 Track My Pages</a>
+  <button id="wlMenuBtn" class="menubtn" aria-label="Menu">☰</button>
   
 </header>
 <p class="tagline">BIRTHDAY SURPRISE PAGES</p>
@@ -232,13 +240,8 @@ footer b{color:var(--teal-d)}
     <h1>A birthday page they will <em>never forget</em> 🎂</h1>
     <p>WishLink turns a name, a wish and a few photos into a magical little web page — locked with a secret PIN, opened with one simple link.</p>
     <a class="cta" href="#maker">✨ Create your free page</a>
-    <div class="trust"><span>✅ 100% free</span><span>🔒 Secret PIN lock</span><span>📸 Photo gallery</span><span>🎨 15 designs</span><span>🚫 No app. No sign-up.</span></div>
-  </div>
-  <div class="herodemo">
-    <a class="demo-btn big" href="/#p=eyJuIjoiQXllc2hhIiwiZiI6IlRlYW0gV2lzaExpbmsiLCJwIjoiZGVtbyIsIndjIjoiaGVhcnRmZWx0Iiwid2kiOjAsImxpIjowLCJnaSI6MCwiaW0iOlsiaHR0cHM6Ly93d3cud2lzaGxpbmsucHAudWEvZGVtby1hZnRlci5qcGciLCJodHRwczovL3d3dy53aXNobGluay5wcC51YS9kZW1vLWJlZm9yZS5qcGciXX0" target="_blank" rel="noopener">▶ Live Demo</a>
-    <a class="demo-btn ghostbig" href="/studio.html">📸 Photo Frame Studio</a>
-    <a class="demo-btn ghostbig" href="/my.html">📊 Track My Pages — see who opened your surprise</a>
-    <p class="phonecap">See a real surprise page, exactly as your friend will open it.<br>PIN: <b>demo</b></p>
+    <p class="demolink"><a href="/#p=eyJuIjoiQXllc2hhIiwiZiI6IlRlYW0gV2lzaExpbmsiLCJwIjoiZGVtbyIsIndjIjoiaGVhcnRmZWx0Iiwid2kiOjAsImxpIjowLCJnaSI6MCwiaW0iOlsiaHR0cHM6Ly93d3cud2lzaGxpbmsucHAudWEvZGVtby1hZnRlci5qcGciLCJodHRwczovL3d3dy53aXNobGluay5wcC51YS9kZW1vLWJlZm9yZS5qcGciXX0" target="_blank" rel="noopener">▶ See a live demo first</a> · PIN: <b>demo</b></p>
+    <div class="trust"><span>✅ 100% free</span><span>🔒 Secret PIN lock</span><span>🚫 No app. No sign-up.</span></div>
   </div>
 </section>
 
