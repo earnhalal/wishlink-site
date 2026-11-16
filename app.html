@@ -330,7 +330,7 @@
   /* analytics (same system as the website; this page counts as 'app') */
   try {
     var dev = deviceId();
-    function sendT(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: 'app', type: t }), keepalive: true }).catch(function(){}); }
+    function sendT(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: 'app', type: t, ref: (document.referrer ? document.referrer.split('/')[2] : '') || '' }), keepalive: true }).catch(function(){}); }
     sendT('visit'); setInterval(function(){ sendT('ping'); }, 30000);
   } catch (e) {}
 })();

@@ -36,6 +36,14 @@ module.exports = async (req, res) => {
       await dbUpdate("pages/" + slug, {
         seen: { views: seen.views || 0, opens: (seen.opens || 0) + 1, lastView: seen.lastView || 0, lastOpen: Date.now() },
       }).catch(() => {});
+      /* analytics funnel: total recipient opens (best-effort) */
+      try {
+        const day = new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10);
+        const dayRec = (await dbGet("stats_days/" + day)) || {};
+        await dbUpdate("stats_days/" + day, { opens: (dayRec.opens || 0) + 1 });
+        const tot = (await dbGet("stats_total")) || {};
+        await dbUpdate("stats_total", { opens: (tot.opens || 0) + 1 });
+      } catch (e) {}
     }
 
     /* content only — never the hashes. Fields pass through as stored:

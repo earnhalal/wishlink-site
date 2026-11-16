@@ -119,7 +119,7 @@ footer{background:#4A1225;margin-top:40px;padding:30px 18px 36px;text-align:cent
     if (!dev) { dev = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', dev); }
     var page = location.pathname.replace(/^\/+|\/+$/g, '').replace(/\.html$/, '').replace(/\//g, '-') || 'home';
     if (!/^[a-z0-9-]{1,40}$/.test(page)) page = 'other';
-    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t }), keepalive: true }).catch(function(){}); }
+    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: page, type: t, ref: (document.referrer ? document.referrer.split('/')[2] : '') || '' }), keepalive: true }).catch(function(){}); }
     send('visit');
     setInterval(function(){ send('ping'); }, 30000);
   } catch (e) {}

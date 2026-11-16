@@ -22,6 +22,14 @@ module.exports = async (req, res) => {
       await dbUpdate("pages/" + slug, {
         seen: { views: (seen.views || 0) + 1, opens: seen.opens || 0, lastView: Date.now(), lastOpen: seen.lastOpen || 0 },
       }).catch(() => {});
+      /* analytics funnel: total link views (best-effort) */
+      try {
+        const day = new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10);
+        const dayRec = (await dbGet("stats_days/" + day)) || {};
+        await dbUpdate("stats_days/" + day, { views: (dayRec.views || 0) + 1 });
+        const tot = (await dbGet("stats_total")) || {};
+        await dbUpdate("stats_total", { views: (tot.views || 0) + 1 });
+      } catch (e) {}
     }
     return send(res, 200, { ok: true });
   } catch (e) {

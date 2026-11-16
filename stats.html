@@ -47,6 +47,16 @@ table.pages td{padding:8px 6px;border-bottom:1px solid var(--line)}
 table.pages td:last-child{text-align:right;font-weight:700;color:var(--indigo)}
 .mut{color:var(--mut);font-size:13px}
 .rowline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.bars.thin{gap:3px;height:110px}
+.bars.thin .col{max-width:26px;border-radius:5px 5px 0 0}
+.bars.thin .bv{font-size:10px}
+.bars.thin .bd{font-size:9px}
+.funnel{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin-top:6px}
+.fstep{flex:1;min-width:120px;background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.fstep .fn{font-family:'Newsreader',serif;font-size:28px;font-weight:700;color:var(--indigo);line-height:1.1}
+.fstep .fl{font-size:12.5px;color:var(--mut);margin-top:2px}
+.farrow{align-self:center;text-align:center;color:var(--coral);font-weight:700;font-size:13px;min-width:52px}
+.farrow .fp{display:block;background:var(--indigo);color:#fff;border-radius:999px;padding:2px 8px;font-size:12px;margin-top:2px}
 footer{background:#4A1225;color:#C9CAE0;text-align:center;padding:26px 16px;margin-top:10px}
 footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
 </style>
@@ -85,8 +95,26 @@ footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
     </div>
 
     <div class="card">
+      <h2 style="margin-bottom:4px">🚀 The funnel — today</h2>
+      <p class="mut" style="margin:0 0 8px">How visitors turn into surprises. The % shows how many made it to the next step.</p>
+      <div class="funnel" id="funnel"></div>
+      <p class="mut" id="funnelTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
       <div class="rowline"><h2>Last 7 days</h2><span class="mut">visits per day · unique visitors &amp; 🎂 pages created under each bar</span></div>
       <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card">
+      <div class="rowline"><h2>Last 30 days</h2><span class="mut">visits per day · 🎂 pages created under each bar</span></div>
+      <div class="bars thin" id="bars30"></div>
+    </div>
+
+    <div class="card">
+      <div class="rowline"><h2>Today by hour</h2><span class="mut">visits in each hour (Pakistan time) — your best posting times</span></div>
+      <div class="bars thin" id="barsHours"></div>
+      <p class="mut" id="hoursEmpty" style="display:none">No visits yet today.</p>
     </div>
 
     <div class="card">
@@ -110,6 +138,28 @@ footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
       <p class="mut" id="brLine"></p>
     </div>
 
+    <div class="card">
+      <h2 style="margin-bottom:8px">🔗 Where visitors come from — today</h2>
+      <table class="pages"><tbody id="srcBody"></tbody></table>
+      <p class="mut" id="srcEmpty" style="display:none">No source data yet — it starts counting from the first visit after this update. Note: WhatsApp clicks often arrive as “Direct”, because WhatsApp hides where its clicks come from.</p>
+      <p class="mut" id="srcTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:8px">🎨 Designs people choose</h2>
+      <table class="pages"><tbody id="themeBody"></tbody></table>
+      <p class="mut" id="themeEmpty" style="display:none">No design data yet — it starts counting from the next page anyone creates.</p>
+      <p class="mut" id="themeTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:8px">💰 Credits economy</h2>
+      <table class="pages"><tbody id="ecoBody"></tbody></table>
+      <h2 style="margin:16px 0 8px;font-size:18px">Recent top-ups</h2>
+      <table class="pages"><tbody id="topupBody"></tbody></table>
+      <p class="mut" id="topupEmpty" style="display:none">No top-ups recorded yet.</p>
+    </div>
+
     <p class="mut" style="text-align:center">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
   </div>
 </div>
@@ -119,7 +169,10 @@ footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
 </footer>
 
 <script>
-var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "📊 Track My Pages", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "📊 Track My Pages", app: "📱 Telegram Mini App", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var THEME_NAMES = { classic: "🌙 Midnight Gold", pastel: "☁️ Pastel Sky", neon: "🌌 Neon Galaxy", rose: "🌹 Rose Royal", ocean: "🌊 Ocean Breeze", sunset: "🌅 Sunset Peach", lavender: "💜 Lavender Dream", emerald: "💚 Emerald Royal", candy: "🍬 Candy Pop", vintage: "📜 Vintage Paper", noir: "🍒 Cherry Noir", mint: "🌿 Sky Mint", royal: "👑 Royal Purple", honey: "🍯 Golden Honey", snow: "❄️ Snow White" };
+var SRC_ICONS = { WhatsApp: "💬", Facebook: "📘", Instagram: "📸", TikTok: "🎵", Telegram: "✈️", YouTube: "▶️", Google: "🔍", Direct: "🔗", Other: "🌐" };
+function pct(a, b) { if (!b) return "—"; return Math.round(a / b * 100) + "%"; }
 var COUNTRY_NAMES = { PK: "Pakistan", IN: "India", US: "United States", GB: "United Kingdom", AE: "UAE", SA: "Saudi Arabia", BD: "Bangladesh", CA: "Canada", AU: "Australia", DE: "Germany", FR: "France", IT: "Italy", ES: "Spain", TR: "Türkiye", ID: "Indonesia", MY: "Malaysia", SG: "Singapore", QA: "Qatar", KW: "Kuwait", OM: "Oman", NP: "Nepal", LK: "Sri Lanka", PH: "Philippines", EG: "Egypt", ZA: "South Africa", NG: "Nigeria", KE: "Kenya", BR: "Brazil", MX: "Mexico", NL: "Netherlands", SE: "Sweden", NO: "Norway", DK: "Denmark", IE: "Ireland", NZ: "New Zealand", JP: "Japan", KR: "South Korea", CN: "China", RU: "Russia", UA: "Ukraine", PL: "Poland", TH: "Thailand", VN: "Vietnam", IR: "Iran", IQ: "Iraq", AF: "Afghanistan" };
 function flag(cc) {
   if (!/^[A-Z]{2}$/.test(cc)) return "🌐";
@@ -185,6 +238,65 @@ function render(s) {
   el("devBody").innerHTML = dents.map(function(e) { return "<tr><td>" + (devIcons[e[0]] || "📟") + " " + e[0] + "</td><td>" + e[1] + "</td></tr>"; }).join("");
   el("osLine").textContent = s.today.oses && Object.keys(s.today.oses).length ? "System: " + mapLine(s.today.oses) : "";
   el("brLine").textContent = s.today.browsers && Object.keys(s.today.browsers).length ? "Browser: " + mapLine(s.today.browsers) : "";
+  /* funnel */
+  var fu = s.today.uniques || 0, fc = s.today.created || 0, fv = s.today.views || 0, fo = s.today.opens || 0;
+  function fstep(n, l) { return '<div class="fstep"><div class="fn">' + n + '</div><div class="fl">' + l + "</div></div>"; }
+  function farrow(p) { return '<div class="farrow">➜<span class="fp">' + p + "</span></div>"; }
+  el("funnel").innerHTML =
+    fstep(fu, "👥 unique visitors") + farrow(pct(fc, fu)) +
+    fstep(fc, "🎂 pages created") + farrow(pct(fv, fc)) +
+    fstep(fv, "👁 page links opened") + farrow(pct(fo, fv)) +
+    fstep(fo, "🎉 opened with PIN");
+  el("funnelTotal").textContent = "All time: " + (s.total.uniques || 0) + " visitors → " + (s.total.pages || 0) + " pages created → " + (s.total.views || 0) + " link opens → " + (s.total.opens || 0) + " PIN opens.";
+  /* 30 days */
+  if (s.last30) {
+    var m30 = 1;
+    s.last30.forEach(function(r) { if (r.visits > m30) m30 = r.visits; });
+    el("bars30").innerHTML = s.last30.map(function(r, i) {
+      var h = Math.max(3, Math.round(r.visits / m30 * 74));
+      var lbl = (i % 5 === 0 || i === 29) ? fmtDate(r.d) : "";
+      return '<div class="bar' + (i === 29 ? " today" : "") + '"><div class="bv">' + (r.visits || "") + '</div><div class="col" style="height:' + h + 'px"></div><div class="bd">' + lbl + '</div><div class="bu">🎂 ' + (r.created || 0) + "</div></div>";
+    }).join("");
+  }
+  /* hours */
+  var hrs = s.hours || {};
+  var hmax = 1, hsum = 0;
+  for (var hh = 0; hh < 24; hh++) { var hv = hrs[String(hh).padStart(2, "0")] || 0; if (hv > hmax) hmax = hv; hsum += hv; }
+  el("hoursEmpty").style.display = hsum ? "none" : "block";
+  var hhtml = "";
+  for (var h2 = 0; h2 < 24; h2++) {
+    var key = String(h2).padStart(2, "0");
+    var val = hrs[key] || 0;
+    var bh = Math.max(3, Math.round(val / hmax * 74));
+    hhtml += '<div class="bar"><div class="bv">' + (val || "") + '</div><div class="col" style="height:' + bh + 'px"></div><div class="bd">' + (h2 % 3 === 0 ? key + ":00" : "") + "</div></div>";
+  }
+  el("barsHours").innerHTML = hhtml;
+  /* sources */
+  var sents = sortedEntries(s.today.sources);
+  el("srcEmpty").style.display = sents.length ? "none" : "block";
+  el("srcBody").innerHTML = sents.map(function(e) { return "<tr><td>" + (SRC_ICONS[e[0]] || "🌐") + " " + e[0] + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  var sAll = sortedEntries(s.total.sources).slice(0, 5);
+  el("srcTotal").textContent = sAll.length ? "All time: " + sAll.map(function(e) { return (SRC_ICONS[e[0]] || "🌐") + " " + e[0] + " " + e[1]; }).join(" · ") : "";
+  /* themes */
+  var tents = sortedEntries(s.today.themes);
+  el("themeEmpty").style.display = tents.length ? "none" : "block";
+  el("themeBody").innerHTML = tents.map(function(e) { return "<tr><td>" + (THEME_NAMES[e[0]] || e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  var tAll = sortedEntries(s.total.themes).slice(0, 5);
+  el("themeTotal").textContent = tAll.length ? "All time: " + tAll.map(function(e) { return (THEME_NAMES[e[0]] || e[0]) + " " + e[1]; }).join(" · ") : "";
+  /* economy */
+  var eco = s.economy || { wallets: 0, creditsFree: 0, creditsPaid: 0, recentTopups: [] };
+  el("ecoBody").innerHTML =
+    "<tr><td>👛 Credit wallets</td><td>" + (eco.wallets || 0) + "</td></tr>" +
+    "<tr><td>🪙 Credits with users (free + paid)</td><td>" + ((eco.creditsFree || 0) + (eco.creditsPaid || 0)) + "</td></tr>" +
+    "<tr><td>🎬 Credits given for watching ads</td><td>" + (s.total.adGranted || 0) + "</td></tr>" +
+    "<tr><td>💰 Top-up earnings (all time)</td><td>Rs " + (s.total.paidRs || 0) + "</td></tr>";
+  var tops = eco.recentTopups || [];
+  el("topupEmpty").style.display = tops.length ? "none" : "block";
+  el("topupBody").innerHTML = tops.map(function(t2) {
+    var when = "";
+    try { when = new Date(t2.ts).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); } catch (e) {}
+    return "<tr><td>Rs " + t2.amount + " → " + t2.credits + " credits · code " + (t2.code || "") + "</td><td>" + when + "</td></tr>";
+  }).join("");
 }
 function loadStats() {
   if (!pin) return;

@@ -234,7 +234,7 @@ setInterval(function(){ if (!document.hidden) load(); }, 45000);
   try {
     var dev = localStorage.getItem('wl_device');
     if (!dev) { dev = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', dev); }
-    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: 'my-pages', type: t }), keepalive: true }).catch(function(){}); }
+    function send(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: 'my-pages', type: t, ref: (document.referrer ? document.referrer.split('/')[2] : '') || '' }), keepalive: true }).catch(function(){}); }
     send('visit');
     setInterval(function(){ send('ping'); }, 30000);
   } catch (e) {}

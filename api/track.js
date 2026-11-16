@@ -63,6 +63,88 @@ function bumpMap(map, key) {
   return m;
 }
 
+/* Traffic source from the referrer the tracker sends (document.referrer
+   host). WhatsApp in-app clicks usually carry NO referrer, so they land
+   in "Direct" — that is a platform limit, not a bug. */
+function visitSource(ref) {
+  const r = String(ref || "").toLowerCase();
+  if (!r) return "Direct";
+  if (r.includes("wishlink.pp.ua")) return "Direct";
+  if (r.includes("whatsapp") || r.includes("wa.me")) return "WhatsApp";
+  if (r.includes("facebook") || r.includes("fb.")) return "Facebook";
+  if (r.includes("instagram")) return "Instagram";
+  if (r.includes("tiktok")) return "TikTok";
+  if (r.includes("t.me") || r.includes("telegram")) return "Telegram";
+  if (r.includes("youtube") || r.includes("youtu.be")) return "YouTube";
+  if (r.includes("google")) return "Google";
+  return "Other";
+}
+
+async function buildStats() {
+  const now = Date.now();
+  const today = pktDay(now);
+  const yesterday = pktDay(now - 86400000);
+  const days = (await dbGet("stats_days")) || {};
+  const total = (await dbGet("stats_total")) || { visits: 0, uniques: 0 };
+  const liveMap = (await dbGet("stats_live")) || {};
+  let live = 0;
+  const stale = [];
+  for (const dev of Object.keys(liveMap)) {
+    const ts = liveMap[dev] || 0;
+    if (now - ts <= LIVE_WINDOW) live++;
+    else if (now - ts > 10 * 60 * 1000) stale.push(dev);
+  }
+  for (const dev of stale.slice(0, 50)) dbRemove("stats_live/" + dev).catch(() => {});
+  const monthPrefix = today.slice(0, 7);
+  let monthVisits = 0;
+  for (const d of Object.keys(days)) {
+    if (d.startsWith(monthPrefix)) monthVisits += days[d].visits || 0;
+  }
+  const last7 = [], last30 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = pktDay(now - i * 86400000);
+    const rec = days[d] || {};
+    last7.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0, edits: rec.edits || 0, paid: rec.paid || 0 });
+  }
+  for (let i = 29; i >= 0; i--) {
+    const d = pktDay(now - i * 86400000);
+    const rec = days[d] || {};
+    last30.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0 });
+  }
+  const hours = (await dbGet("stats_hours/" + today)) || {};
+  /* economy: aggregate the credits wallets (fine at current scale) */
+  const wallets = (await dbGet("studio_wallets")) || {};
+  let walletCount = 0, sumFree = 0, sumPaid = 0;
+  for (const k of Object.keys(wallets)) {
+    const w = wallets[k] || {};
+    walletCount++; sumFree += w.free || 0; sumPaid += w.paid || 0;
+  }
+  const recentTopups = (await dbGet("recent_topups")) || [];
+  const t = days[today] || {};
+  const y = days[yesterday] || {};
+  const dayOut = (rec) => ({
+    visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0,
+    edits: rec.edits || 0, paid: rec.paid || 0, paidRs: rec.paidRs || 0,
+    opens: rec.opens || 0, views: rec.views || 0,
+    pages: rec.pages || {}, countries: rec.countries || {}, devtypes: rec.devtypes || {},
+    oses: rec.oses || {}, browsers: rec.browsers || {},
+    sources: rec.sources || {}, themes: rec.themes || {},
+  });
+  const tt = dayOut(t); tt.date = today;
+  const yy = dayOut(y); yy.date = yesterday;
+  return {
+    live, today: tt, yesterday: yy, last7, last30, hours, monthVisits,
+    economy: { wallets: walletCount, creditsFree: sumFree, creditsPaid: sumPaid, recentTopups },
+    total: {
+      visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0,
+      edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0,
+      opens: total.opens || 0, views: total.views || 0, adGranted: total.adGranted || 0,
+      countries: total.countries || {}, devtypes: total.devtypes || {}, oses: total.oses || {},
+      browsers: total.browsers || {}, sources: total.sources || {}, themes: total.themes || {},
+    },
+  };
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") return send(res, 405, { error: "method" });
   try {
@@ -100,46 +182,21 @@ module.exports = async (req, res) => {
       return send(res, 200, { ok: true });
     }
 
+    if (type === "ownerfeed") {
+      /* the owner's Telegram bot reads the same numbers with the agent
+         token (for live alerts + the nightly report) */
+      if (!process.env.WL_AGENT_TOKEN || String(b.token || "") !== process.env.WL_AGENT_TOKEN) {
+        return send(res, 401, { error: "auth" });
+      }
+      return send(res, 200, await buildStats());
+    }
+
     if (type === "stats") {
       const admin = await dbGet("stats_admin");
       if (!admin) return send(res, 200, { setup: true });
       const okPin = await verifySecret(String(b.pin || ""), admin.salt, admin.hash);
       if (!okPin) return send(res, 401, { error: "Wrong PIN" });
-      const now = Date.now();
-      const today = pktDay(now);
-      const yesterday = pktDay(now - 86400000);
-      const days = (await dbGet("stats_days")) || {};
-      const total = (await dbGet("stats_total")) || { visits: 0, uniques: 0 };
-      const liveMap = (await dbGet("stats_live")) || {};
-      let live = 0;
-      const stale = [];
-      for (const dev of Object.keys(liveMap)) {
-        const ts = liveMap[dev] || 0;
-        if (now - ts <= LIVE_WINDOW) live++;
-        else if (now - ts > 10 * 60 * 1000) stale.push(dev);
-      }
-      for (const dev of stale.slice(0, 50)) dbRemove("stats_live/" + dev).catch(() => {});
-      const monthPrefix = today.slice(0, 7);
-      let monthVisits = 0;
-      for (const d of Object.keys(days)) {
-        if (d.startsWith(monthPrefix)) monthVisits += days[d].visits || 0;
-      }
-      const last7 = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = pktDay(now - i * 86400000);
-        const rec = days[d] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0 };
-        last7.push({ d, visits: rec.visits || 0, uniques: rec.uniques || 0, created: rec.created || 0, edits: rec.edits || 0, paid: rec.paid || 0 });
-      }
-      const t = days[today] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, paidRs: 0, pages: {} };
-      const y = days[yesterday] || { visits: 0, uniques: 0, created: 0, edits: 0, paid: 0, paidRs: 0 };
-      return send(res, 200, {
-        live,
-        today: { date: today, visits: t.visits || 0, uniques: t.uniques || 0, created: t.created || 0, edits: t.edits || 0, paid: t.paid || 0, paidRs: t.paidRs || 0, pages: t.pages || {}, countries: t.countries || {}, devtypes: t.devtypes || {}, oses: t.oses || {}, browsers: t.browsers || {} },
-        yesterday: { date: yesterday, visits: y.visits || 0, uniques: y.uniques || 0, created: y.created || 0, edits: y.edits || 0, paid: y.paid || 0, paidRs: y.paidRs || 0 },
-        last7,
-        monthVisits,
-        total: { visits: total.visits || 0, uniques: total.uniques || 0, pages: total.pages || 0, edits: total.edits || 0, paid: total.paid || 0, paidRs: total.paidRs || 0, countries: total.countries || {}, devtypes: total.devtypes || {}, oses: total.oses || {}, browsers: total.browsers || {} },
-      });
+      return send(res, 200, await buildStats());
     }
 
     /* ---- visit / ping ---- */
@@ -165,6 +222,12 @@ module.exports = async (req, res) => {
 
     const cc = visitCountry(req);
     const vd = visitDevice(req);
+    const src = visitSource(b.ref);
+
+    /* hourly buckets for today's chart (PKT hour) */
+    const hourKey = String(new Date(now + 5 * 3600 * 1000).getUTCHours()).padStart(2, "0");
+    const hourUpd = {}; hourUpd[hourKey] = ((await dbGet("stats_hours/" + day + "/" + hourKey)) || 0) + 1;
+    await dbSet("stats_hours/" + day + "/" + hourKey, hourUpd[hourKey]).catch(() => {});
 
     const dayRec = (await dbGet("stats_days/" + day)) || { visits: 0, uniques: 0, pages: {} };
     const pages = dayRec.pages || {};
@@ -176,11 +239,15 @@ module.exports = async (req, res) => {
       edits: dayRec.edits || 0,
       paid: dayRec.paid || 0,
       paidRs: dayRec.paidRs || 0,
+      opens: dayRec.opens || 0,
+      views: dayRec.views || 0,
+      themes: dayRec.themes || {},
       pages,
       countries: bumpMap(dayRec.countries, cc),
       devtypes: bumpMap(dayRec.devtypes, vd.type),
       oses: bumpMap(dayRec.oses, vd.os),
       browsers: bumpMap(dayRec.browsers, vd.browser),
+      sources: bumpMap(dayRec.sources, src),
     });
 
     const total = (await dbGet("stats_total")) || { visits: 0, uniques: 0 };
@@ -191,10 +258,15 @@ module.exports = async (req, res) => {
       edits: total.edits || 0,
       paid: total.paid || 0,
       paidRs: total.paidRs || 0,
+      opens: total.opens || 0,
+      views: total.views || 0,
+      adGranted: total.adGranted || 0,
+      themes: total.themes || {},
       countries: bumpMap(total.countries, cc),
       devtypes: bumpMap(total.devtypes, vd.type),
       oses: bumpMap(total.oses, vd.os),
       browsers: bumpMap(total.browsers, vd.browser),
+      sources: bumpMap(total.sources, src),
     });
 
     const daysMap = (devRec && devRec.days) || {};

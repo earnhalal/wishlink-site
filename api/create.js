@@ -65,9 +65,14 @@ module.exports = async (req, res) => {
     try {
       const day = new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10);
       const dayRec = (await dbGet("stats_days/" + day)) || {};
-      await dbUpdate("stats_days/" + day, { created: (dayRec.created || 0) + 1 });
+      const theme = String(content.t || "classic");
+      const dThemes = Object.assign({}, dayRec.themes || {});
+      dThemes[theme] = (dThemes[theme] || 0) + 1;
+      await dbUpdate("stats_days/" + day, { created: (dayRec.created || 0) + 1, themes: dThemes });
       const tot = (await dbGet("stats_total")) || {};
-      await dbUpdate("stats_total", { pages: (tot.pages || 0) + 1 });
+      const tThemes = Object.assign({}, tot.themes || {});
+      tThemes[theme] = (tThemes[theme] || 0) + 1;
+      await dbUpdate("stats_total", { pages: (tot.pages || 0) + 1, themes: tThemes });
     } catch (e) {}
 
     if (content.device) {

@@ -393,6 +393,12 @@ const hPayAgent = async (req, res) => {
         await dbUpdate("pay_requests/" + id, { status: "approved", tid, amount, credits, doneTs: now });
         await bumpStat("paid");
         await bumpStatN("paidRs", amount);
+        /* dashboard economy panel: keep the last 10 top-ups (best-effort) */
+        try {
+          const recent = (await dbGet("recent_topups")) || [];
+          recent.unshift({ amount, credits, code: String(rec.device || "").slice(4, 12).toUpperCase(), ts: now });
+          await dbSet("recent_topups", recent.slice(0, 10));
+        } catch (e) {}
         return send(res, 200, { ok: true, approved: true, credits });
       }
       const reason = REASONS.includes(b.reason) ? b.reason : "unreadable";
@@ -497,6 +503,10 @@ const hAdReward = async (req, res) => {
     w.paid = (w.paid || 0) + AD_REWARD_CREDITS; w.ts = Date.now();
     await dbSet("studio_wallets/" + device, w);
     await dbSet("ad_grants/" + device + "/" + day, cnt + 1);
+    try {
+      const tot = (await dbGet("stats_total")) || {};
+      await dbUpdate("stats_total", { adGranted: (tot.adGranted || 0) + AD_REWARD_CREDITS });
+    } catch (e) {}
     return send(res, 200, { ok: true, granted: true, credits: AD_REWARD_CREDITS });
   } catch (e) {
     return send(res, 200, { ok: true });
