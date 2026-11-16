@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WishLink App — Birthday Pages & AI Photos</title>
+<meta name="description" content="WishLink inside Telegram: check your credits, watch an ad to earn free credits, and create AI birthday photos by Laila.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#FFFBF7">
+<link rel="icon" href="/favicon.ico">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!-- MONETAG TELEGRAM MINI APP SDK
+     The owner pastes the real tag from the Monetag dashboard here and sets
+     WL_AD_ZONE to the zone id. Until then the Watch-Ad button explains that
+     ads are being set up. -->
+<script>window.WL_AD_ZONE = 0;</script>
+<!-- <script src="//ZONE-DOMAIN/sdk.js" data-zone="ZONE_ID" data-sdk="show_ZONE_ID"></script> -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pri:#AD2E5D; --dark:#7E1F45; --grad1:#F98BB0; --grad2:#E0608E;
+    --gold:#E8A62E; --bg:#FFFBF7; --ink:#571F30; --muted:#886A75;
+    --line:#F3D9E2; --tint:#FFF0F5; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  body{margin:0; background:var(--bg); color:var(--ink); font-family:'DM Sans',system-ui,sans-serif; font-size:15px}
+  .wrap{max-width:520px; margin:0 auto; padding:14px 14px 30px}
+  header{display:flex; align-items:center; gap:10px; padding:6px 2px 12px}
+  header .logo{font-size:30px}
+  header h1{font-family:'Newsreader',serif; font-size:24px; margin:0; color:var(--dark)}
+  header p{margin:0; color:var(--muted); font-size:12.5px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; margin:0 0 14px; box-shadow:0 6px 24px rgba(173,46,93,.07)}
+  .card h2{font-family:'Newsreader',serif; font-size:19px; margin:0 0 6px; color:var(--dark)}
+  .card p{margin:0 0 10px; color:var(--muted); line-height:1.45}
+  .bal-big{font-family:'Newsreader',serif; font-size:34px; color:var(--pri); line-height:1}
+  .bal-sub{color:var(--muted); font-size:13px; margin-top:4px}
+  .codechip{display:inline-block; background:var(--tint); border:1px dashed var(--grad2); color:var(--dark);
+    border-radius:10px; padding:3px 10px; font-weight:700; letter-spacing:1px; font-size:13px}
+  .btn{display:block; width:100%; border:0; cursor:pointer; text-align:center; text-decoration:none;
+    background:linear-gradient(135deg,var(--grad1),var(--grad2)); color:#fff; font-weight:700; font-size:16px;
+    border-radius:14px; padding:13px 16px; box-shadow:0 8px 20px rgba(224,96,142,.35)}
+  .btn:active{transform:scale(.99)}
+  .btn[disabled]{opacity:.55}
+  .btn-gold{background:linear-gradient(135deg,#FFD166,var(--gold)); color:#571F30}
+  .status{font-size:13.5px; margin-top:10px; line-height:1.45; min-height:18px}
+  .status.ok{color:#1d7a3a} .status.err{color:#b3261e}
+  .chips{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 4px}
+  .chip{border:1.5px solid var(--line); background:#fff; color:var(--ink); border-radius:999px;
+    padding:8px 13px; font-size:13.5px; font-weight:600; cursor:pointer}
+  .chip.on{border-color:var(--pri); background:var(--tint); color:var(--dark)}
+  input[type=text]{width:100%; border:1.5px solid var(--line); border-radius:12px; padding:11px 12px;
+    font-size:15px; font-family:inherit; color:var(--ink); background:#fff; margin:6px 0 10px}
+  input[type=text]:focus{outline:2px solid var(--grad2); border-color:transparent}
+  .filelab{display:block; border:1.5px dashed var(--grad2); background:var(--tint); border-radius:14px;
+    padding:16px; text-align:center; cursor:pointer; color:var(--dark); font-weight:600}
+  #prevImg,#resImg{width:100%; border-radius:14px; margin-top:10px; display:none}
+  .rowbtns{display:flex; gap:8px}
+  .rowbtns .btn{flex:1}
+  .small{font-size:12.5px; color:var(--muted)}
+  footer{text-align:center; color:var(--muted); font-size:12.5px; padding:8px 0 0}
+  footer a{color:var(--pri); text-decoration:none; font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🎂</div>
+    <div>
+      <h1>WishLink</h1>
+      <p>Birthday surprises &amp; AI photos, inside Telegram</p>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2>💰 Your credits</h2>
+    <div class="bal-big"><span id="balTotal">…</span> <span style="font-size:16px">credits</span></div>
+    <div class="bal-sub" id="balSub">Loading your balance…</div>
+    <div class="bal-sub">Your balance code: <span class="codechip" id="balCode">—</span></div>
+    <p class="small" style="margin-top:8px">Keep this code safe — it restores your balance on any device. You get 20 free credits every 24 hours.</p>
+  </div>
+
+  <div class="card">
+    <h2>🎬 Watch an ad, earn credits</h2>
+    <p>Watch a short ad and get <b>10 free credits</b> — that's one whole AI photo edit. Up to 5 ads a day.</p>
+    <button class="btn btn-gold" id="btnAd">🎬 Watch ad · +10 credits</button>
+    <div class="status" id="adStatus"></div>
+  </div>
+
+  <div class="card">
+    <h2>🤖 AI Photo Edit — by Laila</h2>
+    <p>Send a photo and Laila turns it into a birthday celebration picture — fairy lights, balloons and a cake. <b>1 edit = 10 credits.</b></p>
+    <label class="filelab" for="photoFile">📷 Tap to choose a photo</label>
+    <input type="file" id="photoFile" accept="image/*" hidden>
+    <img id="prevImg" alt="Your photo">
+    <div class="chips" id="styleChips">
+      <button class="chip on" data-style="midnight">🌙 Midnight Gold</button>
+      <button class="chip" data-style="rose">🌹 Rose Glow</button>
+      <button class="chip" data-style="royal">👑 Royal Violet</button>
+    </div>
+    <input type="text" id="pname" maxlength="40" placeholder="Name for the photo (optional) — e.g. Ayesha">
+    <button class="btn" id="btnEdit">✨ Create my photo · 10 credits</button>
+    <div class="status" id="aiStatus"></div>
+    <img id="resImg" alt="Your edited photo">
+    <div class="rowbtns" id="resBtns" style="display:none; margin-top:10px">
+      <a class="btn" id="btnDownload" download="wishlink-photo.jpg">⬇️ Download photo</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🎂 Birthday pages</h2>
+    <p>Create a full surprise page with a secret PIN — and get a message in the bot the moment your special person opens it.</p>
+    <a class="btn" href="https://www.wishlink.pp.ua/#maker" target="_blank" rel="noopener">✨ Create a free page</a>
+    <p class="small" style="margin-top:8px">Tip: you can also create pages right inside the bot chat — tap “Create a birthday page”.</p>
+  </div>
+
+  <footer>Made with 💛 by <a href="https://www.wishlink.pp.ua" target="_blank" rel="noopener">WishLink</a></footer>
+</div>
+
+<script>
+(function(){
+  var tg = window.Telegram && Telegram.WebApp ? Telegram.WebApp : null;
+  if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
+
+  /* device: the bot passes ?d=tg-<chatId>; otherwise reuse/create the
+     normal website device id so the wallet is shared with the site. */
+  function deviceId(){
+    try {
+      var q = new URLSearchParams(location.search).get('d');
+      if (q && /^[a-zA-Z0-9-]{8,40}$/.test(q)) { localStorage.setItem('wl_device', q); return q; }
+      var d = localStorage.getItem('wl_device');
+      if (!d) { d = 'dev-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('wl_device', d); }
+      return d;
+    } catch (e) { return 'dev-anon0000'; }
+  }
+  function deviceCode(){ try { return deviceId().slice(4, 12).toUpperCase(); } catch (e) { return ''; } }
+
+  /* fingerprint (same as studio.html) so a returning phone gets its
+     original wallet instead of a fresh one */
+  var _fpPromise = null, WLFP = '';
+  function wlFp(){
+    if (_fpPromise) return _fpPromise;
+    _fpPromise = (async function(){
+      try {
+        var nav = navigator, scr = window.screen || {};
+        var w = Math.min(scr.width || 0, scr.height || 0), h = Math.max(scr.width || 0, scr.height || 0);
+        var gpu = '';
+        try {
+          var gc = document.createElement('canvas');
+          var gl = gc.getContext('webgl') || gc.getContext('experimental-webgl');
+          if (gl) {
+            var ext = gl.getExtension('WEBGL_debug_renderer_info');
+            var r = String((ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)) || '');
+            var gm = /(Adreno|Mali|PowerVR|Immortalis|Apple GPU)[^\s,)]*(?:\s*\d+)?/i.exec(r);
+            gpu = gm ? gm[0].replace(/\(TM\)/gi, '').replace(/\s+/g, '').toLowerCase() : r.slice(0, 32).toLowerCase();
+          }
+        } catch (e) {}
+        var parts = [w + 'x' + h, scr.colorDepth || '', window.devicePixelRatio || '', nav.maxTouchPoints || 0, nav.hardwareConcurrency || '', (window.Intl && Intl.DateTimeFormat ? Intl.DateTimeFormat().resolvedOptions().timeZone : '') || '', nav.language || '', gpu];
+        var s = parts.join('|');
+        if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+          var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+          return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+        }
+        var out = '';
+        for (var k = 0; k < 4; k++) {
+          var hh = 5381, s2 = s + '#' + k;
+          for (var i = 0; i < s2.length; i++) hh = ((hh << 5) + hh + s2.charCodeAt(i)) >>> 0;
+          out += ('0000000' + hh.toString(16)).slice(-8) + ('0000000' + ((hh * 2654435761) >>> 0).toString(16)).slice(-8);
+        }
+        return out;
+      } catch (e) { return ''; }
+    })();
+    return _fpPromise;
+  }
+  wlFp().then(function(v){ WLFP = v || ''; });
+
+  var lastTotal = null;
+  function loadBalance(){
+    return wlFp().then(function(fp){
+      return fetch('/api/studio-wallet?device=' + encodeURIComponent(deviceId()) + (fp ? '&fp=' + encodeURIComponent(fp) : ''))
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if (j && j.device && j.device !== deviceId()) { try { localStorage.setItem('wl_device', j.device); } catch (e) {} }
+          if (j && typeof j.total === 'number') {
+            lastTotal = j.total;
+            document.getElementById('balTotal').textContent = j.total;
+            document.getElementById('balSub').textContent = 'Free: ' + j.free + ' · Paid: ' + j.paid;
+            document.getElementById('balCode').textContent = j.code || deviceCode();
+          }
+          return j;
+        }).catch(function(){ return null; });
+    });
+  }
+  loadBalance();
+
+  /* ---------- Rewarded ads ---------- */
+  var adBusy = false;
+  document.getElementById('btnAd').addEventListener('click', function(){
+    var st = document.getElementById('adStatus');
+    var zone = window.WL_AD_ZONE || 0;
+    var showFn = zone ? window['show_' + zone] : null;
+    if (!showFn) {
+      st.className = 'status';
+      st.textContent = 'Ads are being set up right now — please check back very soon 🙏';
+      return;
+    }
+    if (adBusy) return;
+    adBusy = true;
+    var btn = document.getElementById('btnAd');
+    btn.disabled = true;
+    st.className = 'status'; st.textContent = 'Loading your ad…';
+    fetch('/api/studio?a=adstart', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: deviceId() }) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (!j || !j.ymid) throw new Error('no session');
+        var before = lastTotal;
+        return showFn({ ymid: j.ymid, requestVar: 'credits_button' }).then(function(result){
+          if (result && result.reward_event_type === 'valued') {
+            st.className = 'status'; st.textContent = 'Ad watched! 🎉 Adding your 10 credits…';
+            var tries = 0;
+            var iv = setInterval(function(){
+              tries++;
+              loadBalance().then(function(w){
+                if ((w && typeof w.total === 'number' && before !== null && w.total > before) || tries >= 6) {
+                  clearInterval(iv);
+                  if (w && before !== null && w.total > before) { st.className = 'status ok'; st.textContent = '✅ 10 credits added! Your new balance is ' + w.total + '.'; }
+                  else { st.className = 'status ok'; st.textContent = '✅ Done! Your credits are on the way and will show in your balance in a moment.'; }
+                  adBusy = false; btn.disabled = false;
+                }
+              });
+            }, 3000);
+          } else {
+            st.className = 'status err';
+            st.textContent = 'That ad didn\'t count — it may have been closed too early. No credits this time; please try again.';
+            adBusy = false; btn.disabled = false;
+          }
+        });
+      })
+      .catch(function(){
+        st.className = 'status err';
+        st.textContent = 'No ad is available right now — please try again in a little while.';
+        adBusy = false; btn.disabled = false;
+      });
+  });
+
+  /* ---------- AI Photo Edit ---------- */
+  var uploadDataUrl = null, aiStyle = 'midnight', aiTimer = null;
+  document.getElementById('styleChips').addEventListener('click', function(e){
+    var b = e.target.closest('.chip'); if (!b) return;
+    aiStyle = b.getAttribute('data-style');
+    var chips = document.querySelectorAll('#styleChips .chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle('on', chips[i] === b);
+  });
+  document.getElementById('photoFile').addEventListener('change', function(e){
+    var f = e.target.files && e.target.files[0]; if (!f) return;
+    var img = new Image();
+    img.onload = function(){
+      var max = 880, w = img.width, h = img.height;
+      if (w > max || h > max) { var s = max / Math.max(w, h); w = Math.round(w * s); h = Math.round(h * s); }
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      uploadDataUrl = c.toDataURL('image/jpeg', 0.78);
+      var p = document.getElementById('prevImg'); p.src = uploadDataUrl; p.style.display = 'block';
+      document.getElementById('aiStatus').textContent = 'Photo ready — now tap “Create my photo”.';
+      URL.revokeObjectURL(img.src);
+    };
+    img.src = URL.createObjectURL(f);
+  });
+  function aiMsg(txt, ok){
+    var st = document.getElementById('aiStatus');
+    st.className = 'status' + (ok === true ? ' ok' : ok === false ? ' err' : '');
+    st.textContent = txt;
+  }
+  document.getElementById('btnEdit').addEventListener('click', function(){
+    if (!uploadDataUrl) { aiMsg('Please choose a photo first 📷', false); return; }
+    var btn = document.getElementById('btnEdit');
+    btn.disabled = true;
+    aiMsg('Sending your photo to Laila…');
+    fetch('/api/studio-request', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ img: uploadDataUrl, name: document.getElementById('pname').value || '', style: aiStyle, device: deviceId(), fp: WLFP }) })
+      .then(function(r){ return r.json().then(function(j){ return { status: r.status, j: j }; }); })
+      .then(function(x){
+        if (x.status === 403 || (x.j && x.j.needCredits)) {
+          aiMsg('Not enough credits — one edit costs 10. Watch an ad above to earn 10 free credits 🎬', false);
+          btn.disabled = false; loadBalance(); return;
+        }
+        if (!x.j || !x.j.id) { aiMsg('The edit couldn\'t be started. Please try again in a little while.', false); btn.disabled = false; return; }
+        aiMsg('Laila is working on your photo… usually 1–2 minutes ✨');
+        var id = x.j.id, tries = 0;
+        clearInterval(aiTimer);
+        aiTimer = setInterval(function(){
+          tries++;
+          fetch('/api/studio-status?id=' + encodeURIComponent(id)).then(function(r){ return r.json(); }).then(function(j){
+            if (j.status === 'done' && j.result) {
+              clearInterval(aiTimer);
+              var im = document.getElementById('resImg'); im.src = j.result; im.style.display = 'block';
+              var dl = document.getElementById('btnDownload'); dl.href = j.result;
+              document.getElementById('resBtns').style.display = 'flex';
+              aiMsg('✅ Your photo is ready! Tap Download to save it.', true);
+              btn.disabled = false; loadBalance();
+            } else if (j.status === 'expired' || (j.status && j.status !== 'pending' && j.status !== 'working')) {
+              clearInterval(aiTimer);
+              aiMsg('That edit couldn\'t be completed — your 10 credits were refunded automatically. Please try again with a clear, front-facing photo.', false);
+              btn.disabled = false; loadBalance();
+            } else if (tries > 40) {
+              clearInterval(aiTimer);
+              aiMsg('This is taking longer than usual. Please check again in a few minutes.', false);
+              btn.disabled = false;
+            }
+          }).catch(function(){});
+        }, 5000);
+      })
+      .catch(function(){ aiMsg('Network problem — please try again.', false); btn.disabled = false; });
+  });
+
+  /* analytics (same system as the website; this page counts as 'app') */
+  try {
+    var dev = deviceId();
+    function sendT(t){ fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ device: dev, page: 'app', type: t }), keepalive: true }).catch(function(){}); }
+    sendT('visit'); setInterval(function(){ sendT('ping'); }, 30000);
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

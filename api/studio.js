@@ -445,6 +445,64 @@ const hWallet = async (req, res) => {
   }
 };
 
+/* ---------- Rewarded ads (Telegram Mini App) ----------
+   POST ?a=adstart {device} creates a one-time ad session and returns
+   { ymid }. The Mini App passes that ymid to Monetag's SDK; Monetag's
+   server then calls the postback URL configured in its dashboard:
+   GET ?a=adreward&ymid=...&event_type=impression&reward_event_type=valued
+   A valued impression grants AD_REWARD_CREDITS to the session device's
+   wallet — once per session (Monetag retries/duplicates postbacks, so
+   the used flag is the dedup) and under a per-device daily cap. */
+const AD_REWARD_CREDITS = 10, AD_DAILY_CAP = 5;
+
+function pktDay() { return new Date(Date.now() + 5 * 3600 * 1000).toISOString().slice(0, 10); }
+
+const hAdStart = async (req, res) => {
+  if (req.method !== "POST") return send(res, 405, { error: "method" });
+  try {
+    const b = await readBody(req);
+    const device = String(b.device || "");
+    if (!/^[a-zA-Z0-9-]{8,40}$/.test(device)) return send(res, 400, { error: "bad device" });
+    const ip = clientIp(req);
+    const rl = await rateLimited(ip, "adstart", 10, 10 * 60 * 1000);
+    if (rl.limited) return send(res, 429, { error: "too many — try again in a few minutes" });
+    await recordFailure(rl.key, rl.rec, rl.now);
+    const id = "ad" + randomCode(14);
+    await dbSet("ad_sessions/" + id, { device, ts: Date.now(), used: false });
+    return send(res, 200, { ymid: id });
+  } catch (e) {
+    return send(res, 500, { error: "adstart failed" });
+  }
+};
+
+const hAdReward = async (req, res) => {
+  /* Monetag postback. Always answer 200 so Monetag stops retrying;
+     unknown, expired or already-used sessions are simply ignored. */
+  try {
+    const url = new URL(req.url, "https://x.local");
+    const ymid = String(url.searchParams.get("ymid") || "");
+    const valued = String(url.searchParams.get("reward_event_type") || "") === "valued";
+    const evType = String(url.searchParams.get("event_type") || "");
+    if (!/^ad[a-zA-Z0-9]{10,20}$/.test(ymid)) return send(res, 200, { ok: true, ignored: "bad ymid" });
+    const sess = await dbGet("ad_sessions/" + ymid);
+    if (!sess || sess.used || Date.now() - (sess.ts || 0) > 2 * 3600 * 1000)
+      return send(res, 200, { ok: true, ignored: "unknown or used" });
+    await dbUpdate("ad_sessions/" + ymid, { used: true, valued, evType, doneTs: Date.now() });
+    if (!valued || evType !== "impression") return send(res, 200, { ok: true, granted: false });
+    const device = sess.device;
+    const day = pktDay();
+    const cnt = (await dbGet("ad_grants/" + device + "/" + day)) || 0;
+    if (cnt >= AD_DAILY_CAP) return send(res, 200, { ok: true, granted: false, capped: true });
+    const w = await getWallet(device);
+    w.paid = (w.paid || 0) + AD_REWARD_CREDITS; w.ts = Date.now();
+    await dbSet("studio_wallets/" + device, w);
+    await dbSet("ad_grants/" + device + "/" + day, cnt + 1);
+    return send(res, 200, { ok: true, granted: true, credits: AD_REWARD_CREDITS });
+  } catch (e) {
+    return send(res, 200, { ok: true });
+  }
+};
+
 module.exports = async (req, res) => {
   const a = (req.query && req.query.a) || "";
   if (a === "request") return hRequest(req, res);
@@ -454,5 +512,7 @@ module.exports = async (req, res) => {
   if (a === "pay") return hPay(req, res);
   if (a === "payagent") return hPayAgent(req, res);
   if (a === "wallet") return hWallet(req, res);
+  if (a === "adstart") return hAdStart(req, res);
+  if (a === "adreward") return hAdReward(req, res);
   return send(res, 404, { error: "unknown studio action" });
 };
