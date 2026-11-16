@@ -39,9 +39,15 @@ a{color:var(--acc)}
 .pin-card input{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:10px;font-size:19px;text-align:center;letter-spacing:5px;margin:16px 0 6px;font-family:inherit}
 .pin-card input:focus{border-color:var(--acc);outline:none}
 .err{color:var(--bad);min-height:22px;font-size:13.5px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-top:16px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
-.stat .num{font-size:27px;font-weight:700;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:6px;margin-top:16px;overflow-x:auto;padding-bottom:2px}
+.tab{padding:9px 18px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit;color:var(--ink2)}
+.tab:hover{border-color:#CBD5E1}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.panel{display:none}
+.panel.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.stat .num{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
 .stat .lbl{color:var(--mut);font-size:12.5px;margin-top:3px;font-weight:500}
 .stat .delta{font-size:12px;font-weight:600;margin-top:5px}
 .delta.up{color:var(--ok)} .delta.down{color:var(--bad)} .delta.flat{color:var(--mut)}
@@ -92,6 +98,13 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
   </div>
 
   <div id="dash" style="display:none">
+    <div class="tabs">
+      <button class="tab on" data-panel="panel-overview">Overview</button>
+      <button class="tab" data-panel="panel-traffic">Traffic</button>
+      <button class="tab" data-panel="panel-audience">Audience</button>
+      <button class="tab" data-panel="panel-economy">Economy</button>
+    </div>
+    <div class="panel on" id="panel-overview">
     <div class="grid">
       <div class="stat"><div class="num"><span class="live-dot"></span><span id="sLive">–</span></div><div class="lbl">Live on the website now</div></div>
       <div class="stat"><div class="num" id="sToday">–</div><div class="lbl">Visits today</div><div class="delta flat" id="dVisits"></div></div>
@@ -120,6 +133,8 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
       <div class="bars" id="bars"></div>
     </div>
 
+    </div>
+    <div class="panel" id="panel-traffic">
     <div class="card">
       <div class="rowline"><h2>Last 30 days</h2><span class="mut">Visits per day · pages created under each bar</span></div>
       <div class="bars thin" id="bars30"></div>
@@ -145,6 +160,8 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
       <p class="mut" id="srcTotal" style="margin-top:10px"></p>
     </div>
 
+    </div>
+    <div class="panel" id="panel-audience">
     <div class="card">
       <h2>Designs people choose</h2>
       <table class="pages"><tbody id="themeBody"></tbody></table>
@@ -167,6 +184,8 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
       <p class="mut" id="brLine"></p>
     </div>
 
+    </div>
+    <div class="panel" id="panel-economy">
     <div class="card">
       <h2>Credits economy</h2>
       <table class="pages"><tbody id="ecoBody"></tbody></table>
@@ -175,6 +194,7 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
       <p class="mut" id="topupEmpty" style="display:none">No top-ups recorded yet.</p>
     </div>
 
+    </div>
     <p class="mut" style="text-align:center;margin-top:18px">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
   </div>
 </div>
@@ -383,6 +403,18 @@ el("pinBtn").addEventListener("click", function() {
 el("pinInput").addEventListener("keydown", function(e) { if (e.key === "Enter") el("pinBtn").click(); });
 el("lockBtn").addEventListener("click", function() { logout(""); });
 function startTimer() { if (!timer) timer = setInterval(loadStats, 30000); }
+
+/* Tabs */
+document.querySelectorAll(".tab").forEach(function(t) {
+  t.addEventListener("click", function() {
+    document.querySelectorAll(".tab").forEach(function(x) { x.classList.remove("on"); });
+    document.querySelectorAll(".panel").forEach(function(x) { x.classList.remove("on"); });
+    t.classList.add("on");
+    var p = el(t.getAttribute("data-panel"));
+    if (p) p.classList.add("on");
+    window.scrollTo(0, 0);
+  });
+});
 
 /* On open: if no PIN is set on the server yet, go straight to setup. */
 if (pin) { loadStats(); startTimer(); }
