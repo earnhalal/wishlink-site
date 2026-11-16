@@ -3,135 +3,164 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Website Stats — WishLink (Owner)</title>
+<title>WishLink Analytics — Owner Dashboard</title>
 <meta name="robots" content="noindex,nofollow">
-<meta name="theme-color" content="#FFFBF7">
+<meta name="theme-color" content="#0F172A">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
-:root{--indigo:#AD2E5D;--indigo-d:#7E1F45;--coral:#E0608E;--gold:#E8A62E;--cream:#FFFBF7;--ink:#571F30;--mut:#886A75;--line:#F3D9E2;--tint:#FFF0F5;--ok:#1E8E5A;--err:#C0392B}
+:root{
+  --bg:#F6F7F9; --card:#FFFFFF; --ink:#0F172A; --ink2:#334155; --mut:#64748B;
+  --line:#E5E7EB; --line2:#EEF1F4; --acc:#2456C8; --acc-soft:#EBF0FB;
+  --ok:#16A34A; --bad:#DC2626; --gold:#B45309;
+}
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.5 'DM Sans',system-ui,sans-serif;color:var(--ink);background:var(--cream)}
-h1,h2{font-family:'Newsreader',serif;color:var(--indigo);margin:0}
-a{color:var(--indigo)}
-:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
-.wrap{max-width:880px;margin:0 auto;padding:22px 16px 40px}
-header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px}
-.logo{font-family:'Newsreader',serif;font-size:24px;font-weight:700;color:var(--indigo);text-decoration:none}
-.logo span{color:var(--coral)}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px}
-.pin-card{max-width:420px;margin:40px auto;text-align:center}
-.pin-card input{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:12px;font-size:20px;text-align:center;letter-spacing:4px;margin:14px 0}
-.btn{display:inline-block;background:linear-gradient(135deg,#F98BB0,#E0608E);color:#fff;border:0;border-radius:999px;padding:13px 28px;font-size:16px;font-weight:600;cursor:pointer;min-height:48px}
-.btn:hover{background:var(--indigo-d)}
-.btn.ghost{background:#fff;color:var(--indigo);border:1.5px solid var(--indigo)}
-.err{color:var(--err);min-height:22px;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
-.stat .num{font-family:'Newsreader',serif;font-size:34px;font-weight:700;color:var(--indigo);line-height:1.1}
-.stat .lbl{color:var(--mut);font-size:13px;margin-top:4px}
-.stat.live .num{color:var(--err)}
-.dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:#e33;vertical-align:middle;margin-right:7px;animation:pulse 1.4s infinite}
-@keyframes pulse{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}
-.bars{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:8px}
-.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
-.bar .col{width:100%;max-width:52px;background:var(--indigo);border-radius:8px 8px 0 0;min-height:3px}
-.bar.today .col{background:var(--coral)}
-.bar .bv{font-size:13px;font-weight:700;color:var(--indigo)}
-.bar .bd{font-size:11px;color:var(--mut);white-space:nowrap}
-.bar .bu{font-size:11px;color:var(--mut)}
-table.pages{width:100%;border-collapse:collapse}
-table.pages td{padding:8px 6px;border-bottom:1px solid var(--line)}
-table.pages td:last-child{text-align:right;font-weight:700;color:var(--indigo)}
-.mut{color:var(--mut);font-size:13px}
-.rowline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.bars.thin{gap:3px;height:110px}
-.bars.thin .col{max-width:26px;border-radius:5px 5px 0 0}
-.bars.thin .bv{font-size:10px}
+body{margin:0;font:15px/1.55 'DM Sans',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+h1,h2{margin:0;font-weight:700;letter-spacing:-.01em}
+a{color:var(--acc)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px 44px}
+.topbar{background:var(--ink);color:#fff;margin:0 -18px;padding:0 18px}
+.topbar-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;height:58px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:17px;letter-spacing:-.01em}
+.brand .mark{width:30px;height:30px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center;font-size:16px}
+.brand small{display:block;font-weight:500;font-size:11.5px;color:#94A3B8;letter-spacing:.04em;text-transform:uppercase}
+.btn{display:inline-block;background:var(--acc);color:#fff;border:0;border-radius:9px;padding:11px 22px;font-size:15px;font-weight:600;cursor:pointer;min-height:44px;font-family:inherit}
+.btn:hover{background:#1D46A5}
+.btn.ghost{background:transparent;color:#CBD5E1;border:1px solid #334155;padding:7px 14px;min-height:36px;font-size:13.5px}
+.btn.ghost:hover{border-color:#64748B;color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-top:16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.card h2{font-size:15.5px;color:var(--ink)}
+.card .sub{color:var(--mut);font-size:13px;margin-top:2px}
+.pin-card{max-width:400px;margin:56px auto;text-align:center;padding:30px 26px}
+.pin-card h1{font-size:21px}
+.pin-card input{width:100%;padding:13px;border:1.5px solid var(--line);border-radius:10px;font-size:19px;text-align:center;letter-spacing:5px;margin:16px 0 6px;font-family:inherit}
+.pin-card input:focus{border-color:var(--acc);outline:none}
+.err{color:var(--bad);min-height:22px;font-size:13.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin-top:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.stat .num{font-size:27px;font-weight:700;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat .lbl{color:var(--mut);font-size:12.5px;margin-top:3px;font-weight:500}
+.stat .delta{font-size:12px;font-weight:600;margin-top:5px}
+.delta.up{color:var(--ok)} .delta.down{color:var(--bad)} .delta.flat{color:var(--mut)}
+.live-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--bad);vertical-align:2px;margin-right:6px;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.bars{display:flex;align-items:flex-end;gap:7px;height:132px;margin-top:14px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.bar .col{width:100%;max-width:46px;background:#C7D5F2;border-radius:5px 5px 0 0;min-height:3px}
+.bar.today .col{background:var(--acc)}
+.bar .bv{font-size:12.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.bar .bd{font-size:10.5px;color:var(--mut);white-space:nowrap}
+.bar .bu{font-size:10.5px;color:var(--mut);white-space:nowrap}
+.bars.thin{gap:3px;height:112px}
+.bars.thin .col{max-width:24px;border-radius:4px 4px 0 0}
+.bars.thin .bv{font-size:9.5px}
 .bars.thin .bd{font-size:9px}
-.funnel{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin-top:6px}
-.fstep{flex:1;min-width:120px;background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
-.fstep .fn{font-family:'Newsreader',serif;font-size:28px;font-weight:700;color:var(--indigo);line-height:1.1}
-.fstep .fl{font-size:12.5px;color:var(--mut);margin-top:2px}
-.farrow{align-self:center;text-align:center;color:var(--coral);font-weight:700;font-size:13px;min-width:52px}
-.farrow .fp{display:block;background:var(--indigo);color:#fff;border-radius:999px;padding:2px 8px;font-size:12px;margin-top:2px}
-footer{background:#4A1225;color:#C9CAE0;text-align:center;padding:26px 16px;margin-top:10px}
-footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
+table.pages{width:100%;border-collapse:collapse;margin-top:6px}
+table.pages td{padding:8.5px 4px;border-bottom:1px solid var(--line2);font-size:14px;color:var(--ink2)}
+table.pages tr:last-child td{border-bottom:0}
+table.pages td:last-child{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.mut{color:var(--mut);font-size:13px}
+.rowline{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.frow{display:grid;grid-template-columns:168px 1fr 64px 74px;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2)}
+.frow:last-child{border-bottom:0}
+.frow .fl{font-size:13.5px;font-weight:600;color:var(--ink2)}
+.frow .ftrack{height:22px;background:var(--line2);border-radius:6px;overflow:hidden}
+.frow .ffill{height:100%;background:var(--acc);border-radius:6px;min-width:2px}
+.frow .fv{font-weight:700;font-size:15px;text-align:right;font-variant-numeric:tabular-nums}
+.frow .fp{font-size:12px;color:var(--mut);text-align:right}
+.frow .fp b{color:var(--ink2)}
+footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px}
+@media (max-width:640px){ .frow{grid-template-columns:118px 1fr 46px 58px;gap:8px} .stat .num{font-size:23px} }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
 </head>
 <body>
+<div class="topbar"><div class="topbar-in">
+  <div class="brand"><div class="mark">🎂</div><div>WishLink<small>Analytics · Owner</small></div></div>
+  <button class="btn ghost" id="lockBtn" style="display:none">🔒 Lock</button>
+</div></div>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="/">WishLink<span>.</span></a>
-    <button class="btn ghost" id="lockBtn" style="display:none;padding:9px 18px;min-height:40px">🔒 Lock</button>
-  </header>
 
   <div class="card pin-card" id="pinCard">
-    <h1 id="pinTitle">📊 Website Stats</h1>
-    <p class="mut" id="pinText">Enter your stats PIN to see how many people are visiting WishLink.</p>
+    <h1 id="pinTitle">Owner Dashboard</h1>
+    <p class="mut" id="pinText">Enter your stats PIN to open the WishLink analytics dashboard.</p>
     <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" maxlength="8">
     <div class="err" id="pinErr"></div>
-    <button class="btn" id="pinBtn">Show stats</button>
+    <button class="btn" id="pinBtn">Open dashboard</button>
   </div>
 
   <div id="dash" style="display:none">
-    <div class="grid" style="margin-bottom:12px">
-      <div class="stat live"><div class="num"><span class="dot"></span><span id="sLive">–</span></div><div class="lbl">Live on the website right now</div></div>
-      <div class="stat"><div class="num" id="sToday">–</div><div class="lbl">Visits today</div></div>
-      <div class="stat"><div class="num" id="sTodayU">–</div><div class="lbl">Unique visitors today</div></div>
-      <div class="stat"><div class="num" id="sCreated">–</div><div class="lbl">🎂 Pages created today</div></div>
-      <div class="stat"><div class="num" id="sEdits">–</div><div class="lbl">🤖 AI edits completed today</div></div>
-      <div class="stat"><div class="num" id="sPaidToday">–</div><div class="lbl">💰 Credit top-up earnings today</div></div>
+    <div class="grid">
+      <div class="stat"><div class="num"><span class="live-dot"></span><span id="sLive">–</span></div><div class="lbl">Live on the website now</div></div>
+      <div class="stat"><div class="num" id="sToday">–</div><div class="lbl">Visits today</div><div class="delta flat" id="dVisits"></div></div>
+      <div class="stat"><div class="num" id="sTodayU">–</div><div class="lbl">Unique visitors today</div><div class="delta flat" id="dUniques"></div></div>
+      <div class="stat"><div class="num" id="sCreated">–</div><div class="lbl">Pages created today</div><div class="delta flat" id="dCreated"></div></div>
+      <div class="stat"><div class="num" id="sEdits">–</div><div class="lbl">AI edits today</div></div>
+      <div class="stat"><div class="num" id="sPaidToday">–</div><div class="lbl">Top-up earnings today</div></div>
       <div class="stat"><div class="num" id="sYest">–</div><div class="lbl">Visits yesterday</div></div>
       <div class="stat"><div class="num" id="sMonth">–</div><div class="lbl">Visits this month</div></div>
       <div class="stat"><div class="num" id="sTotal">–</div><div class="lbl">All-time visits</div></div>
       <div class="stat"><div class="num" id="sTotalU">–</div><div class="lbl">All-time unique visitors</div></div>
-      <div class="stat"><div class="num" id="sTotalPages">–</div><div class="lbl">🎂 Pages created in total</div></div>
-      <div class="stat"><div class="num" id="sTotalEdits">–</div><div class="lbl">🤖 AI edits in total</div></div>
-      <div class="stat"><div class="num" id="sTotalPaid">–</div><div class="lbl">💰 Credit top-up earnings in total</div></div>
+      <div class="stat"><div class="num" id="sTotalPages">–</div><div class="lbl">Pages created in total</div></div>
+      <div class="stat"><div class="num" id="sTotalEdits">–</div><div class="lbl">AI edits in total</div></div>
+      <div class="stat"><div class="num" id="sTotalPaid">–</div><div class="lbl">Top-up earnings in total</div></div>
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:4px">🚀 The funnel — today</h2>
-      <p class="mut" style="margin:0 0 8px">How visitors turn into surprises. The % shows how many made it to the next step.</p>
-      <div class="funnel" id="funnel"></div>
-      <p class="mut" id="funnelTotal" style="margin-top:10px"></p>
+      <h2>Conversion funnel</h2>
+      <div class="sub">How visitors turn into surprises — today. The right column shows the step-to-step conversion.</div>
+      <div id="funnel" style="margin-top:8px"></div>
+      <p class="mut" id="funnelTotal" style="margin:12px 0 0"></p>
     </div>
 
     <div class="card">
-      <div class="rowline"><h2>Last 7 days</h2><span class="mut">visits per day · unique visitors &amp; 🎂 pages created under each bar</span></div>
+      <div class="rowline"><h2>Last 7 days</h2><span class="mut">Visits per day · uniques, pages &amp; edits under each bar</span></div>
       <div class="bars" id="bars"></div>
     </div>
 
     <div class="card">
-      <div class="rowline"><h2>Last 30 days</h2><span class="mut">visits per day · 🎂 pages created under each bar</span></div>
+      <div class="rowline"><h2>Last 30 days</h2><span class="mut">Visits per day · pages created under each bar</span></div>
       <div class="bars thin" id="bars30"></div>
     </div>
 
     <div class="card">
-      <div class="rowline"><h2>Today by hour</h2><span class="mut">visits in each hour (Pakistan time) — your best posting times</span></div>
+      <div class="rowline"><h2>Today by hour</h2><span class="mut">Visits per hour (Pakistan time) — your best posting times</span></div>
       <div class="bars thin" id="barsHours"></div>
       <p class="mut" id="hoursEmpty" style="display:none">No visits yet today.</p>
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:8px">Top pages today</h2>
+      <h2>Top pages — today</h2>
       <table class="pages"><tbody id="pagesBody"></tbody></table>
       <p class="mut" id="pagesEmpty" style="display:none">No visits yet today.</p>
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:8px">🌍 Where visitors come from — today</h2>
+      <h2>Traffic sources — today</h2>
+      <div class="sub">Where visitors arrived from. Note: WhatsApp hides its referrer, so WhatsApp clicks usually appear as “Direct”.</div>
+      <table class="pages"><tbody id="srcBody"></tbody></table>
+      <p class="mut" id="srcEmpty" style="display:none">No source data yet — counting starts with the first visit after this update.</p>
+      <p class="mut" id="srcTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <h2>Designs people choose</h2>
+      <table class="pages"><tbody id="themeBody"></tbody></table>
+      <p class="mut" id="themeEmpty" style="display:none">No design data yet — counting starts with the next page anyone creates.</p>
+      <p class="mut" id="themeTotal" style="margin-top:10px"></p>
+    </div>
+
+    <div class="card">
+      <h2>Countries — today</h2>
       <table class="pages"><tbody id="countriesBody"></tbody></table>
-      <p class="mut" id="countriesEmpty" style="display:none">No country data yet today — it starts counting from today's first visit after this update.</p>
+      <p class="mut" id="countriesEmpty" style="display:none">No country data yet today.</p>
       <p class="mut" id="countriesTotal" style="margin-top:10px"></p>
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:8px">📱 Devices — today</h2>
+      <h2>Devices — today</h2>
       <table class="pages"><tbody id="devBody"></tbody></table>
       <p class="mut" id="devEmpty" style="display:none">No device data yet today.</p>
       <p class="mut" id="osLine" style="margin-top:10px"></p>
@@ -139,40 +168,22 @@ footer .fb{font-family:'Newsreader',serif;color:var(--gold);font-size:20px}
     </div>
 
     <div class="card">
-      <h2 style="margin-bottom:8px">🔗 Where visitors come from — today</h2>
-      <table class="pages"><tbody id="srcBody"></tbody></table>
-      <p class="mut" id="srcEmpty" style="display:none">No source data yet — it starts counting from the first visit after this update. Note: WhatsApp clicks often arrive as “Direct”, because WhatsApp hides where its clicks come from.</p>
-      <p class="mut" id="srcTotal" style="margin-top:10px"></p>
-    </div>
-
-    <div class="card">
-      <h2 style="margin-bottom:8px">🎨 Designs people choose</h2>
-      <table class="pages"><tbody id="themeBody"></tbody></table>
-      <p class="mut" id="themeEmpty" style="display:none">No design data yet — it starts counting from the next page anyone creates.</p>
-      <p class="mut" id="themeTotal" style="margin-top:10px"></p>
-    </div>
-
-    <div class="card">
-      <h2 style="margin-bottom:8px">💰 Credits economy</h2>
+      <h2>Credits economy</h2>
       <table class="pages"><tbody id="ecoBody"></tbody></table>
-      <h2 style="margin:16px 0 8px;font-size:18px">Recent top-ups</h2>
+      <h2 style="margin:18px 0 4px;font-size:14.5px">Recent top-ups</h2>
       <table class="pages"><tbody id="topupBody"></tbody></table>
       <p class="mut" id="topupEmpty" style="display:none">No top-ups recorded yet.</p>
     </div>
 
-    <p class="mut" style="text-align:center">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
+    <p class="mut" style="text-align:center;margin-top:18px">Auto-refreshes every 30 seconds · Days follow Pakistan time · A “unique visitor” is one device/browser.</p>
   </div>
 </div>
-<footer>
-  <div class="fb">WishLink</div>
-  <div style="font-size:13px;margin-top:4px">Owner stats — only you can see this page's numbers.</div>
-</footer>
+<footer>WishLink Analytics — private owner dashboard. Numbers are visible only with the stats PIN.</footer>
 
 <script>
-var LABELS = { home: "🏠 Homepage & Maker", surprise: "🎁 Surprise pages (shared links)", studio: "📸 Photo Studio", "my-pages": "📊 Track My Pages", app: "📱 Telegram Mini App", blog: "📰 Blog", about: "ℹ️ About", contact: "✉️ Contact", privacy: "🔒 Privacy Policy", terms: "📄 Terms", "delete": "🗑 Delete a page" };
+var LABELS = { home: "Homepage & Maker", surprise: "Surprise pages (shared links)", studio: "Photo Studio", "my-pages": "Track My Pages", app: "Telegram Mini App", blog: "Blog", about: "About", contact: "Contact", privacy: "Privacy Policy", terms: "Terms", "delete": "Delete a page" };
 var THEME_NAMES = { classic: "🌙 Midnight Gold", pastel: "☁️ Pastel Sky", neon: "🌌 Neon Galaxy", rose: "🌹 Rose Royal", ocean: "🌊 Ocean Breeze", sunset: "🌅 Sunset Peach", lavender: "💜 Lavender Dream", emerald: "💚 Emerald Royal", candy: "🍬 Candy Pop", vintage: "📜 Vintage Paper", noir: "🍒 Cherry Noir", mint: "🌿 Sky Mint", royal: "👑 Royal Purple", honey: "🍯 Golden Honey", snow: "❄️ Snow White" };
 var SRC_ICONS = { WhatsApp: "💬", Facebook: "📘", Instagram: "📸", TikTok: "🎵", Telegram: "✈️", YouTube: "▶️", Google: "🔍", Direct: "🔗", Other: "🌐" };
-function pct(a, b) { if (!b) return "—"; return Math.round(a / b * 100) + "%"; }
 var COUNTRY_NAMES = { PK: "Pakistan", IN: "India", US: "United States", GB: "United Kingdom", AE: "UAE", SA: "Saudi Arabia", BD: "Bangladesh", CA: "Canada", AU: "Australia", DE: "Germany", FR: "France", IT: "Italy", ES: "Spain", TR: "Türkiye", ID: "Indonesia", MY: "Malaysia", SG: "Singapore", QA: "Qatar", KW: "Kuwait", OM: "Oman", NP: "Nepal", LK: "Sri Lanka", PH: "Philippines", EG: "Egypt", ZA: "South Africa", NG: "Nigeria", KE: "Kenya", BR: "Brazil", MX: "Mexico", NL: "Netherlands", SE: "Sweden", NO: "Norway", DK: "Denmark", IE: "Ireland", NZ: "New Zealand", JP: "Japan", KR: "South Korea", CN: "China", RU: "Russia", UA: "Ukraine", PL: "Poland", TH: "Thailand", VN: "Vietnam", IR: "Iran", IQ: "Iraq", AF: "Afghanistan" };
 function flag(cc) {
   if (!/^[A-Z]{2}$/.test(cc)) return "🌐";
@@ -183,6 +194,16 @@ function sortedEntries(map) {
 }
 function mapLine(map) {
   return sortedEntries(map).map(function(e) { return e[0] + " " + e[1]; }).join(" · ");
+}
+function pct(a, b) { if (!b) return "—"; return Math.round(a / b * 100) + "%"; }
+function delta(elId, today, yest) {
+  var e = el(elId); if (!e) return;
+  if (!yest && !today) { e.textContent = ""; return; }
+  if (!yest) { e.textContent = "▲ new today"; e.className = "delta up"; return; }
+  var d = Math.round((today - yest) / yest * 100);
+  if (d > 0) { e.textContent = "▲ " + d + "% vs yesterday"; e.className = "delta up"; }
+  else if (d < 0) { e.textContent = "▼ " + Math.abs(d) + "% vs yesterday"; e.className = "delta down"; }
+  else { e.textContent = "— same as yesterday"; e.className = "delta flat"; }
 }
 var pin = localStorage.getItem("wl_stats_pin") || "";
 var setupMode = false;
@@ -195,7 +216,7 @@ function post(body) {
 }
 function labelFor(k) {
   if (LABELS[k]) return LABELS[k];
-  if (k.indexOf("blog-") === 0) return "📰 Blog post";
+  if (k.indexOf("blog-") === 0) return "Blog post";
   return k;
 }
 function fmtDate(d) {
@@ -215,6 +236,9 @@ function render(s) {
   el("sTotalPages").textContent = s.total.pages || 0;
   el("sTotalEdits").textContent = s.total.edits || 0;
   el("sTotalPaid").textContent = "Rs " + (s.total.paidRs || 0);
+  delta("dVisits", s.today.visits || 0, s.yesterday.visits || 0);
+  delta("dUniques", s.today.uniques || 0, s.yesterday.uniques || 0);
+  delta("dCreated", s.today.created || 0, s.yesterday.created || 0);
   var max = 1;
   s.last7.forEach(function(r) { if (r.visits > max) max = r.visits; });
   el("bars").innerHTML = s.last7.map(function(r, i) {
@@ -238,15 +262,19 @@ function render(s) {
   el("devBody").innerHTML = dents.map(function(e) { return "<tr><td>" + (devIcons[e[0]] || "📟") + " " + e[0] + "</td><td>" + e[1] + "</td></tr>"; }).join("");
   el("osLine").textContent = s.today.oses && Object.keys(s.today.oses).length ? "System: " + mapLine(s.today.oses) : "";
   el("brLine").textContent = s.today.browsers && Object.keys(s.today.browsers).length ? "Browser: " + mapLine(s.today.browsers) : "";
-  /* funnel */
+  /* funnel — horizontal proportional bars */
   var fu = s.today.uniques || 0, fc = s.today.created || 0, fv = s.today.views || 0, fo = s.today.opens || 0;
-  function fstep(n, l) { return '<div class="fstep"><div class="fn">' + n + '</div><div class="fl">' + l + "</div></div>"; }
-  function farrow(p) { return '<div class="farrow">➜<span class="fp">' + p + "</span></div>"; }
+  var fmax = Math.max(fu, 1);
+  function frow(label, val, prev) {
+    var w = Math.max(1.5, Math.round(val / fmax * 1000) / 10);
+    var pc = prev === null ? "" : "<b>" + pct(val, prev) + "</b> of prev";
+    return '<div class="frow"><div class="fl">' + label + '</div><div class="ftrack"><div class="ffill" style="width:' + w + '%"></div></div><div class="fv">' + val + '</div><div class="fp">' + pc + "</div></div>";
+  }
   el("funnel").innerHTML =
-    fstep(fu, "👥 unique visitors") + farrow(pct(fc, fu)) +
-    fstep(fc, "🎂 pages created") + farrow(pct(fv, fc)) +
-    fstep(fv, "👁 page links opened") + farrow(pct(fo, fv)) +
-    fstep(fo, "🎉 opened with PIN");
+    frow("Unique visitors", fu, null) +
+    frow("Pages created", fc, fu) +
+    frow("Page links opened", fv, fc) +
+    frow("Opened with PIN", fo, fv);
   el("funnelTotal").textContent = "All time: " + (s.total.uniques || 0) + " visitors → " + (s.total.pages || 0) + " pages created → " + (s.total.views || 0) + " link opens → " + (s.total.opens || 0) + " PIN opens.";
   /* 30 days */
   if (s.last30) {
@@ -286,10 +314,10 @@ function render(s) {
   /* economy */
   var eco = s.economy || { wallets: 0, creditsFree: 0, creditsPaid: 0, recentTopups: [] };
   el("ecoBody").innerHTML =
-    "<tr><td>👛 Credit wallets</td><td>" + (eco.wallets || 0) + "</td></tr>" +
-    "<tr><td>🪙 Credits with users (free + paid)</td><td>" + ((eco.creditsFree || 0) + (eco.creditsPaid || 0)) + "</td></tr>" +
-    "<tr><td>🎬 Credits given for watching ads</td><td>" + (s.total.adGranted || 0) + "</td></tr>" +
-    "<tr><td>💰 Top-up earnings (all time)</td><td>Rs " + (s.total.paidRs || 0) + "</td></tr>";
+    "<tr><td>Credit wallets</td><td>" + (eco.wallets || 0) + "</td></tr>" +
+    "<tr><td>Credits held by users (free + paid)</td><td>" + ((eco.creditsFree || 0) + (eco.creditsPaid || 0)) + "</td></tr>" +
+    "<tr><td>Credits given for watching ads</td><td>" + (s.total.adGranted || 0) + "</td></tr>" +
+    "<tr><td>Top-up earnings (all time)</td><td>Rs " + (s.total.paidRs || 0) + "</td></tr>";
   var tops = eco.recentTopups || [];
   el("topupEmpty").style.display = tops.length ? "none" : "block";
   el("topupBody").innerHTML = tops.map(function(t2) {
@@ -315,9 +343,9 @@ function enterSetup() {
   setupMode = true;
   el("pinCard").style.display = "block";
   el("dash").style.display = "none";
-  el("pinTitle").textContent = "📊 Create your stats PIN";
+  el("pinTitle").textContent = "Create your stats PIN";
   el("pinText").textContent = "This is the first visit. Choose a 4–8 digit PIN — only someone with this PIN can see the website numbers.";
-  el("pinBtn").textContent = "Set PIN & show stats";
+  el("pinBtn").textContent = "Set PIN & open dashboard";
 }
 function logout(msg) {
   pin = "";
@@ -326,9 +354,9 @@ function logout(msg) {
   el("dash").style.display = "none";
   el("lockBtn").style.display = "none";
   el("pinCard").style.display = "block";
-  el("pinTitle").textContent = "📊 Website Stats";
-  el("pinText").textContent = "Enter your stats PIN to see how many people are visiting WishLink.";
-  el("pinBtn").textContent = "Show stats";
+  el("pinTitle").textContent = "Owner Dashboard";
+  el("pinText").textContent = "Enter your stats PIN to open the WishLink analytics dashboard.";
+  el("pinBtn").textContent = "Open dashboard";
   el("pinErr").textContent = msg || "";
   el("pinInput").value = "";
 }
