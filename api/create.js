@@ -32,14 +32,7 @@ module.exports = async (req, res) => {
     const OCCS = ["love", "friendship", "newyear", "anniversary", "invitation", "wedding", "baby", "eid"];
     const occ = String(b.o || "birthday");
     if (OCCS.includes(occ)) content.o = occ;
-    /* premium designs: a premium theme may only be used by a device that
-       unlocked it (credits purchase recorded by /api/studio?a=buydesign) */
-    const PREMIUM_THEMES = ["rose", "emerald", "royal", "noir", "honey"];
-    if (PREMIUM_THEMES.includes(content.t)) {
-      if (!content.device) return send(res, 403, { error: "premium_locked" });
-      const un = await dbGet("design_unlocks/" + content.device + "/" + content.t).catch(() => null);
-      if (!un) return send(res, 403, { error: "premium_locked" });
-    }
+    /* all designs are free (owner order 2026-11-17) — no premium gate */
     const slug = slugifyName(name) + "-" + randomCode(10);
 
     /* photos → Storage */

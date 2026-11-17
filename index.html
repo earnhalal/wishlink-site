@@ -380,14 +380,14 @@ footer b{color:var(--teal-d)}
 
 <section class="dsec">
   <h2>🎉 Pick an occasion — every occasion has its own designs</h2>
-  <p class="dsub">Tap an occasion to see its designs and start with one. Birthday alone has 15 designs — and inside every occasion you will find a few 👑 Premium designs, unlockable with credits.</p>
+  <p class="dsub">Tap an occasion to see its designs and start with one. Birthday alone has 15 designs — and every design in every occasion is completely free.</p>
   <div class="dgrid">
     <a class="dcard" href="/birthday.html"><span class="big">🎂</span><b>Birthday</b><span>The original surprise</span><span class="used">🎨 15 designs</span></a>
-    <a class="dcard" href="/love.html"><i class="pill prem">👑 Premium inside</i><span class="big">❤️</span><b>Love</b><span>For someone special</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/love.html"><i class="pill prem">✨ All free</i><span class="big">❤️</span><b>Love</b><span>For someone special</span><span class="used">🎨 7 designs</span></a>
     <a class="dcard" href="/friendship.html"><span class="big">👯</span><b>Best Friend</b><span>For your partner in crime</span><span class="used">🎨 6 designs</span></a>
     <a class="dcard" href="/new-year.html"><span class="big">🎆</span><b>New Year</b><span>Start 2027 with a bang</span><span class="used">🎨 6 designs</span></a>
-    <a class="dcard" href="/anniversary.html"><i class="pill prem">👑 Premium inside</i><span class="big">💍</span><b>Anniversary</b><span>Another year of love</span><span class="used">🎨 6 designs</span></a>
-    <a class="dcard" href="/invitation.html"><i class="pill prem">👑 Premium inside</i><span class="big">💌</span><b>Invitation</b><span>A prettier way to invite</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/anniversary.html"><i class="pill prem">✨ All free</i><span class="big">💍</span><b>Anniversary</b><span>Another year of love</span><span class="used">🎨 6 designs</span></a>
+    <a class="dcard" href="/invitation.html"><i class="pill prem">✨ All free</i><span class="big">💌</span><b>Invitation</b><span>A prettier way to invite</span><span class="used">🎨 6 designs</span></a>
     <a class="dcard" href="/custom-design.html"><span class="big">✨</span><b>Custom Design</b><span>Made to order, just for you</span><span class="used">💬 Order on WhatsApp</span></a>
   </div>
 </section>
@@ -407,7 +407,7 @@ footer b{color:var(--teal-d)}
   <details><summary>How does the person open my surprise?</summary><p>You send them one link (WhatsApp works best). The page asks for the secret PIN you chose — tell them the PIN in your message. Once it opens, the celebration starts: music, confetti, cake, your photos, a gift box and your letter.</p></details>
   <details><summary>Can I add our photos?</summary><p>Yes — up to 4 photos. They are resized in your browser and stored securely with your page on our servers, then shown as an auto-sliding gallery the birthday person can also swipe through.</p></details>
   <details><summary>Do I need to install an app or create an account?</summary><p>No. WishLink works entirely in the browser, on any phone or computer. There are no accounts and no passwords to remember — just the PIN on each page.</p></details>
-  <details><summary>What occasions does WishLink support?</summary><p>Birthday (15 designs), Love, Best Friend, New Year, Anniversary and Invitation pages are all live — tap an occasion above to see its designs. Most designs are free; a few 👑 Premium designs unlock forever with credits. And if you want something fully personal, order a Custom Design on WhatsApp.</p></details>
+  <details><summary>What occasions does WishLink support?</summary><p>Birthday (15 designs), Love, Best Friend, New Year, Anniversary and Invitation pages are all live — tap an occasion above to see its designs. Every design is completely free. And if you want something fully personal, order a Custom Design on WhatsApp.</p></details>
 </section>
 
 <section class="blogteaser">
@@ -526,7 +526,7 @@ function collect(){
    wording: maker labels, ready wishes/letters/gifts, the page headline and
    the share message. Premium designs are marked in PREMIUM_THEMES and are
    enforced server-side (api/create.js + api/studio.js buydesign). */
-var PREMIUM_THEMES = { rose: 1, emerald: 1, royal: 1, noir: 1, honey: 1 };
+var PREMIUM_THEMES = {}; /* all designs free (owner order 2026-11-17) */
 var PREMIUM_PRICE = 50;
 var OCCASIONS = {
   birthday: {
@@ -546,7 +546,7 @@ var OCCASIONS = {
     wishLabel: "Love message", wishPh: "Your love message will appear here…",
     headline: "With All My Love",
     blurb: "For the one who makes ordinary days feel like celebrations — sweet, decent and from the heart.",
-    themes: ["rose", "sunset", "lavender", "noir", "honey", "pastel"],
+    themes: ["lovestory", "rose", "sunset", "lavender", "noir", "honey", "pastel"],
     share: "I made a love page for you ❤️ Open it here: {link} PIN: {pin}"
   },
   friendship: {
@@ -2108,8 +2108,176 @@ document.getElementById('partyBtn').addEventListener('click', function(){
 }
 
 function renderPage(d){
+  if(d && d.t === "lovestory") return buildLovePage(d);
   if(d && d.t && d.t !== "classic" && THEMES[d.t]) return buildPage2(d, THEMES[d.t]);
   return buildPage(d, "free");
+}
+
+/* ================= Love Story design (gift box → roses → photo wall) =================
+   A story-style page for the Love occasion: gift box tap, roses flood, intro
+   card, quote, then a polaroid photo wall (the maker's own photos, or the
+   built-in illustrations) and a typewriter letter. PIN: server-unlocked pages
+   skip the lock; hash pages show the heart lock first (same rule as the
+   other designs). */
+function buildLovePage(d){
+  var name = d.name || "My Love", from = d.from || "Someone who loves you";
+  var photos = (d.im && d.im.length) ? d.im.slice(0, 4) : ["/love-1.jpg", "/love-2.jpg", "/love-3.jpg", "/love-4.jpg"];
+  var caps = ["Every moment with you feels like a fairytale ✨", "With you, even sunsets feel warmer 🌅", "Your laugh is my favourite sound 🍂", "In every rain, I'll hold the umbrella for you ☔"];
+  var pols = photos.map(function(src, i){
+    return '<div class="pol"><img src="' + src + '" alt="Photo ' + (i + 1) + '"><p>' + caps[i % caps.length] + '</p></div>';
+  }).join("");
+  var wishHtml = (d.wish || "").trim() ? '<div class="wishcard">💌 ' + esc(d.wish) + '</div>' : "";
+  var giftHtml = (d.gift || "").trim() ? '<div class="giftcard">🎁 <b>A gift for you:</b> ' + esc(d.gift) + '</div>' : "";
+  var D = { name: name, from: from, pin: String(d.pin || "surprise"), unlocked: !!d.unlocked, letter: (d.letter || "").trim() || ("My dear " + name + ",\n\nThis page is small, but what it carries is not: you are loved, today and every day. Thank you for being you.\n\nWith all my love, always.") };
+  var css = [
+    "*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}",
+    "body{font-family:'Quicksand',Verdana,sans-serif;background:linear-gradient(180deg,#ffeef4,#fff9f5 60%,#ffeef4);color:#571F30;min-height:100vh;overflow-x:hidden}",
+    ".wrap{max-width:430px;margin:0 auto;min-height:100vh;padding:26px 20px 44px;position:relative}",
+    ".screen{display:none;flex-direction:column;align-items:center;text-align:center;animation:lvfade .5s ease both}",
+    ".screen.on{display:flex}",
+    "@keyframes lvfade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}",
+    ".note{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#b06a84;margin-top:8px;font-weight:700}",
+    ".giftbox{font-size:118px;line-height:1;margin-top:60px;cursor:pointer;animation:lvbob 2.2s ease-in-out infinite;filter:drop-shadow(0 18px 24px rgba(229,69,123,.35))}",
+    "@keyframes lvbob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-12px) rotate(2deg)}}",
+    "h1.big{font-family:'Playfair Display',Georgia,serif;font-size:40px;line-height:1.15;margin-top:32px;color:#8e1f47}",
+    ".tap{margin-top:12px;font-size:15px;color:#a34a6d;animation:lvpulse 1.6s ease-in-out infinite;font-weight:600}",
+    "@keyframes lvpulse{0%,100%{opacity:.45}50%{opacity:1}}",
+    ".rosep{position:fixed;top:-40px;z-index:60;pointer-events:none;animation:lvfall linear forwards}",
+    "@keyframes lvfall{to{transform:translateY(110vh) rotate(320deg)}}",
+    ".card{background:#fff;border-radius:26px;box-shadow:0 18px 44px rgba(142,31,71,.16);padding:16px 16px 22px;width:100%;margin-top:24px}",
+    ".card img{width:100%;border-radius:18px;display:block}",
+    "h2.serif{font-family:'Playfair Display',Georgia,serif;font-size:31px;color:#8e1f47;margin-top:22px;line-height:1.25}",
+    ".sub{font-size:15px;color:#8a5a6d;margin-top:10px;line-height:1.55;font-weight:600}",
+    ".btn{margin-top:26px;background:linear-gradient(135deg,#F98BB0,#E0608E);color:#fff;border:none;font-family:inherit;font-weight:700;font-size:16px;padding:15px 30px;border-radius:999px;cursor:pointer;box-shadow:0 12px 26px rgba(224,96,142,.4)}",
+    ".btn:active{transform:scale(.96)}",
+    ".heart-ic{width:86px;height:86px;border-radius:50%;background:#ffe3ee;display:flex;align-items:center;justify-content:center;font-size:42px;margin-top:48px;box-shadow:inset 0 0 0 2px #ffd0e0}",
+    ".quote{font-family:'Playfair Display',Georgia,serif;font-size:24px;line-height:1.5;color:#8e1f47;margin-top:26px;font-style:italic}",
+    ".dots{display:flex;gap:14px;margin-top:28px}",
+    ".dot{width:17px;height:17px;border-radius:50%;border:2px solid #e5457b;transition:background .15s}",
+    ".dot.f{background:#e5457b}",
+    ".dots.shake{animation:lvshake .45s}",
+    "@keyframes lvshake{0%,100%{transform:none}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}",
+    ".err{height:22px;margin-top:14px;font-size:14px;color:#c22e5c;font-weight:700}",
+    ".pad{display:grid;grid-template-columns:repeat(3,74px);gap:13px;margin-top:14px;justify-content:center}",
+    ".key{height:62px;border-radius:50%;border:1.5px solid #f3c3d4;background:#fff;font-size:23px;font-family:inherit;color:#571F30;cursor:pointer}",
+    ".key:active{background:#ffe3ee;transform:scale(.93)}",
+    ".key.ghost{border:none;background:transparent;font-size:19px}",
+    ".pin-field{margin-top:20px;width:230px;padding:13px;border-radius:14px;border:2px solid #e5457b;background:#fff;font-size:19px;text-align:center;letter-spacing:4px;font-family:inherit;font-weight:700;color:#571F30;outline:none}",
+    ".spin{margin-top:110px;font-size:64px;animation:lvrot 1.3s linear infinite}",
+    "@keyframes lvrot{to{transform:rotate(360deg)}}",
+    ".wishcard{background:#fff;border-radius:18px;box-shadow:0 10px 26px rgba(142,31,71,.12);padding:18px;margin-top:20px;width:100%;font-size:16.5px;line-height:1.6;text-align:left}",
+    ".wall{width:100%}",
+    ".pol{background:#fff;padding:10px 10px 12px;border-radius:8px;box-shadow:0 12px 30px rgba(142,31,71,.18);margin-top:22px}",
+    ".pol img{width:100%;border-radius:4px;display:block}",
+    ".pol p{font-family:'Segoe Script','Brush Script MT',cursive;font-size:19px;color:#6d3350;padding:10px 6px 2px;line-height:1.35}",
+    ".pol:nth-child(odd){transform:rotate(-1.6deg)}",
+    ".pol:nth-child(even){transform:rotate(1.4deg)}",
+    ".letter-card{background:#fffdf7;border:1.5px dashed #eec3d2;border-radius:18px;padding:22px 20px;margin-top:28px;width:100%;text-align:left;box-shadow:0 10px 26px rgba(142,31,71,.1)}",
+    ".letter-card h3{font-family:'Playfair Display',Georgia,serif;font-size:21px;color:#8e1f47;text-align:center}",
+    "#lvLetter{font-size:17px;line-height:1.75;white-space:pre-wrap;margin-top:14px;color:#5b3444;min-height:160px;font-family:Georgia,serif}",
+    ".giftcard{background:#fff0f5;border:1.5px solid #f3c3d4;border-radius:18px;padding:18px;margin-top:24px;width:100%;font-size:16px;line-height:1.6;text-align:left}",
+    ".final-card{margin-top:28px;background:linear-gradient(135deg,#8e1f47,#c22e5c);color:#fff;border-radius:22px;padding:30px 22px;width:100%}",
+    ".final-card .t1{font-family:'Playfair Display',Georgia,serif;font-size:26px}",
+    ".final-card .t2{font-size:14px;margin-top:9px;opacity:.92}",
+    ".badge2{display:inline-block;margin-top:26px;font-size:12px;font-weight:700;letter-spacing:.06em;color:#a34a6d;border:1px solid #f3c3d4;border-radius:999px;padding:7px 15px;background:#fff}",
+    "#wlReport{margin-top:12px;background:none;border:1.5px solid #e5457b;color:#a34a6d;font-size:12px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;font-family:inherit}"
+  ].join("");
+  var numericPin = /^\d{4}$/.test(D.pin);
+  var lockHtml = "";
+  if(!D.unlocked){
+    lockHtml =
+    '<section class="screen" id="lv-lock">' +
+      '<div class="heart-ic">🔒</div>' +
+      '<h2 class="serif">Enter the secret passkey</h2>' +
+      '<p class="sub">Only my favourite person knows it.</p>' +
+      (numericPin
+        ? '<div class="dots" id="lvDots"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="err" id="lvErr"></div><div class="pad" id="lvPad"></div>'
+        : '<input class="pin-field" id="lvPinField" type="password" placeholder="Secret PIN" autocomplete="off"><div class="err" id="lvErr"></div><button class="btn" id="lvUnlockBtn" type="button">Unlock ❤️</button>') +
+    '</section>';
+  }
+  var html =
+'<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">' +
+'<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">' +
+'<meta name="robots" content="noindex,nofollow">' +
+'<title>For ' + esc(name) + ' ❤️</title>' +
+'<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">' +
+'<style>' + css + '</style></head><body><div class="wrap">' +
+lockHtml +
+'<section class="screen" id="lv-gift">' +
+  '<div class="note">A surprise is waiting</div>' +
+  '<div class="giftbox" id="lvGift">🎁</div>' +
+  '<h1 class="big">For you,<br>' + esc(name) + ' 🎁</h1>' +
+  '<div class="tap">( tap to open )</div>' +
+'</section>' +
+'<section class="screen" id="lv-intro">' +
+  '<div class="card"><img src="' + photos[0] + '" alt="Us"></div>' +
+  '<h2 class="serif">From me to you.</h2>' +
+  '<p class="sub">This is how much I love you.</p>' +
+  '<button class="btn" id="lvToQuote" type="button">Open the surprise →</button>' +
+'</section>' +
+'<section class="screen" id="lv-quote">' +
+  '<div class="heart-ic">💗</div>' +
+  '<p class="quote">"In all the world, there is no heart for me like yours. In all the world, there is no love for you like mine."</p>' +
+  '<p class="sub">This page holds something special,<br>made only for you.</p>' +
+  '<button class="btn" id="lvToFinal" type="button">See your surprise →</button>' +
+'</section>' +
+'<section class="screen" id="lv-load">' +
+  '<div class="spin">🌹</div>' +
+  '<h2 class="serif">Unlocking your surprise…</h2>' +
+'</section>' +
+'<section class="screen" id="lv-final">' +
+  '<h2 class="serif" style="margin-top:4px">For ' + esc(name) + ' ❤️</h2>' +
+  wishHtml +
+  '<div class="wall">' + pols + '</div>' +
+  '<div class="letter-card"><h3>A letter for you 💌</h3><div id="lvLetter"></div></div>' +
+  giftHtml +
+  '<div class="final-card"><div class="t1">I will always love you ❤️</div><div class="t2">— From, ' + esc(from) + '</div></div>' +
+  '<div><span class="badge2">✦ Made with WishLink</span><br><button id="wlReport" type="button">🚩 Report this page</button></div>' +
+'</section>' +
+'</div>' +
+'<script>var D = ' + JSON.stringify(D).replace(/<\//g, "<\\/") + ';\n' +
+'var typed = false;\n' +
+'function show(id){ var ss = document.querySelectorAll(".screen"); for(var i=0;i<ss.length;i++) ss[i].classList.remove("on"); document.getElementById(id).classList.add("on"); window.scrollTo(0,0); if(id === "lv-final" && !typed){ typed = true; setTimeout(typeLetter, 700); } }\n' +
+'function typeLetter(){ var el = document.getElementById("lvLetter"), i = 0, T = D.letter; var t = setInterval(function(){ el.textContent = T.slice(0, ++i); if(i >= T.length) clearInterval(t); }, 24); }\n' +
+'document.getElementById("lvGift").addEventListener("click", function(){\n' +
+'  var em = ["🌹","🌸","💐","🌹","🌷","🌹"];\n' +
+'  for(var i=0;i<70;i++){ var s = document.createElement("span"); s.className = "rosep"; s.textContent = em[i % em.length]; s.style.left = (Math.random()*96) + "vw"; s.style.fontSize = (20 + Math.random()*30) + "px"; s.style.animationDuration = (1.6 + Math.random()*1.8) + "s"; s.style.animationDelay = (Math.random()*0.7) + "s"; document.body.appendChild(s); (function(el){ setTimeout(function(){ el.remove(); }, 4200); })(s); }\n' +
+'  setTimeout(function(){ show("lv-intro"); }, 1500);\n' +
+'});\n' +
+'document.getElementById("lvToQuote").addEventListener("click", function(){ show("lv-quote"); });\n' +
+'document.getElementById("lvToFinal").addEventListener("click", function(){ show("lv-load"); setTimeout(function(){ show("lv-final"); }, 1900); });\n' +
+'/* lock (hash pages only; server-unlocked pages skip it) */\n' +
+'if(!D.unlocked){\n' +
+'  show("lv-lock");\n' +
+'  var entered = "";\n' +
+'  function ok(){ show("lv-gift"); }\n' +
+'  function bad(){ var e = document.getElementById("lvErr"); if(e) e.textContent = "Oops, that\'s not it. Try again 💭"; var dd = document.getElementById("lvDots"); if(dd){ dd.classList.remove("shake"); void dd.offsetWidth; dd.classList.add("shake"); } }\n' +
+'  var pad = document.getElementById("lvPad");\n' +
+'  if(pad){\n' +
+'    var keys = ["1","2","3","4","5","6","7","8","9","","0","⌫"];\n' +
+'    keys.forEach(function(k){ var b = document.createElement("button"); b.type = "button"; b.className = "key" + (k === "" ? " ghost" : ""); b.textContent = k; b.addEventListener("click", function(){\n' +
+'      if(k === "") return;\n' +
+'      if(k === "⌫"){ entered = entered.slice(0,-1); draw(); return; }\n' +
+'      if(entered.length >= 4) return;\n' +
+'      entered += k; draw(); document.getElementById("lvErr").textContent = "";\n' +
+'      if(entered.length === 4){ if(entered.toLowerCase() === D.pin.toLowerCase()){ setTimeout(ok, 250); } else { bad(); setTimeout(function(){ entered = ""; draw(); }, 480); } }\n' +
+'    }); pad.appendChild(b); });\n' +
+'    function draw(){ var ds = document.querySelectorAll("#lvDots .dot"); for(var i=0;i<4;i++) ds[i].classList.toggle("f", i < entered.length); }\n' +
+'  } else {\n' +
+'    document.getElementById("lvUnlockBtn").addEventListener("click", function(){ var v = document.getElementById("lvPinField").value.trim(); if(v.toLowerCase() === D.pin.toLowerCase()) ok(); else bad(); });\n' +
+'  }\n' +
+'} else { show("lv-gift"); }\n' +
+'/* report */\n' +
+'var wlRb = document.getElementById("wlReport");\n' +
+'if(wlRb){ wlRb.addEventListener("click", function(){\n' +
+'  if(!window.__WL_SLUG__){ wlRb.textContent = "🚩 Reports work on shared links"; return; }\n' +
+'  wlRb.disabled = true; wlRb.textContent = "Reporting…";\n' +
+'  fetch("/api/report", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ slug: window.__WL_SLUG__ }) })\n' +
+'    .then(function(r){ wlRb.textContent = r.ok ? "🚩 Reported — thank you ✓" : "🚩 Could not report"; })\n' +
+'    .catch(function(){ wlRb.textContent = "🚩 Could not report"; });\n' +
+'}); }\n' +
+'</scr' + 'ipt></body></html>';
+  return html;
 }
 
 function downloadHtml(html, filename){
@@ -2151,9 +2319,10 @@ if(!fPin.value){ fPin.value = String(Math.floor(1000 + Math.random()*9000)); }
 
 /* ---- design picker ---- */
 var WL_THEME = "classic";
-var WL_DESIGN = {classic:{u:"9,800+",h:1,r:1},pastel:{u:"5,200+"},neon:{u:"5,900+",h:1},rose:{u:"6,400+",h:1},ocean:{u:"2,900+"},sunset:{u:"4,100+"},lavender:{u:"2,600+"},emerald:{u:"3,800+",h:1},candy:{u:"4,700+"},vintage:{u:"620+"},noir:{u:"1,400+"},mint:{u:"1,800+"},royal:{u:"3,300+"},honey:{u:"2,200+"},snow:{u:"950+"}};
+var WL_DESIGN = {lovestory:{h:1},classic:{u:"9,800+",h:1,r:1},pastel:{u:"5,200+"},neon:{u:"5,900+",h:1},rose:{u:"6,400+",h:1},ocean:{u:"2,900+"},sunset:{u:"4,100+"},lavender:{u:"2,600+"},emerald:{u:"3,800+",h:1},candy:{u:"4,700+"},vintage:{u:"620+"},noir:{u:"1,400+"},mint:{u:"1,800+"},royal:{u:"3,300+"},honey:{u:"2,200+"},snow:{u:"950+"}};
 var THEME_META = [{ id:"classic", name:"Midnight Gold", tag:"The original dark & gold", colors:["#14100a","#e8b44b","#f5e9c9"] }]
-  .concat(THEME_ORDER.map(function(id){ var th = THEMES[id]; return { id:id, name:th.name, tag:th.tag, colors:[th.acc, th.acc2, th.dark ? "#141428" : "#ffffff"] }; }));
+  .concat(THEME_ORDER.map(function(id){ var th = THEMES[id]; return { id:id, name:th.name, tag:th.tag, colors:[th.acc, th.acc2, th.dark ? "#141428" : "#ffffff"] }; }))
+  .concat([{ id:"lovestory", name:"Love Story", tag:"Gift box, roses & your photo wall", colors:["#e5457b","#ff7aa8","#fff0f5"] }]);
 var themeGrid = $("themeGrid");
 THEME_META.forEach(function(m){
   var b = document.createElement("button");

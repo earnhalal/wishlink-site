@@ -41,7 +41,7 @@ async function bumpStatN(field, n) {
 const FREE_CAP = 20, EDIT_COST = 10, DAY_MS = 24 * 3600 * 1000, MIN_TOPUP_RS = 100;
 /* Premium page designs: unlocked once per design, forever, for DESIGN_PRICE
    credits. create.js enforces the same list server-side. */
-const PREMIUM_THEMES = ["rose", "emerald", "royal", "noir", "honey"], DESIGN_PRICE = 50;
+const PREMIUM_THEMES = [], DESIGN_PRICE = 50; /* all designs free (owner order 2026-11-17) */
 
 async function getWallet(device) {
   let w = await dbGet("studio_wallets/" + device);
