@@ -68,6 +68,14 @@ table.pages{width:100%;border-collapse:collapse;margin-top:6px}
 table.pages td{padding:8.5px 4px;border-bottom:1px solid var(--line2);font-size:14px;color:var(--ink2)}
 table.pages tr:last-child td{border-bottom:0}
 table.pages td:last-child{text-align:right;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.vis{border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:10px;background:#FBFCFE}
+.vis .vtop{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;font-size:14px}
+.vis .vcc{font-weight:700}
+.vis .vip{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--acc)}
+.vis .vmeta{font-size:12.5px;color:var(--mut);margin-top:3px}
+.vis .vpages{font-size:13px;margin-top:7px;line-height:1.65}
+.vis .vpages .pg{display:block}
+.vis .vsess{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.6}
 .mut{color:var(--mut);font-size:13px}
 .rowline{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .frow{display:grid;grid-template-columns:168px 1fr 64px 74px;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line2)}
@@ -189,6 +197,20 @@ footer{color:var(--mut);text-align:center;padding:26px 16px 6px;font-size:12.5px
       <p class="mut" id="devEmpty" style="display:none">No device data yet today.</p>
       <p class="mut" id="osLine" style="margin-top:10px"></p>
       <p class="mut" id="brLine"></p>
+    </div>
+
+    <div class="card">
+      <h2>👥 Visitors — who is coming</h2>
+      <p class="sub">One card per device: IP address, place, repeat visits, how long they stayed on each page and how far they scrolled. Counting starts with the first visit after this update.</p>
+      <div id="visBox" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h2>🤖 Bots & AI crawlers</h2>
+      <p class="sub">Search engines, AI agents and scripts that visit the site — counted separately, never mixed into the human numbers.</p>
+      <table class="pages"><tbody id="botBody"></tbody></table>
+      <p class="mut" id="botEmpty" style="display:none">No bot visits recorded yet.</p>
+      <div id="botRecent"></div>
     </div>
 
     </div>
@@ -359,6 +381,54 @@ function render(s) {
     try { when = new Date(t2.ts).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }); } catch (e) {}
     return "<tr><td>Rs " + t2.amount + " → " + t2.credits + " credits · code " + (t2.code || "") + "</td><td>" + when + "</td></tr>";
   }).join("");
+
+  /* visitors + bots */
+  renderVisitors(s.visitors || []);
+  var bent = sortedEntries(s.total.bots || {});
+  el("botEmpty").style.display = bent.length ? "none" : "block";
+  el("botBody").innerHTML = bent.map(function(e) { return "<tr><td>🤖 " + esc(e[0]) + "</td><td>" + e[1] + "</td></tr>"; }).join("");
+  renderBots(s.bots || []);
+}
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function fmtDur(s) { s = Math.round(s || 0); if (s < 60) return s + "s"; var m = Math.floor(s / 60); if (m < 60) return m + "m " + (s % 60) + "s"; return Math.floor(m / 60) + "h " + (m % 60) + "m"; }
+function relTime(ts) { if (!ts) return "—"; var diff = Date.now() - ts; if (diff < 60000) return "just now"; if (diff < 3600000) return Math.floor(diff / 60000) + " min ago"; if (diff < 86400000) return Math.floor(diff / 3600000) + "h ago"; return Math.floor(diff / 86400000) + "d ago"; }
+function sessWhen(ts) { try { return new Date(ts).toLocaleString("en-GB", { timeZone: "Asia/Karachi", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hour12: true }); } catch (e) { return ""; } }
+function ccLabel(cc) { return flag(cc) + " " + (COUNTRY_NAMES[cc] || cc || "Unknown"); }
+function renderVisitors(list) {
+  var box = el("visBox");
+  if (!list.length) {
+    box.innerHTML = '<p class="mut">No visitor details yet — per-visitor IP, repeat visits, stay time and scroll depth start counting from now.</p>';
+    return;
+  }
+  box.innerHTML = list.map(function(v) {
+    var pgKeys = Object.keys(v.pages || {}).sort(function(a, b) { return (v.pages[b].v || 0) - (v.pages[a].v || 0); });
+    var pagesHtml = pgKeys.map(function(k) {
+      var e = v.pages[k];
+      return '<span class="pg">' + esc(LABELS[k] || k) + " — " + (e.v || 0) + " view" + ((e.v || 0) === 1 ? "" : "s") +
+        " · stayed " + fmtDur(e.s) + " · scrolled " + (e.sc || 0) + "%</span>";
+    }).join("");
+    var sessHtml = (v.sess || []).map(function(ss) {
+      return esc(sessWhen(ss.t)) + " — " + fmtDur(ss.s);
+    }).join(" &nbsp;·&nbsp; ");
+    return '<div class="vis">' +
+      '<div class="vtop"><span class="vcc">' + esc(ccLabel(v.cc)) + (v.city ? ' <span style="color:var(--mut);font-weight:400">· ' + esc(v.city) + "</span>" : "") + '</span><span class="vip">' + esc(v.ip || "IP unknown") + "</span></div>" +
+      '<div class="vmeta">' + esc([v.dtype, v.os, v.browser].filter(Boolean).join(" · ")) +
+        " — <b>" + (v.visits || 0) + " visit" + ((v.visits || 0) === 1 ? "" : "s") + "</b> in " + (v.sessions || 0) + " session" + ((v.sessions || 0) === 1 ? "" : "s") +
+        " · last seen " + relTime(v.last) + " · total stay " + fmtDur(v.totalSecs) + "</div>" +
+      (pagesHtml ? '<div class="vpages">' + pagesHtml + "</div>" : "") +
+      (sessHtml ? '<div class="vsess">Recent visits: ' + sessHtml + "</div>" : "") +
+      "</div>";
+  }).join("");
+}
+function renderBots(list) {
+  var box = el("botRecent");
+  if (!list.length) { box.innerHTML = ""; return; }
+  box.innerHTML = '<div style="margin-top:12px">' + list.map(function(bt) {
+    return '<div class="vis"><div class="vtop"><span class="vcc">🤖 ' + esc(bt.name || "Bot") + '</span>' +
+      '<span class="vip">' + esc(bt.ip || "") + '</span></div>' +
+      '<div class="vmeta">' + esc(ccLabel(bt.cc)) + (bt.city ? " · " + esc(bt.city) : "") + " · " + (bt.n || 0) + " visit" + ((bt.n || 0) === 1 ? "" : "s") +
+      " total · last seen " + relTime(bt.last) + "</div></div>";
+  }).join("") + "</div>";
 }
 function loadStats() {
   if (!pin) return;
